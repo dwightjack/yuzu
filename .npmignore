@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+test
+examples
+.babelrc
+.editorconfig
+.eslintrc.js
+karma.conf.js
+karma.sauce.conf.js
+webpack.*
