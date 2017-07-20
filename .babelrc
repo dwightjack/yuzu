@@ -1,33 +1,28 @@
 {
-  "env": {
-    "es": {
-      "presets": [
-        ["es2015", {"loose": true, "modules": false}]
-      ]
-    },
-    "rollup": {
-      "presets": [
-        ["es2015", {"loose": true, "modules": false}]
-      ],
-      "plugins": [
-        ["external-helpers"]
-      ]
-    },
-	"cjs": {
-      "presets": [
-        ["es2015", {"loose": true, "modules": "commonjs"}]
-      ],
-      "plugins": [
-        ["add-module-exports"]
-      ]
-	},
-	"test": {
-		"presets": [
-			["es2015", { "loose": true, "modules": false } ]
-		],
-		"plugins": [
-			["external-helpers"]
-		]
+	"env": {
+		"es": {
+			"presets": [
+				["es2015", {"loose": true, "modules": false}]
+			],
+			"plugins": ["transform-flow-strip-types"]
+		},
+		"rollup": {
+			"presets": [
+				["es2015", {"loose": true, "modules": false}]
+			],
+			"plugins": ["external-helpers", "transform-flow-strip-types"]
+		},
+		"cjs": {
+			"presets": [
+				["es2015", {"loose": true, "modules": "commonjs"}]
+			],
+			"plugins": ["add-module-exports", "transform-flow-strip-types"]
+		},
+		"test": {
+			"presets": [
+				["es2015", { "loose": true, "modules": false } ]
+			],
+			"plugins": ["external-helpers", "transform-flow-strip-types"]
+		}
 	}
-  }
 }

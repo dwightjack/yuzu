@@ -3,7 +3,9 @@
         "browser": true,
         "es6": true
     },
-    "extends": "airbnb-base",
+		"extends": "airbnb-base",
+
+		"parser": "babel-eslint",
 
     "rules": {
         "indent": [2, 4],
