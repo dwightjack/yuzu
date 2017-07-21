@@ -99,7 +99,8 @@ class Component extends EventEmitter {
 
         const stateEventsMap = this.bindStateEvents();
         Object.keys(stateEventsMap).forEach((key) => {
-            this.on('change:' + key, stateEventsMap[key].bind(this));
+            const method = typeof stateEventsMap[key] === 'string' ? this[stateEventsMap[key]] : stateEventsMap[key];
+            this.on('change:' + key, method.bind(this));
         });
 
         const initialState = Object.assign({}, this.getInitialState(), state);
@@ -176,3 +177,45 @@ class Component extends EventEmitter {
 }
 
 export default Component;
+
+
+/**
+ *
+ * #### Example
+ *
+ * ```
+ *
+ * ```
+ *
+ * @param {Component} parentInstance
+ * @param {object} binds
+ */
+
+export const connect = (
+    parentInstance,
+    binds = {}
+) => (componentClass) => {
+
+    class WrappedComponent extends componentClass {
+
+        init(state) {
+            const keys = Object.keys(binds);
+            const parentState = keys.reduce((o, k) => (
+                Object.assign(o, { [binds[k]]: parentInstance.getState(k) })
+            ), {});
+
+            keys.forEach((k) => {
+                parentInstance.on('change:' + k, (newValue) => {
+                    this.setState(binds[k], newValue);
+                });
+            });
+
+            super.init(Object.assign(parentState, state));
+        }
+
+    }
+
+    WrappedComponent.name = `connected(${componentClass.name || 'Component'})`;
+
+    return WrappedComponent;
+};
