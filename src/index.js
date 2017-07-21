@@ -5,7 +5,8 @@ import { EventManager } from 'tsumami/lib/events';
 import isElement from 'lodash.iselement';
 import { nextUid } from './utils';
 
-
+const getOwnPropertyNames = Object.getOwnPropertyNames;
+const propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 class Component extends EventEmitter {
 
@@ -26,7 +27,16 @@ class Component extends EventEmitter {
             return parent.apply(this, args);
         };
 
-        Object.assign(child, parent);
+        //https://github.com/mridgway/hoist-non-react-statics/blob/master/index.js#L51
+        const keys = getOwnPropertyNames(parent);
+        for (let i = 0; i < keys.length; ++i) { //eslint-disable-line no-plusplus
+            const key = keys[i];
+            if (propIsEnumerable.call(parent, key) || typeof parent[key] === 'function') {
+                try { // Avoid failures from read-only properties
+                    child[key] = parent[key];
+                } catch (e) {} //eslint-disable-line no-empty
+            }
+        }
 
         child.prototype = Object.create(parent.prototype, props);
         child.prototype.constructor = child;
@@ -67,7 +77,7 @@ class Component extends EventEmitter {
         this.state = {};
     }
 
-    setRef(id: string, ComponentClass: Component | Function, ...opts: [Element, {}]): Promise<Component> {
+    setRef(id: string, ComponentClass: Component | typeof Component, ...opts: [Element, {}]): Promise<Component> {
         const ref: Component = ComponentClass instanceof Component ? ComponentClass : new ComponentClass(...opts);
         const prevRef = this.$refs[id];
         this.$refs[id] = ref;
@@ -111,7 +121,8 @@ class Component extends EventEmitter {
 
         const stateEventsMap = this.bindStateEvents();
         Object.keys(stateEventsMap).forEach((key) => {
-            const method = typeof stateEventsMap[key] === 'string' ? this[stateEventsMap[key]] : stateEventsMap[key];
+            // $FlowFixMe
+            const method: Function = typeof stateEventsMap[key] === 'string' && typeof this[stateEventsMap[key]] === 'function' ? this[stateEventsMap[key]] : stateEventsMap[key];
             this.on('change:' + key, method.bind(this));
         });
 
@@ -143,7 +154,7 @@ class Component extends EventEmitter {
         }
     }
 
-    bindStateEvents(): { [event_id: string]: Function } { //eslint-disable-line class-methods-use-this
+    bindStateEvents(): { [event_id: string]: Function | string } { //eslint-disable-line class-methods-use-this
         return {};
     }
 
@@ -190,7 +201,6 @@ class Component extends EventEmitter {
 
 export default Component;
 
-
 /**
  *
  * #### Example
@@ -202,15 +212,14 @@ export default Component;
  * @param {Component} parentInstance
  * @param {object} binds
  */
-
 export const connect = (
-    parentInstance,
-    binds = {}
-) => (componentClass) => {
+    parentInstance: Component,
+    binds?: {} = {}
+) => (componentClass: typeof Component) => {
 
     class WrappedComponent extends componentClass {
 
-        init(state) {
+        init(state?: {[string]: any} = {}): Component {
             const keys = Object.keys(binds);
             const parentState = keys.reduce((o, k) => (
                 Object.assign(o, { [binds[k]]: parentInstance.getState(k) })
@@ -222,7 +231,7 @@ export const connect = (
                 });
             });
 
-            super.init(Object.assign(parentState, state));
+            return super.init(Object.assign(parentState, state));
         }
 
     }
