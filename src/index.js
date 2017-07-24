@@ -5,6 +5,8 @@ import { EventManager } from 'tsumami/lib/events';
 import isElement from 'lodash.iselement';
 import { nextUid } from './utils';
 
+
+
 const getOwnPropertyNames = Object.getOwnPropertyNames;
 const propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -46,7 +48,7 @@ class Component extends EventEmitter {
         return child;
     }
 
-    constructor(el: Element, options?: {[string]: any} = { state: {} }) {
+    constructor(el: Element, options?: {[string]: any} = {}) {
         super();
         this.setMaxListeners(0);
 
@@ -77,10 +79,18 @@ class Component extends EventEmitter {
         this.state = {};
     }
 
-    setRef(id: string, ComponentClass: Component | typeof Component, ...opts: [Element, {}]): Promise<Component> {
-        const ref: Component = ComponentClass instanceof Component ? ComponentClass : new ComponentClass(...opts);
+    setRef({ id, component, el, opts = {}, props = {} }: refType): Promise<Component> {
+        const ref: Component = component instanceof Component ? component : new component(el, opts); //eslint-disable-line
         const prevRef = this.$refs[id];
+        const state = {};
         this.$refs[id] = ref;
+
+        if (props) {
+            Object.keys(props).forEach((k) => {
+                this.on(`change:${k}`, (v) => ref.setState(props[k], v));
+                state[props[k]] = this.state[k];
+            });
+        }
 
         if (prevRef) {
             return prevRef.destroy().then(() => {
@@ -89,7 +99,7 @@ class Component extends EventEmitter {
                 } else {
                     this.$el.appendChild(ref.$el);
                 }
-                return ref.init();
+                return ref.init(state);
             });
         }
 
@@ -97,7 +107,7 @@ class Component extends EventEmitter {
         //     this.$el.appendChild(ref.$el);
         // }
 
-        return Promise.resolve(ref.init());
+        return Promise.resolve(ref.init(state));
     }
 
     init(state?: {[string]: any} = {}): Component {
@@ -201,42 +211,18 @@ class Component extends EventEmitter {
 
 export default Component;
 
-/**
- *
- * #### Example
- *
- * ```
- *
- * ```
- *
- * @param {Component} parentInstance
- * @param {object} binds
- */
-export const connect = (
-    parentInstance: Component,
-    binds?: {} = {}
-) => (componentClass: typeof Component) => {
+type refInstanceType = {|
+    component: Component,
+    id: string,
+    props?: {}
+|};
 
-    class WrappedComponent extends componentClass {
+type refConstructorType = {|
+    component: typeof Component,
+    id: string,
+    el: Element,
+    opts?: {[option_ke: string]: string},
+    props?: {}
+|};
 
-        init(state?: {[string]: any} = {}): Component {
-            const keys = Object.keys(binds);
-            const parentState = keys.reduce((o, k) => (
-                Object.assign(o, { [binds[k]]: parentInstance.getState(k) })
-            ), {});
-
-            keys.forEach((k) => {
-                parentInstance.on('change:' + k, (newValue) => {
-                    this.setState(binds[k], newValue);
-                });
-            });
-
-            return super.init(Object.assign(parentState, state));
-        }
-
-    }
-
-    WrappedComponent.name = `connected(${componentClass.name || 'Component'})`;
-
-    return WrappedComponent;
-};
+type refType = refConstructorType | refInstanceType
