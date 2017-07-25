@@ -21,7 +21,7 @@ class Component extends EventEmitter {
     _active: boolean
 
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
-    static extend(props: { [string]: any} = {}) {
+    static create(props: { [string]: any} = {}) {
         const parent: Function = this;
         const child = props.hasOwnProperty('constructor') ? props.constructor : function ChildConstructor(...args) { //eslint-disable-line no-prototype-builtins
             return parent.apply(this, args);
@@ -147,6 +147,8 @@ class Component extends EventEmitter {
 
         this._active = true;
 
+        this.afterInit();
+
         return this;
     }
 
@@ -187,6 +189,9 @@ class Component extends EventEmitter {
     beforeInit() { //eslint-disable-line class-methods-use-this
     }
 
+    afterInit() { //eslint-disable-line class-methods-use-this
+    }
+
     closeRefs(): Promise<void> {
         return Promise.all(Object.keys(this.$refs).map((ref: string): Promise<any> => {
             return this.$refs[ref].destroy();
@@ -213,4 +218,6 @@ class Component extends EventEmitter {
 
 }
 
-export default Component;
+export {
+    Component //eslint-disable-line import/prefer-default-export
+};
