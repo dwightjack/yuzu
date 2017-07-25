@@ -72,7 +72,7 @@ module.exports = (config) => {
         reporters: ['progress', 'saucelabs'],
 
         sauceLabs: {
-            testName: 'vue-types',
+            testName: 'yuzu',
             recordScreenshots: false,
             build: `${pkg.version}-${Date.now()}`
         },

@@ -6,17 +6,19 @@ import uglify from 'rollup-plugin-uglify';
 import { version, name, license, author, homepage } from './package.json';
 
 const banner = `
-/**! ${name} - v${version}
+/**!
+ * ${name} - v${version}
  * ${homepage}
  * Copyright (c) ${(new Date().getFullYear())} - ${author};
- * Licensed ${license}
+ * @license Licensed ${license}
  */
 `;
 
 const baseConfig = {
     entry: 'src/index.js',
     format: 'umd',
-    moduleName: 'Component',
+    moduleName: 'YZ',
+    amd: { id: 'yuzu' },
     plugins: [
         resolve({
             preferBuiltins: false

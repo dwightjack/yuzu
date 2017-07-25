@@ -55,7 +55,6 @@ const app = new MyComponent('#app');
 In environments that don't support `extends` (such as ES5), you can use the static `Component.create` method to achieve the same result:
 
  ```js
-
 var MyComponent = YZ.Component.create({
 
 	getInitialState: function () {

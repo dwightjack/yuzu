@@ -1,8 +1,8 @@
 {
-  "name": "component",
+  "name": "yuzu",
   "description": "in-DOM component lifecycle",
   "version": "0.0.1",
-  "homepage": "https://github.com/dwightjack/component",
+  "homepage": "https://github.com/dwightjack/yuzu",
   "author": "Marco Solazzi",
   "license": "MIT",
   "unpkg": "umd/index.min.js",
@@ -17,9 +17,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/dwightjack/component.git"
+    "url": "https://github.com/dwightjack/yuzu.git"
   },
-  "bugs": "https://github.com/dwightjack/component/issues",
+  "bugs": "https://github.com/dwightjack/yuzu/issues",
   "keywords": [
     "component"
   ],

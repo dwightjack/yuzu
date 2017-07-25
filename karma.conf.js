@@ -57,7 +57,7 @@ const baseConfig = {
             require('rollup-plugin-node-globals')() //eslint-disable-line
         ],
         format: 'iife',               // Helps prevent naming collisions.
-        moduleName: 'domUtils', // Required for 'iife' format.
+        moduleName: 'Yuzu', // Required for 'iife' format.
         sourceMap: 'inline'          // Sensible for testing.
     },
 
