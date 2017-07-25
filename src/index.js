@@ -15,7 +15,7 @@ class Component extends EventEmitter {
     $els: {[element_id: string]: Element}
     $refs: {[ref_id: string]: Component}
     options: optionsType
-    $ev: {[method_id: string]: Function}
+    $ev: EventManager
     state: stateType
     _uid: string
     _active: boolean
@@ -38,7 +38,7 @@ class Component extends EventEmitter {
             }
         }
 
-        child.prototype = Object.create(parent.prototype, props);
+        child.prototype = Object.assign(Object.create(parent.prototype), props);
         child.prototype.constructor = child;
 
         child.__super__ = parent.prototype;
@@ -72,13 +72,7 @@ class Component extends EventEmitter {
 
         this.options = Object.assign({}, this.getDefaultOptions(), options);
 
-        const domEvents: EventManager = new EventManager();
-
-        this.$ev = {};
-
-        ['on', 'off', 'delegate', 'undelegate'].forEach((m) => {
-            this.$ev[m] = domEvents.bind(domEvents, this.$el);
-        });
+        this.$ev = new EventManager();
 
         this.state = {};
     }
