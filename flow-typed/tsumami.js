@@ -1,3 +1,4 @@
+// @flow
 declare module 'tsumami' {
     declare var exports: any
 }
