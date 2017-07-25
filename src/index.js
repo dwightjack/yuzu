@@ -12,10 +12,10 @@ class Component extends EventEmitter {
 
     el: Element
     $el: Element
-    $els: { [element_id: string]: Element }
-    $refs: { [ref_id: string]: Component }
+    $els: {[element_id: string]: Element}
+    $refs: {[ref_id: string]: Component}
     options: optionsType
-    $ev: { [method_id: string]: Function }
+    $ev: {[method_id: string]: Function}
     state: stateType
     _uid: string
     _active: boolean
@@ -23,7 +23,7 @@ class Component extends EventEmitter {
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
     static extend(props: { [string]: any} = {}) {
         const parent: Function = this;
-        const child = props.constructor || function ChildConstructor(...args) {
+        const child = props.hasOwnProperty('constructor') ? props.constructor : function ChildConstructor(...args) { //eslint-disable-line no-prototype-builtins
             return parent.apply(this, args);
         };
 
@@ -53,6 +53,8 @@ class Component extends EventEmitter {
         if (!el) {
             throw new TypeError('First argument must be a DOM Element');
         }
+
+        this._active = false;
 
         this.el = this.$el = typeof el === 'string' ? qs(el) : el; //eslint-disable-line no-multi-assign
 
@@ -218,17 +220,3 @@ class Component extends EventEmitter {
 }
 
 export default Component;
-
-type refInstanceType = {|
-    component: Component,
-    id: string,
-    props?: {}
-|};
-
-type refConstructorType = {|
-    component: typeof Component,
-    id: string,
-    el: Element,
-    opts ?: optionsType,
-    props ?: {}
-|};
