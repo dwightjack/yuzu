@@ -27,6 +27,8 @@
 				"prefer-template": 0,
 				"no-underscore-dangle": 0,
 
+				"flowtype/define-flow-type": 2,
+
         "import/no-dynamic-require": 0,
         "import/no-unresolved": [2, {"commonjs": true}],
         "import/no-extraneous-dependencies": [2, {"devDependencies": true, "optionalDependencies": true, "peerDependencies": true}]
