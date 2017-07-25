@@ -29,7 +29,7 @@ const baseConfig = {
     external: ['tsumami', 'tsumami/lib/events'],
     globals: {
         tsumami: 'tsumami.dom',
-        'tsumami/lib/events': 'tsumami.events'
+        'tsumami/lib/events': 'tsumami'
     },
     dest: 'umd/index.js',
     banner,
