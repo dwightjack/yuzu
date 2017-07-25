@@ -1,6 +1,6 @@
 import expect from 'expect';
 
-import Component from '../src';
+import { Component } from '../src';
 
 // import {mount} from './utils';
 
