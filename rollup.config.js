@@ -14,7 +14,7 @@ const banner = `
 `;
 
 const baseConfig = {
-    entry: 'src/umd.js',
+    entry: 'src/index.js',
     format: 'umd',
     moduleName: 'Component',
     plugins: [
