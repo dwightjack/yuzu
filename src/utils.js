@@ -1,5 +1,6 @@
+// @flow
 
-export const UID_PREFIX = '_ui.';
+export const UID_PREFIX: string = '_ui.';
 
-let uid = -1;
-export const nextUid = (prefix = UID_PREFIX) => prefix + (++uid); //eslint-disable-line no-plusplus
+let uid: number = -1;
+export const nextUid = (prefix: string = UID_PREFIX): string => prefix + (++uid); //eslint-disable-line no-plusplus

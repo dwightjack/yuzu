@@ -1,8 +1,8 @@
 {
-  "name": "component",
+  "name": "yuzu",
   "description": "in-DOM component lifecycle",
   "version": "0.0.1",
-  "homepage": "https://github.com/dwightjack/component",
+  "homepage": "https://github.com/dwightjack/yuzu",
   "author": "Marco Solazzi",
   "license": "MIT",
   "unpkg": "umd/index.min.js",
@@ -17,9 +17,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/dwightjack/component.git"
+    "url": "https://github.com/dwightjack/yuzu.git"
   },
-  "bugs": "https://github.com/dwightjack/component/issues",
+  "bugs": "https://github.com/dwightjack/yuzu/issues",
   "keywords": [
     "component"
   ],
@@ -29,7 +29,7 @@
     "build:es": "rimraf es && cross-env BABEL_ENV=es babel ./src -d es --ignore umd.js",
     "build:cjs": "rimraf lib && cross-env BABEL_ENV=cjs babel ./src -d lib --ignore umd.js",
     "build:umd": "rimraf umd && cross-env BABEL_ENV=rollup rollup -c rollup.config.js",
-    "lint": "eslint -c ./src/.eslintrc.json src",
+    "lint": "eslint -c ./src/.eslintrc.json src flow-typed",
     "docs": "rimraf doc && node ./scripts/docs.js",
     "start": "node ./scripts/server.js",
     "test": "cross-env BABEL_ENV=test karma start karma.conf.js --single-run --browsers PhantomJS",
@@ -37,17 +37,21 @@
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
+    "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-external-helpers": "6.22.0",
     "babel-plugin-rewire-exports": "0.2.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-es2015": "6.24.1",
     "cross-env": "5.0.1",
     "eslint": "3.19.0",
     "eslint-config-airbnb-base": "11.2.0",
+    "eslint-plugin-flowtype": "2.35.0",
     "eslint-plugin-import": "2.7.0",
     "expect": "1.20.2",
     "expect-element": "1.1.1",
     "express": "4.15.3",
+    "flow-bin": "^0.50.0",
     "karma": "1.7.0",
     "karma-html2js-preprocessor": "1.1.0",
     "karma-mocha": "1.3.0",

@@ -1,24 +1,44 @@
-
+// @flow
 import EventEmitter from 'events';
 import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
 import isElement from 'lodash.iselement';
 import { nextUid } from './utils';
 
-
+const getOwnPropertyNames = Object.getOwnPropertyNames;
+const propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 class Component extends EventEmitter {
 
+    el: Element
+    $el: Element
+    $els: {[element_id: string]: Element}
+    $refs: {[ref_id: string]: Component}
+    options: optionsType
+    $ev: EventManager
+    state: stateType
+    _uid: string
+    _active: boolean
+
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
-    static extend(props = {}) {
-        const parent = this;
-        const child = props.constructor || function ChildConstructor(...args) {
+    static create(props: { [string]: any} = {}) {
+        const parent: Function = this;
+        const child = props.hasOwnProperty('constructor') ? props.constructor : function ChildConstructor(...args) { //eslint-disable-line no-prototype-builtins
             return parent.apply(this, args);
         };
 
-        Object.assign(child, parent);
+        //https://github.com/mridgway/hoist-non-react-statics/blob/master/index.js#L51
+        const keys = getOwnPropertyNames(parent);
+        for (let i = 0; i < keys.length; ++i) { //eslint-disable-line no-plusplus
+            const key = keys[i];
+            if (propIsEnumerable.call(parent, key) || typeof parent[key] === 'function') {
+                try { // Avoid failures from read-only properties
+                    child[key] = parent[key];
+                } catch (e) {} //eslint-disable-line no-empty
+            }
+        }
 
-        child.prototype = Object.create(parent.prototype, props);
+        child.prototype = Object.assign(Object.create(parent.prototype), props);
         child.prototype.constructor = child;
 
         child.__super__ = parent.prototype;
@@ -26,15 +46,21 @@ class Component extends EventEmitter {
         return child;
     }
 
-    constructor(el, options = { state: {} }) {
+    constructor(el: Element | string, options?: optionsType = {}) {
         super();
         this.setMaxListeners(0);
+
+        if (!el) {
+            throw new TypeError('First argument must be a DOM Element');
+        }
+
+        this._active = false;
 
         this.el = this.$el = typeof el === 'string' ? qs(el) : el; //eslint-disable-line no-multi-assign
 
         if (!isElement(this.$el)) {
             //fail silently (kinda...);
-            console.warn(`Element ${this.$el} is not a DOM element`); //eslint-disable-line no-console
+            console.warn('Element is not a DOM element', this.$el); //eslint-disable-line no-console
             return this;
         }
 
@@ -46,21 +72,29 @@ class Component extends EventEmitter {
 
         this.options = Object.assign({}, this.getDefaultOptions(), options);
 
-        const domEvents = new EventManager();
-
-        this.$ev = {};
-
-        ['on', 'off', 'delegate', 'undelegate'].forEach((m) => {
-            this.$ev[m] = domEvents.bind(domEvents, this.$el);
-        });
+        this.$ev = new EventManager();
 
         this.state = {};
     }
 
-    setRef(id, ComponentClass, ...opts) {
-        const ref = ComponentClass instanceof Component ? ComponentClass : new ComponentClass(...opts);
+    setRef({ id, component, el, opts = {}, props = {} }: refConstructorType | refInstanceType): Promise<Component> {
+        let ref: Component;
+
+        if (component instanceof Component) {
+            ref = component;
+        } else {
+            ref = new component(el, opts); //eslint-disable-line new-cap
+        }
         const prevRef = this.$refs[id];
+        const inheritedState: stateType = {};
         this.$refs[id] = ref;
+
+        if (props) {
+            Object.keys(props).forEach((k) => {
+                this.on(`change:${k}`, (v) => ref.setState(props[k], v));
+                inheritedState[props[k]] = this.state[k];
+            });
+        }
 
         if (prevRef) {
             return prevRef.destroy().then(() => {
@@ -69,7 +103,7 @@ class Component extends EventEmitter {
                 } else {
                     this.$el.appendChild(ref.$el);
                 }
-                return ref.init();
+                return ref.init(inheritedState);
             });
         }
 
@@ -77,14 +111,16 @@ class Component extends EventEmitter {
         //     this.$el.appendChild(ref.$el);
         // }
 
-        return Promise.resolve(ref.init());
+        return Promise.resolve(ref.init(inheritedState));
     }
 
-    init(state = {}) {
+    init(state?: stateType): Component {
 
         //initialization placeholder
-        if (this.$el.getAttribute('data-ui-uid')) {
-            console.log(`Element ${this.$el.getAttribute('data-ui-uid')} is already created`, this.$el); //eslint-disable-line no-console
+        const uid: ?string = this.$el.getAttribute('data-ui-uid');
+
+        if (uid) {
+            console.log(`Element ${uid} is already created`, this.$el); //eslint-disable-line no-console
             return this;
         }
 
@@ -99,7 +135,9 @@ class Component extends EventEmitter {
 
         const stateEventsMap = this.bindStateEvents();
         Object.keys(stateEventsMap).forEach((key) => {
-            this.on('change:' + key, stateEventsMap[key].bind(this));
+            // $FlowFixMe
+            const method: Function = typeof stateEventsMap[key] === 'string' && typeof this[stateEventsMap[key]] === 'function' ? this[stateEventsMap[key]] : stateEventsMap[key];
+            this.on('change:' + key, method.bind(this));
         });
 
         const initialState = Object.assign({}, this.getInitialState(), state);
@@ -109,18 +147,20 @@ class Component extends EventEmitter {
 
         this._active = true;
 
+        this.afterInit();
+
         return this;
     }
 
-    broadcast(event, ...params) {
+    broadcast(event: string, ...params?: Array<any>) {
         Object.keys(this.$refs).forEach((ref) => this.$refs[ref].emit('broadcast:' + event, ...params));
     }
 
-    getState(key) {
+    getState(key: string): any {
         return this.state[key];
     }
 
-    setState(key, newValue, silent = false) {
+    setState(key: string, newValue: any, silent?: boolean = false) {
         const oldValue = this.getState(key);
         if (oldValue !== newValue) {
             this.state[key] = newValue;
@@ -130,7 +170,7 @@ class Component extends EventEmitter {
         }
     }
 
-    bindStateEvents() { //eslint-disable-line class-methods-use-this
+    bindStateEvents(): { [event_id: string]: Function | string } { //eslint-disable-line class-methods-use-this
         return {};
     }
 
@@ -138,41 +178,46 @@ class Component extends EventEmitter {
         console.log('\u2615 enjoy!');  //eslint-disable-line no-console
     }
 
-    getInitialState() { //eslint-disable-line class-methods-use-this
+    getInitialState(): stateType { //eslint-disable-line class-methods-use-this
         return {};
     }
 
-    getDefaultOptions() { //eslint-disable-line class-methods-use-this
+    getDefaultOptions(): optionsType { //eslint-disable-line class-methods-use-this
         return {};
     }
 
     beforeInit() { //eslint-disable-line class-methods-use-this
     }
 
-    closeRefs() {
-        return Promise.all(Object.keys(this.$refs).map((ref) => {
+    afterInit() { //eslint-disable-line class-methods-use-this
+    }
+
+    closeRefs(): Promise<void> {
+        return Promise.all(Object.keys(this.$refs).map((ref: string): Promise<any> => {
             return this.$refs[ref].destroy();
-        })).then(() => {
+        })).then((): void => {
             this.$refs = {};
-        }).catch((error) => {
+        }).catch((error: Error): void => {
             console.error('close refs', error);  //eslint-disable-line no-console
         });
     }
 
-    destroy() {
+    destroy(): Promise<void> {
         this.emit('destroy');
         this.$ev.off();
         this.removeAllListeners();
         this.$el.removeAttribute('data-ui-uid');  //eslint-disable-line no-console
 
 
-        return this.closeRefs().then(() => {
+        return this.closeRefs().then((): void => {
             this._active = false;
-        }).catch((error) => {
+        }).catch((error: Error): void => {
             console.error('destroy catch: ', error);  //eslint-disable-line no-console
         });
     }
 
 }
 
-export default Component;
+export {
+    Component //eslint-disable-line import/prefer-default-export
+};
