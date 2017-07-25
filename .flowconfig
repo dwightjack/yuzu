@@ -9,7 +9,7 @@
 [include]
 
 [libs]
-flow
+flow-typed
 
 [options]
 

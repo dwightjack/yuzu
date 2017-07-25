@@ -5,8 +5,6 @@ import { EventManager } from 'tsumami/lib/events';
 import isElement from 'lodash.iselement';
 import { nextUid } from './utils';
 
-
-
 const getOwnPropertyNames = Object.getOwnPropertyNames;
 const propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -16,14 +14,14 @@ class Component extends EventEmitter {
     $el: Element
     $els: { [element_id: string]: Element }
     $refs: { [ref_id: string]: Component }
-    options: {[string]: any}
+    options: optionsType
     $ev: { [method_id: string]: Function }
-    state: {[string]: any}
+    state: stateType
     _uid: string
     _active: boolean
 
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
-    static extend(props = {}) {
+    static extend(props: { [string]: any} = {}) {
         const parent: Function = this;
         const child = props.constructor || function ChildConstructor(...args) {
             return parent.apply(this, args);
@@ -48,9 +46,13 @@ class Component extends EventEmitter {
         return child;
     }
 
-    constructor(el: Element, options?: {[string]: any} = {}) {
+    constructor(el: Element | string, options?: optionsType = {}) {
         super();
         this.setMaxListeners(0);
+
+        if (!el) {
+            throw new TypeError('First argument must be a DOM Element');
+        }
 
         this.el = this.$el = typeof el === 'string' ? qs(el) : el; //eslint-disable-line no-multi-assign
 
@@ -79,16 +81,22 @@ class Component extends EventEmitter {
         this.state = {};
     }
 
-    setRef({ id, component, el, opts = {}, props = {} }: refType): Promise<Component> {
-        const ref: Component = component instanceof Component ? component : new component(el, opts); //eslint-disable-line
+    setRef({ id, component, el, opts = {}, props = {} }: refConstructorType | refInstanceType): Promise<Component> {
+        let ref: Component;
+
+        if (component instanceof Component) {
+            ref = component;
+        } else {
+            ref = new component(el, opts); //eslint-disable-line new-cap
+        }
         const prevRef = this.$refs[id];
-        const state = {};
+        const inheritedState: stateType = {};
         this.$refs[id] = ref;
 
         if (props) {
             Object.keys(props).forEach((k) => {
                 this.on(`change:${k}`, (v) => ref.setState(props[k], v));
-                state[props[k]] = this.state[k];
+                inheritedState[props[k]] = this.state[k];
             });
         }
 
@@ -99,7 +107,7 @@ class Component extends EventEmitter {
                 } else {
                     this.$el.appendChild(ref.$el);
                 }
-                return ref.init(state);
+                return ref.init(inheritedState);
             });
         }
 
@@ -107,10 +115,10 @@ class Component extends EventEmitter {
         //     this.$el.appendChild(ref.$el);
         // }
 
-        return Promise.resolve(ref.init(state));
+        return Promise.resolve(ref.init(inheritedState));
     }
 
-    init(state?: {[string]: any} = {}): Component {
+    init(state?: stateType): Component {
 
         //initialization placeholder
         const uid: ?string = this.$el.getAttribute('data-ui-uid');
@@ -172,11 +180,11 @@ class Component extends EventEmitter {
         console.log('\u2615 enjoy!');  //eslint-disable-line no-console
     }
 
-    getInitialState(): { [string]: any } { //eslint-disable-line class-methods-use-this
+    getInitialState(): stateType { //eslint-disable-line class-methods-use-this
         return {};
     }
 
-    getDefaultOptions(): { [string]: any } { //eslint-disable-line class-methods-use-this
+    getDefaultOptions(): optionsType { //eslint-disable-line class-methods-use-this
         return {};
     }
 
@@ -193,7 +201,7 @@ class Component extends EventEmitter {
         });
     }
 
-    destroy() {
+    destroy(): Promise<void> {
         this.emit('destroy');
         this.$ev.off();
         this.removeAllListeners();
@@ -221,8 +229,6 @@ type refConstructorType = {|
     component: typeof Component,
     id: string,
     el: Element,
-    opts?: {[option_ke: string]: string},
-    props?: {}
+    opts ?: optionsType,
+    props ?: {}
 |};
-
-type refType = refConstructorType | refInstanceType
