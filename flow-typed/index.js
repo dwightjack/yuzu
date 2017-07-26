@@ -13,7 +13,7 @@ export type refInstanceType = {|
 export type refConstructorType = {|
     component: Class<Component>,
     id: string,
-    el: Element,
+    el: Element | string,
     opts?: optionsType,
     props?: {}
 |};
