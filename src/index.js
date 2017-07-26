@@ -2,12 +2,12 @@
 import EventEmitter from 'events';
 import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
-import isElement from 'lodash.iselement';
-import isPlainObject from 'lodash.isplainobject';
-import { nextUid } from './utils';
+import { nextUid, isElement, isPlainObject } from './utils';
 
 const getOwnPropertyNames = Object.getOwnPropertyNames;
 const propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+const UID_DATA_ATTR = 'data-yzid';
 
 class Component extends EventEmitter {
 
@@ -133,7 +133,7 @@ class Component extends EventEmitter {
     init(state?: stateType): Component {
 
         //initialization placeholder
-        const uid: ?string = this.$el.getAttribute('data-ui-uid');
+        const uid: ?string = this.$el.getAttribute(UID_DATA_ATTR);
 
         if (uid) {
             console.log(`Element ${uid} is already created`, this.$el); //eslint-disable-line no-console
@@ -141,7 +141,7 @@ class Component extends EventEmitter {
         }
 
         this._uid = nextUid();
-        this.$el.setAttribute('data-ui-uid', this._uid);
+        this.$el.setAttribute(UID_DATA_ATTR, this._uid);
 
         if (!this.$el.id) {
             this.$el.id = 'component' + this._uid;
@@ -222,7 +222,7 @@ class Component extends EventEmitter {
         this.emit('destroy');
         this.$ev.off();
         this.removeAllListeners();
-        this.$el.removeAttribute('data-ui-uid');  //eslint-disable-line no-console
+        this.$el.removeAttribute(UID_DATA_ATTR);  //eslint-disable-line no-console
 
 
         return this.closeRefs().then((): void => {

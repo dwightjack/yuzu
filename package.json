@@ -74,8 +74,6 @@
   },
   "dependencies": {
     "events": "1.1.1",
-    "lodash.iselement": "4.1.1",
-    "lodash.isplainobject": "4.0.6",
     "tsumami": "1.0.3"
   }
 }
