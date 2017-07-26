@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
 import isElement from 'lodash.iselement';
+import isPlainObject from 'lodash.isplainobject';
 import { nextUid } from './utils';
 
 const getOwnPropertyNames = Object.getOwnPropertyNames;
@@ -77,14 +78,29 @@ class Component extends EventEmitter {
         this.state = {};
     }
 
-    setRef({ id, component, el, opts = {}, props = {} }: refConstructorType | refInstanceType): Promise<Component> {
+    setRef(refCfg: refConstructorType | refInstanceType): Promise<Component> {
+
         let ref: Component;
 
-        if (component instanceof Component) {
-            ref = component;
-        } else {
-            ref = new component(el, opts); //eslint-disable-line new-cap
+        if (!isPlainObject(refCfg)) {
+            throw new Error('Invalid reference configuration');
         }
+
+        if (refCfg.component instanceof Component) {
+            ref = refCfg.component;
+        } else if (typeof refCfg.component === 'function' && refCfg.el) {
+            const { el, opts, component } = refCfg;
+            ref = new component(el, opts); //eslint-disable-line new-cap
+        } else {
+            throw new Error('Invalid reference configuration');
+        }
+
+        const { id, props } = refCfg;
+
+        if (!id) {
+            throw new Error('Invalid reference id string');
+        }
+
         const prevRef = this.$refs[id];
         const inheritedState: stateType = {};
         this.$refs[id] = ref;
