@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="test">
+        <input type="text" id="input" />
+        <div id="child"></div>
+
+    </div>
+
+    <script src="https://unpkg.com/desandro-classie@1.0.1/classie.js"></script>
+    <script src="https://unpkg.com/tsumami"></script>
+    <script src="../umd/index.js"></script>
+    <script>
+    (function () {
+
+        window.Child = YZ.Component.create({
+
+            bindStateEvents() {
+                return {
+                    text: function (text) {
+                        this.$el.innerHTML = text;
+                    }
+                }
+            }
+        });
+
+        window.Test = YZ.Component.create({
+
+            getInitialState: function () {
+                return {
+                    title: 'Ciao'
+                };
+            },
+
+            beforeInit: function () {
+
+                this.$els.input = tsumami.dom.qs('#input');
+
+                var self = this;
+
+                this.$ev.on(this.$els.input, 'keyup', function (e) {
+                    self.setState('title', e.target.value);
+                });
+
+            }
+        });
+
+        window.tree = YZ.mount(
+            Test,
+            '#test',
+            null,
+            [
+                YZ.mount(Child, '#child', { id: 'child', props: { title: 'text' }})
+            ]
+        )();
+
+    }());
+    </script>
+</body>
+</html>
