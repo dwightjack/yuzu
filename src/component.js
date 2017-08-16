@@ -53,9 +53,6 @@ export default class Component extends EventEmitter {
         this.setMaxListeners(0);
 
         this._active = false;
-        this._uid = nextUid();
-
-
 
         //DOM references
         this.$els = {};
@@ -152,10 +149,12 @@ export default class Component extends EventEmitter {
             return this;
         }
 
+        this._uid = nextUid();
+
         this.$el.setAttribute(UID_DATA_ATTR, this._uid);
 
         if (!this.$el.id) {
-            this.$el.id = 'component' + this._uid;
+            this.$el.id = 'yuzu' + this._uid;
         }
 
         this.beforeInit();

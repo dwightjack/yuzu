@@ -22,7 +22,12 @@ const mount = function mount(
             component.init(state);
         }
 
-        if (Array.isArray(children) && children.length > 0) {
+        if (typeof children === 'function') {
+            children(component).map((child) => {
+                const inst = child(undefined, component);
+                return component.setRef({ component: inst, id: (inst.options.id || inst._uid), props: inst.options.props });
+            });
+        } else if (Array.isArray(children) && children.length > 0) {
             children.map((child) => {
                 const inst = child(undefined, component);
                 return component.setRef({ component: inst, id: (inst.options.id || inst._uid), props: inst.options.props });
