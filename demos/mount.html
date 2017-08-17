@@ -74,7 +74,7 @@
             Test,
             '#test',
             null,
-            YZ.Children('.child', (el, i) => {
+            YZ.Children('.child', function (el, i) {
                 return YZ.mount(i === 0 ? Child : ChildUpper, el, { id: 'child' + i, props: { title: 'text' } })
             })
         )();
