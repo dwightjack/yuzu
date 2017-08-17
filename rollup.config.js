@@ -46,6 +46,15 @@ export default [
     }, baseConfig),
     Object.assign({
         dest: 'umd/index.min.js',
-        plugins: [...plugins, uglify(), bundlesize()]
+        plugins: [...plugins, uglify({
+            warnings: false,
+            mangle: true,
+            compress: {
+                pure_funcs: ['classCallCheck']
+            },
+            output: {
+                beautify: false
+            }
+        }), bundlesize()]
     }, baseConfig)
 ];
