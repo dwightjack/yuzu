@@ -2,7 +2,7 @@
 import EventEmitter from 'events';
 import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
-import { nextUid, isElement, isPlainObject } from './utils';
+import { nextUid, isElement, isPlainObject, assign } from './utils';
 
 const getOwnPropertyNames = Object.getOwnPropertyNames;
 const propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -11,16 +11,17 @@ const UID_DATA_ATTR = 'data-yzid';
 
 export default class Component extends EventEmitter {
 
-    el: Element
-    $el: Element
-    $els: {[element_id: string]: Element}
-    $refs: {[ref_id: string]: Component}
-    options: optionsType
-    $ev: EventManager
-    state: stateType
-    _uid: string
-    _active: boolean
-    ctx: Component
+    el: Element;
+    $el: Element;
+    $els: {[element_id: string]: Element};
+    $refs: {[ref_id: string]: Component};
+    _$refsKeys: string[];
+    options: optionsType;
+    $ev: EventManager;
+    state: stateType;
+    ctx: Component;
+    _uid: string;
+    _active: boolean;
 
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
     static create(props: { [string]: any} = {}) {
@@ -40,7 +41,7 @@ export default class Component extends EventEmitter {
             }
         }
 
-        child.prototype = Object.assign(Object.create(parent.prototype), props);
+        child.prototype = assign(Object.create(parent.prototype), props);
         child.prototype.constructor = child;
 
         child.__super__ = parent.prototype;
@@ -48,7 +49,7 @@ export default class Component extends EventEmitter {
         return child;
     }
 
-    constructor(el?: Element | string, options?: optionsType = {}) {
+    constructor(el?: RootElement, options?: optionsType = {}) {
         super();
         this.setMaxListeners(0);
 
@@ -59,19 +60,22 @@ export default class Component extends EventEmitter {
 
         //sub components references
         this.$refs = {};
+        this._$refsKeys = [];
 
-        this.options = Object.assign({}, this.getDefaultOptions(), options);
+        this.options = assign(this.getDefaultOptions(), options);
 
         this.$ev = new EventManager();
 
         this.state = {};
+
+        this.created();
 
         if (el) {
             this.mount(el);
         }
     }
 
-    mount(el: Element | string) {
+    mount(el: RootElement) {
 
         if (this.$el) {
             throw new Error('Component is already mounted');
@@ -82,7 +86,10 @@ export default class Component extends EventEmitter {
         if (!isElement(this.$el)) {
             //fail silently (kinda...);
             console.warn('Element is not a DOM element', this.$el); //eslint-disable-line no-console
+            return this;
         }
+
+        this.mounted();
 
         return this;
     }
@@ -122,6 +129,7 @@ export default class Component extends EventEmitter {
         }
 
         if (prevRef) {
+
             return prevRef.destroy().then(() => {
                 if (this.$el.contains(prevRef.$el)) {
                     this.$el.replaceChild(ref.$el, prevRef.$el);
@@ -132,6 +140,8 @@ export default class Component extends EventEmitter {
             });
         }
 
+        this._$refsKeys.push(id);
+
         // if (!this.$el.contains(ref.$el)) {
         //     this.$el.appendChild(ref.$el);
         // }
@@ -139,7 +149,7 @@ export default class Component extends EventEmitter {
         return Promise.resolve(ref.init(inheritedState));
     }
 
-    init(state?: stateType): Component {
+    init(state?: stateType = {}): Component {
 
         //initialization placeholder
         const uid: ?string = this.$el.getAttribute(UID_DATA_ATTR);
@@ -166,7 +176,7 @@ export default class Component extends EventEmitter {
             this.on('change:' + key, method.bind(this));
         });
 
-        const initialState = Object.assign({}, this.getInitialState(), state);
+        const initialState = assign(this.getInitialState(), state);
         Object.keys(initialState).forEach((key) => {
             this.setState(key, initialState[key]);
         });
@@ -179,7 +189,12 @@ export default class Component extends EventEmitter {
     }
 
     broadcast(event: string, ...params?: Array<any>) {
-        Object.keys(this.$refs).forEach((ref) => this.$refs[ref].emit('broadcast:' + event, ...params));
+        const { _$refsKeys, $refs } = this;
+
+        for (let i = 0, l = _$refsKeys.length; i < l; i += 1) {
+            const ref = _$refsKeys[i];
+            $refs[ref].emit('broadcast:' + event, ...params);
+        }
     }
 
     getState(key: string): any {
@@ -200,7 +215,7 @@ export default class Component extends EventEmitter {
         return {};
     }
 
-    getCoffee() { //eslint-disable-line class-methods-use-this
+    getCoffee(): void { //eslint-disable-line class-methods-use-this
         console.log('\u2615 enjoy!');  //eslint-disable-line no-console
     }
 
@@ -212,17 +227,21 @@ export default class Component extends EventEmitter {
         return {};
     }
 
-    beforeInit() { //eslint-disable-line class-methods-use-this
-    }
+    created(): void {} //eslint-disable-line class-methods-use-this
 
-    afterInit() { //eslint-disable-line class-methods-use-this
-    }
+    mounted(): void {} //eslint-disable-line class-methods-use-this
+
+    beforeInit(): void {} //eslint-disable-line class-methods-use-this
+
+    afterInit(): void {} //eslint-disable-line class-methods-use-this
 
     closeRefs(): Promise<void> {
-        return Promise.all(Object.keys(this.$refs).map((ref: string): Promise<any> => {
-            return this.$refs[ref].destroy();
+        const { $refs } = this;
+        return Promise.all(this._$refsKeys.map((ref: string): Promise<any> => {
+            return $refs[ref].destroy();
         })).then((): void => {
             this.$refs = {};
+            this._$refsKeys.length = 0;
         }).catch((error: Error): void => {
             console.error('close refs', error);  //eslint-disable-line no-console
         });
