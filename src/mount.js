@@ -31,7 +31,8 @@ const mount = function mount(
         for (let i = 0, l = childrenList.length; i < l; i++) { //eslint-disable-line no-plusplus
             const child = childrenList[i];
             const inst = child(undefined, component);
-            component.setRef({ component: inst, id: (inst.options.id || inst._uid), props: inst.options.props });
+            const { id, props } = inst.options;
+            component.setRef({ component: inst, id: (id || inst._uid), props });
         }
 
         return component;

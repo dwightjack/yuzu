@@ -1,5 +1,6 @@
 // @flow
-import EventEmitter from 'events';
+import dush from 'dush';
+import type { dushInstance } from 'dush';
 import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
 import { nextUid, isElement, isPlainObject, assign } from './utils';
@@ -9,7 +10,7 @@ const propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 const UID_DATA_ATTR = 'data-yzid';
 
-export default class Component extends EventEmitter {
+export default class Component {
 
     el: Element;
     $el: Element;
@@ -23,11 +24,19 @@ export default class Component extends EventEmitter {
     _uid: string;
     _active: boolean;
 
+    on: dushInstance.on;
+    off: dushInstance.off;
+    once: dushInstance.once;
+    emit: dushInstance.emit;
+    use: dushInstance.use;
+    _allEvents: dushInstance._allEvents;
+
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
-    static create(props: { [string]: any} = {}) {
+    static create(props: { [string]: any}) {
+
         const parent: Function = this;
-        const child = props.hasOwnProperty('constructor') ? props.constructor : function ChildConstructor(...args) { //eslint-disable-line no-prototype-builtins
-            return parent.apply(this, args);
+        const child = props.hasOwnProperty('constructor') ? props.constructor : function ChildConstructor() { //eslint-disable-line no-prototype-builtins
+            return parent.apply(this, arguments); //eslint-disable-line prefer-rest-params
         };
 
         //https://github.com/mridgway/hoist-non-react-statics/blob/master/index.js#L51
@@ -50,8 +59,8 @@ export default class Component extends EventEmitter {
     }
 
     constructor(el?: RootElement, options?: optionsType = {}) {
-        super();
-        this.setMaxListeners(0);
+
+        assign(this, dush());
 
         this._active = false;
 
@@ -102,10 +111,12 @@ export default class Component extends EventEmitter {
             throw new Error('Invalid reference configuration');
         }
 
-        if (refCfg.component instanceof Component) {
-            ref = refCfg.component;
-        } else if (typeof refCfg.component === 'function' && refCfg.el) {
-            const { el, opts, component } = refCfg;
+        const { component } = refCfg;
+
+        if (component instanceof Component) {
+            ref = component;
+        } else if (typeof component === 'function' && refCfg.el) {
+            const { el, opts } = refCfg;
             ref = new component(el, opts); //eslint-disable-line new-cap
         } else {
             throw new Error('Invalid reference configuration');
@@ -116,10 +127,10 @@ export default class Component extends EventEmitter {
         if (!id) {
             throw new Error('Invalid reference id string');
         }
-
-        const prevRef = this.$refs[id];
+        const { $refs } = this;
+        const prevRef = $refs[id];
         const inheritedState: stateType = {};
-        this.$refs[id] = ref;
+        $refs[id] = ref;
 
         if (props) {
             Object.keys(props).forEach((k) => {
@@ -131,10 +142,11 @@ export default class Component extends EventEmitter {
         if (prevRef) {
 
             return prevRef.destroy().then(() => {
-                if (this.$el.contains(prevRef.$el)) {
-                    this.$el.replaceChild(ref.$el, prevRef.$el);
+                const { $el } = this;
+                if ($el.contains(prevRef.$el)) {
+                    $el.replaceChild(ref.$el, prevRef.$el);
                 } else {
-                    this.$el.appendChild(ref.$el);
+                    $el.appendChild(ref.$el);
                 }
                 return ref.init(inheritedState);
             });
@@ -142,29 +154,28 @@ export default class Component extends EventEmitter {
 
         this._$refsKeys.push(id);
 
-        // if (!this.$el.contains(ref.$el)) {
-        //     this.$el.appendChild(ref.$el);
-        // }
-
         return Promise.resolve(ref.init(inheritedState));
     }
 
     init(state?: stateType = {}): Component {
 
+        const { $el } = this;
+
         //initialization placeholder
-        const uid: ?string = this.$el.getAttribute(UID_DATA_ATTR);
+        let uid: ?string = $el.getAttribute(UID_DATA_ATTR);
 
         if (uid) {
-            console.log(`Element ${uid} is already created`, this.$el); //eslint-disable-line no-console
+            console.log(`Element ${uid} is already created`, $el); //eslint-disable-line no-console
             return this;
         }
 
-        this._uid = nextUid();
+        uid = nextUid();
+        this._uid = uid;
 
-        this.$el.setAttribute(UID_DATA_ATTR, this._uid);
+        $el.setAttribute(UID_DATA_ATTR, uid);
 
-        if (!this.$el.id) {
-            this.$el.id = 'yuzu' + this._uid;
+        if (!$el.id) {
+            $el.id = `yuzu${uid}`;
         }
 
         this.beforeInit();
@@ -236,12 +247,12 @@ export default class Component extends EventEmitter {
     afterInit(): void {} //eslint-disable-line class-methods-use-this
 
     closeRefs(): Promise<void> {
-        const { $refs } = this;
-        return Promise.all(this._$refsKeys.map((ref: string): Promise<any> => {
+        const { $refs, _$refsKeys } = this;
+        return Promise.all(_$refsKeys.map((ref: string): Promise<any> => {
             return $refs[ref].destroy();
         })).then((): void => {
             this.$refs = {};
-            this._$refsKeys.length = 0;
+            _$refsKeys.length = 0;
         }).catch((error: Error): void => {
             console.error('close refs', error);  //eslint-disable-line no-console
         });
@@ -250,7 +261,7 @@ export default class Component extends EventEmitter {
     destroy(): Promise<void> {
         this.emit('destroy');
         this.$ev.off();
-        this.removeAllListeners();
+        this.off();
         this.$el.removeAttribute(UID_DATA_ATTR);  //eslint-disable-line no-console
 
 
