@@ -6,8 +6,8 @@ import type Component from './component';
 const mount = function mount(
     ComponentConstructor: Class<Component>,
     el: Element | string,
-    options?: optionsType & { props: { [prop_id: string]: string}},
-    children?: Function[]
+    options?: optionsType & { props?: { [prop_id: string]: string}},
+    children?: Function | Function[]
 ): Function {
 
     const component = new ComponentConstructor(undefined, options || {});
@@ -22,16 +22,16 @@ const mount = function mount(
             component.init(state);
         }
 
+        const childrenList: Function[] = Array.isArray(children) ? children : [];
+
         if (typeof children === 'function') {
-            children(component).map((child) => {
-                const inst = child(undefined, component);
-                return component.setRef({ component: inst, id: (inst.options.id || inst._uid), props: inst.options.props });
-            });
-        } else if (Array.isArray(children) && children.length > 0) {
-            children.map((child) => {
-                const inst = child(undefined, component);
-                return component.setRef({ component: inst, id: (inst.options.id || inst._uid), props: inst.options.props });
-            });
+            childrenList.push(...children(component));
+        }
+
+        for (let i = 0, l = childrenList.length; i < l; i++) { //eslint-disable-line no-plusplus
+            const child = childrenList[i];
+            const inst = child(undefined, component);
+            component.setRef({ component: inst, id: (inst.options.id || inst._uid), props: inst.options.props });
         }
 
         return component;
