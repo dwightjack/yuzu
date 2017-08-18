@@ -3,7 +3,7 @@ import dush from 'dush';
 import type { dushInstance } from 'dush';
 import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
-import { nextUid, isElement, isPlainObject, assign } from './utils';
+import { nextUid, isElement, isPlainObject, extend } from './utils';
 
 const defineProperty = Object.defineProperty;
 const getOwnPropertyNames = Object.getOwnPropertyNames;
@@ -52,7 +52,7 @@ export default class Component {
         }
 
 
-        child.prototype = assign(Object.create(parent.prototype), props);
+        child.prototype = extend(Object.create(parent.prototype), props);
         child.prototype.constructor = child;
 
         child.__super__ = parent.prototype;
@@ -62,7 +62,7 @@ export default class Component {
 
     constructor(el?: RootElement, options?: optionsType = {}) {
 
-        assign(this, dush());
+        extend(this, dush());
 
         this._active = false;
 
@@ -73,7 +73,7 @@ export default class Component {
         this.$refs = {};
         this._$refsKeys = [];
 
-        this.options = assign(this.getDefaultOptions(), options);
+        this.options = extend(this.getDefaultOptions(), options);
 
         this.$ev = new EventManager();
 
@@ -189,7 +189,7 @@ export default class Component {
             this.on('change:' + key, method.bind(this));
         });
 
-        const initialState = assign(this.getInitialState(), state);
+        const initialState = extend(this.getInitialState(), state);
         Object.keys(initialState).forEach((key) => {
             this.setState(key, initialState[key]);
         });

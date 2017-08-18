@@ -187,4 +187,57 @@ describe('`Utils`', () => {
         });
 
     });
+
+    describe('`extend`', () => {
+
+        it('should break if target object is `undefined`', () => {
+
+            expect(() => {
+                utils.extend(undefined, {});
+            }).toThrow();
+
+        });
+
+        it('should break if target object is `null`', () => {
+
+            expect(() => {
+                utils.extend(null, {});
+            }).toThrow();
+
+        });
+
+        it('should merge objects properties', () => {
+            expect(utils.extend({ a: 1 }, { b: 2 })).toMatch({ a: 1, b: 2 });
+        });
+
+        it('should skip non-enumerable properties', () => {
+
+            const target = { a: 1 };
+            const source = {};
+
+            Object.defineProperty(source, 'b', {
+                enumerable: false,
+                value: 'X'
+            });
+
+            expect(utils.extend(target, source)).toNotContainKey('b');
+        });
+
+        it('should copy just owned properties', () => {
+            function F() { this.b = 2; }
+            F.prototype.a = 1;
+            const obj = new F();
+
+            expect(utils.extend({}, obj)).toMatch({ b: 2 });
+        });
+
+        it('should accept multiple sources', () => {
+            expect(utils.extend({ a: 1 }, { b: 2 }, { c: 3 })).toMatch({ a: 1, b: 2, c: 3 });
+        });
+
+        it('should overwrite leftmost properties with rightmost properties', () => {
+            expect(utils.extend({ a: 0, b: 0, c: 3 }, { a: 1 }, { a: 1, b: 2 })).toMatch({ a: 1, b: 2, c: 3 });
+        });
+
+    });
 });

@@ -31,28 +31,26 @@ export const isElement = (value: any): boolean => (
 );
 
 //https://developer.mozilla.org/it/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill
-export const assign = Object.assign || function assignFn(target?: ?Object, ...sources?: Array<Object>): Object {
+export function extend(target?: ?Object, source?: ?Object): Object { //eslint-disable-line no-unused-vars
 
     if (target === undefined || target === null) {
         throw new TypeError('Cannot convert first argument to object');
     }
 
-    const to = Object(target);
-    for (let i = 1, l = sources.length; i < l; i += 1) {
-        let nextSource = sources[i];
+    for (let i = 1, l = arguments.length; i < l; i += 1) {
+        const nextSource = arguments[i]; //eslint-disable-line prefer-rest-params
         if (nextSource === undefined || nextSource === null) {
             continue; //eslint-disable-line no-continue
         }
-        nextSource = Object(nextSource);
 
-        const keysArray = Object.keys(Object(nextSource));
+        const keysArray = Object.keys(nextSource);
         for (let nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex += 1) {
             const nextKey = keysArray[nextIndex];
             const desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
             if (desc !== undefined && desc.enumerable) {
-                to[nextKey] = nextSource[nextKey];
+                target[nextKey] = nextSource[nextKey]; //eslint-disable-line no-param-reassign
             }
         }
     }
-    return to;
-};
+    return target;
+}
