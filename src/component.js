@@ -5,8 +5,9 @@ import { qs } from 'tsumami';
 import { EventManager } from 'tsumami/lib/events';
 import { nextUid, isElement, isPlainObject, assign } from './utils';
 
+const defineProperty = Object.defineProperty;
 const getOwnPropertyNames = Object.getOwnPropertyNames;
-const propIsEnumerable = Object.prototype.propertyIsEnumerable;
+const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 
 const UID_DATA_ATTR = 'data-yzid';
 
@@ -32,8 +33,9 @@ export default class Component {
     _allEvents: dushInstance._allEvents;
 
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
-    static create(props: { [string]: any}) {
+    static create(obj: { [string]: any}) {
 
+        const props = obj || {};
         const parent: Function = this;
         const child = props.hasOwnProperty('constructor') ? props.constructor : function ChildConstructor() { //eslint-disable-line no-prototype-builtins
             return parent.apply(this, arguments); //eslint-disable-line prefer-rest-params
@@ -43,12 +45,12 @@ export default class Component {
         const keys = getOwnPropertyNames(parent);
         for (let i = 0; i < keys.length; ++i) { //eslint-disable-line no-plusplus
             const key = keys[i];
-            if (propIsEnumerable.call(parent, key) || typeof parent[key] === 'function') {
-                try { // Avoid failures from read-only properties
-                    child[key] = parent[key];
-                } catch (e) {} //eslint-disable-line no-empty
-            }
+            const descriptor = getOwnPropertyDescriptor(parent, key);
+            try { // Avoid failures from read-only properties
+                defineProperty(child, key, descriptor);
+            } catch (e) { } //eslint-disable-line no-empty
         }
+
 
         child.prototype = assign(Object.create(parent.prototype), props);
         child.prototype.constructor = child;
