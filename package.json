@@ -29,7 +29,7 @@
     "build:es": "rimraf es && cross-env BABEL_ENV=es babel ./src -d es --ignore umd.js",
     "build:cjs": "rimraf lib && cross-env BABEL_ENV=cjs babel ./src -d lib --ignore umd.js",
     "build:umd": "rimraf umd && cross-env BABEL_ENV=rollup rollup -c rollup.config.js",
-    "lint": "eslint -c ./src/.eslintrc.json src flow-typed",
+    "lint": "eslint test src flow-typed",
     "docs": "rimraf doc && node ./scripts/docs.js",
     "start": "node ./scripts/server.js",
     "test": "cross-env BABEL_ENV=test karma start karma.conf.js --single-run --browsers PhantomJS",
