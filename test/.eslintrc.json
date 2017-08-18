@@ -3,8 +3,13 @@
         "browser": true,
         "es6": true,
 				"mocha": true
-    },
-    "extends": "airbnb-base",
+		},
+
+		"root": true,
+
+		"extends": "airbnb-base",
+
+		"parser": "babel-eslint",
 
     "rules": {
         "indent": [2, 4],
