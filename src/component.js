@@ -33,7 +33,7 @@ export default class Component {
     _allEvents: dushInstance._allEvents;
 
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
-    static create(obj: { [string]: any}) {
+    static create(obj?: { [string]: any}, statics?: { [string]: any}) {
 
         const props = obj || {};
         const parent: Function = this;
@@ -56,6 +56,10 @@ export default class Component {
         child.prototype.constructor = child;
 
         child.__super__ = parent.prototype;
+
+        if (isPlainObject(statics)) {
+            extend(child, statics);
+        }
 
         return child;
     }
