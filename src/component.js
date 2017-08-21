@@ -128,11 +128,12 @@ export default class Component {
             throw new Error('Invalid reference configuration');
         }
 
-        const { id = ref._iud, props } = refCfg;
+        const { id, props } = refCfg;
 
         if (!id) {
             throw new Error('Invalid reference id string');
         }
+
         const { $refs } = this;
         const prevRef = $refs[id];
         const inheritedState: stateType = {};
@@ -166,6 +167,10 @@ export default class Component {
     init(state?: stateType = {}): Component {
 
         const { $el } = this;
+
+        if (!isElement($el)) {
+            throw new Error('component instance not mounted');
+        }
 
         //initialization placeholder
         let uid: ?string = $el.getAttribute(UID_DATA_ATTR);

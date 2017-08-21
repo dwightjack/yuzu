@@ -25,6 +25,7 @@
         "arrow-body-style": 0,
 				"prefer-template": 0,
 				"camelcase": 0,
+				"no-underscore-dangle": 0,
 
         "import/no-dynamic-require": 0,
         "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
