@@ -619,20 +619,108 @@ describe('`Component`', () => {
             expect(inst._$refsKeys).toContain('child');
         });
 
-        it('should pass selected state to child', (done) => {
+        it('should pass selected state to child', () => {
             const component = new Child('.child');
             const spy = expect.spyOn(component, 'init').andCallThrough();
-            const options = {
-                props: { b: 'b' }
-            };
+            const props = { b: 'b' };
             const expected = { b: 2 };
 
-            inst.setRef({ id: 'child', component, options }).then(() => {
-                expect(spy.calls[0].arguments[0]).toMatch(expected);
+            inst.setRef({ id: 'child', component, props });
+            expect(spy.calls[0].arguments[0]).toMatch(expected);
+
+        });
+
+        it('should return a promise', () => {
+            const component = new Child('.child');
+
+            const ret = inst.setRef({ id: 'child', component });
+
+            expect(ret).toBeA(Promise);
+
+        });
+
+        it('should call previous reference\'s `destroy` method when a new reference is set', () => {
+
+            const child = new Child('.child');
+            const otherChild = new Child(document.createElement('p'));
+            const spy = expect.spyOn(child, 'destroy').andCallThrough();
+
+            inst.$refs.child = child;
+
+            const ret = inst.setRef({ id: 'child', component: otherChild });
+            expect(ret).toBeA(Promise);
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should replace previous reference\'s root element with the new reference `$el`', (done) => {
+
+            const child = new Child('.child');
+            const otherChild = new Child(document.createElement('p'));
+            const spy = expect.spyOn(inst.$el, 'replaceChild').andCallThrough();
+
+            expect.spyOn(inst.$el, 'contains').andReturn(true);
+
+            inst.$refs.child = child;
+
+            const ret = inst.setRef({ id: 'child', component: otherChild }).then(() => {
+                expect(inst.$el.contains).toHaveBeenCalledWith(child.$el);
+                expect(spy).toHaveBeenCalledWith(otherChild.$el, child.$el);
                 done();
-            }, done);
+            });
+            expect(ret).toBeA(Promise);
+        });
 
+        it('should append new reference `$el` when previuos `$el` is already detached', (done) => {
 
+            const child = new Child('.child');
+            const otherChild = new Child(document.createElement('p'));
+            const spy = expect.spyOn(inst.$el, 'appendChild').andCallThrough();
+
+            expect.spyOn(inst.$el, 'contains').andReturn(false);
+
+            inst.$refs.child = child;
+
+            inst.$el.removeChild(child.$el);
+
+            const ret = inst.setRef({ id: 'child', component: otherChild }).then(() => {
+                expect(inst.$el.contains).toHaveBeenCalledWith(child.$el);
+                expect(spy).toHaveBeenCalledWith(otherChild.$el);
+                done();
+            });
+            expect(ret).toBeA(Promise);
+        });
+
+    });
+
+    describe('`broadcast()`', () => {
+        let inst;
+        let root;
+        let Child;
+
+        beforeEach(() => {
+
+            Child = Component.create();
+
+            inst = new Component();
+            mount('component.html');
+            root = document.getElementById('ref');
+
+            inst.mount(root).init({ a: 1, b: 2 });
+
+            inst.$refs.child = new Child(document.createElement('div'));
+            inst._$refsKeys.push('child');
+
+        });
+
+        it('should fire a `broadcast:*` event on every child', () => {
+            const spy = expect.spyOn(inst.$refs.child, 'emit');
+
+            inst.broadcast('test', 'string', 10);
+            expect(spy.calls.length).toBe(inst._$refsKeys.length);
+
+            spy.calls.forEach((c) => {
+                expect(c.arguments).toMatch(['broadcast:test', 'string', 10]);
+            });
 
 
         });
