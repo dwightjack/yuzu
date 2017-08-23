@@ -1,8 +1,21 @@
 // @flow
 
+/**
+ * uid prefix
+ *
+ * @public
+ * @type {string}
+ */
 export const UID_PREFIX: string = '_ui.';
 
+/**
+ * @private
+ */
 let uid: number = -1;
+
+/**
+ * Returns a sequential uid
+ */
 export const nextUid = (prefix: string = UID_PREFIX): string => prefix + (++uid); //eslint-disable-line no-plusplus
 
 
@@ -12,8 +25,14 @@ const objToString = objProto.toString;
 const hasOwnProperty = objProto.hasOwnProperty;
 const objectCtorString = funcToString.call(Object);
 
+/**
+ * Checks if a passed-in value has a `typeof` of `object`
+ */
 export const isObjectLike = (value: any): boolean => !!value && typeof value === 'object';
 
+/**
+ * Checks if a value is a plain object (aka: _POJO_)
+ */
 export const isPlainObject = (value: any): boolean => {
     if (!isObjectLike(value) || objToString.call(value) !== '[object Object]') {
         return false;
@@ -26,11 +45,18 @@ export const isPlainObject = (value: any): boolean => {
     return (typeof Ctor === 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) === objectCtorString);
 };
 
+/**
+ * Checks if a value is a DOM element
+ */
 export const isElement = (value: any): boolean => (
     !!value && value.nodeType === 1 && isObjectLike(value) && !isPlainObject(value)
 );
 
-//https://developer.mozilla.org/it/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill
+/**
+ * Extends a target object with properties from passed-in source objects
+ *
+ * Based on [MDN's polyfill](https://developer.mozilla.org/it/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill)
+ */
 export function extend(target?: ?Object, source?: ?Object): Object { //eslint-disable-line no-unused-vars
 
     if (target === undefined || target === null) {
