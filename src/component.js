@@ -109,6 +109,101 @@ export default class Component {
         return this;
     }
 
+    init(state?: stateType = {}): Component {
+
+        const { $el } = this;
+
+        if (!isElement($el)) {
+            throw new Error('component instance not mounted');
+        }
+
+        //initialization placeholder
+        let uid: ?string = $el.getAttribute(UID_DATA_ATTR);
+
+        if (uid) {
+            console.log(`Element ${uid} is already created`, $el); //eslint-disable-line no-console
+            return this;
+        }
+
+        uid = nextUid();
+        this._uid = uid;
+
+        $el.setAttribute(UID_DATA_ATTR, uid);
+
+        if (!$el.id) {
+            $el.id = `yuzu${uid}`;
+        }
+
+        this.beforeInit();
+
+        const stateEventsMap = this.bindStateEvents();
+        Object.keys(stateEventsMap).forEach((key) => {
+            // $FlowFixMe
+            const method: Function = typeof stateEventsMap[key] === 'string' && typeof this[stateEventsMap[key]] === 'function' ? this[stateEventsMap[key]] : stateEventsMap[key];
+            this.on('change:' + key, method.bind(this));
+        });
+
+        const initialState = extend(this.getInitialState(), state);
+        Object.keys(initialState).forEach((key) => {
+            this.setState(key, initialState[key]);
+        });
+
+        this._active = true;
+
+        this.afterInit();
+
+        return this;
+    }
+
+    bindStateEvents(): { [event_id: string]: Function | string } { //eslint-disable-line class-methods-use-this
+        return {};
+    }
+
+    getCoffee(): void { //eslint-disable-line class-methods-use-this
+        console.log('\u2615 enjoy!');  //eslint-disable-line no-console
+    }
+
+    getInitialState(): stateType { //eslint-disable-line class-methods-use-this
+        return {};
+    }
+
+    getDefaultOptions(): optionsType { //eslint-disable-line class-methods-use-this
+        return {};
+    }
+
+    created(): void {} //eslint-disable-line class-methods-use-this
+
+    mounted(): void {} //eslint-disable-line class-methods-use-this
+
+    beforeInit(): void {} //eslint-disable-line class-methods-use-this
+
+    afterInit(): void {} //eslint-disable-line class-methods-use-this
+
+    beforeDestroy(): void {} //eslint-disable-line class-methods-use-this
+
+    getState(key: string): any {
+        return this.state[key];
+    }
+
+    setState(key: string, newValue: any, silent?: boolean = false) {
+        const oldValue = this.getState(key);
+        if (oldValue !== newValue) {
+            this.state[key] = newValue;
+            if (!silent) {
+                this.emit('change:' + key, newValue, oldValue);
+            }
+        }
+    }
+
+    broadcast(event: string, ...params?: Array<any>) {
+        const { _$refsKeys, $refs } = this;
+
+        for (let i = 0, l = _$refsKeys.length; i < l; i += 1) {
+            const ref = _$refsKeys[i];
+            $refs[ref].emit('broadcast:' + event, ...params);
+        }
+    }
+
     setRef(refCfg: refConstructorType | refInstanceType): Promise<Component> {
 
         let ref: Component;
@@ -164,99 +259,6 @@ export default class Component {
         return Promise.resolve(ref.init(inheritedState));
     }
 
-    init(state?: stateType = {}): Component {
-
-        const { $el } = this;
-
-        if (!isElement($el)) {
-            throw new Error('component instance not mounted');
-        }
-
-        //initialization placeholder
-        let uid: ?string = $el.getAttribute(UID_DATA_ATTR);
-
-        if (uid) {
-            console.log(`Element ${uid} is already created`, $el); //eslint-disable-line no-console
-            return this;
-        }
-
-        uid = nextUid();
-        this._uid = uid;
-
-        $el.setAttribute(UID_DATA_ATTR, uid);
-
-        if (!$el.id) {
-            $el.id = `yuzu${uid}`;
-        }
-
-        this.beforeInit();
-
-        const stateEventsMap = this.bindStateEvents();
-        Object.keys(stateEventsMap).forEach((key) => {
-            // $FlowFixMe
-            const method: Function = typeof stateEventsMap[key] === 'string' && typeof this[stateEventsMap[key]] === 'function' ? this[stateEventsMap[key]] : stateEventsMap[key];
-            this.on('change:' + key, method.bind(this));
-        });
-
-        const initialState = extend(this.getInitialState(), state);
-        Object.keys(initialState).forEach((key) => {
-            this.setState(key, initialState[key]);
-        });
-
-        this._active = true;
-
-        this.afterInit();
-
-        return this;
-    }
-
-    broadcast(event: string, ...params?: Array<any>) {
-        const { _$refsKeys, $refs } = this;
-
-        for (let i = 0, l = _$refsKeys.length; i < l; i += 1) {
-            const ref = _$refsKeys[i];
-            $refs[ref].emit('broadcast:' + event, ...params);
-        }
-    }
-
-    getState(key: string): any {
-        return this.state[key];
-    }
-
-    setState(key: string, newValue: any, silent?: boolean = false) {
-        const oldValue = this.getState(key);
-        if (oldValue !== newValue) {
-            this.state[key] = newValue;
-            if (!silent) {
-                this.emit('change:' + key, newValue, oldValue);
-            }
-        }
-    }
-
-    bindStateEvents(): { [event_id: string]: Function | string } { //eslint-disable-line class-methods-use-this
-        return {};
-    }
-
-    getCoffee(): void { //eslint-disable-line class-methods-use-this
-        console.log('\u2615 enjoy!');  //eslint-disable-line no-console
-    }
-
-    getInitialState(): stateType { //eslint-disable-line class-methods-use-this
-        return {};
-    }
-
-    getDefaultOptions(): optionsType { //eslint-disable-line class-methods-use-this
-        return {};
-    }
-
-    created(): void {} //eslint-disable-line class-methods-use-this
-
-    mounted(): void {} //eslint-disable-line class-methods-use-this
-
-    beforeInit(): void {} //eslint-disable-line class-methods-use-this
-
-    afterInit(): void {} //eslint-disable-line class-methods-use-this
-
     closeRefs(): Promise<void> {
         const { $refs, _$refsKeys } = this;
         return Promise.all(_$refsKeys.map((ref: string): Promise<any> => {
@@ -270,7 +272,7 @@ export default class Component {
     }
 
     destroy(): Promise<void> {
-        this.emit('destroy');
+        this.beforeDestroy();
         this.$ev.off();
         this.off();
         this.$el.removeAttribute(UID_DATA_ATTR);  //eslint-disable-line no-console

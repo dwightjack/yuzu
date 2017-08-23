@@ -434,6 +434,10 @@ describe('`Component`', () => {
         it('should have a `afterInit` method', () => {
             expect(inst.afterInit).toBeA(Function);
         });
+
+        it('should have a `beforeDestroy` method', () => {
+            expect(inst.beforeDestroy).toBeA(Function);
+        });
     });
 
     describe('`getState()`', () => {
@@ -524,6 +528,41 @@ describe('`Component`', () => {
 
             //called because two objects are different
             expect(spy).toHaveBeenCalled();
+        });
+
+    });
+
+    describe('`broadcast()`', () => {
+        let inst;
+        let root;
+        let Child;
+
+        beforeEach(() => {
+
+            Child = Component.create();
+
+            inst = new Component();
+            mount('component.html');
+            root = document.getElementById('ref');
+
+            inst.mount(root).init({ a: 1, b: 2 });
+
+            inst.$refs.child = new Child(document.createElement('div'));
+            inst._$refsKeys.push('child');
+
+        });
+
+        it('should fire a `broadcast:*` event on every child', () => {
+            const spy = expect.spyOn(inst.$refs.child, 'emit');
+
+            inst.broadcast('test', 'string', 10);
+            expect(spy.calls.length).toBe(inst._$refsKeys.length);
+
+            spy.calls.forEach((c) => {
+                expect(c.arguments).toMatch(['broadcast:test', 'string', 10]);
+            });
+
+
         });
 
     });
@@ -692,7 +731,8 @@ describe('`Component`', () => {
 
     });
 
-    describe('`broadcast()`', () => {
+    describe('`setRef()`', () => {
+
         let inst;
         let root;
         let Child;
@@ -707,24 +747,136 @@ describe('`Component`', () => {
 
             inst.mount(root).init({ a: 1, b: 2 });
 
-            inst.$refs.child = new Child(document.createElement('div'));
+        });
+
+        it('should cycle every ref and call its `destroy method`', () => {
+
+            const child = new Child(document.createElement('div'));
+            const spy = expect.spyOn(child, 'destroy').andCallThrough();
+            inst.$refs.child = child;
             inst._$refsKeys.push('child');
+
+            inst.closeRefs();
+
+            expect(spy).toHaveBeenCalled();
 
         });
 
-        it('should fire a `broadcast:*` event on every child', () => {
-            const spy = expect.spyOn(inst.$refs.child, 'emit');
+        it('should return a Promise', () => {
 
-            inst.broadcast('test', 'string', 10);
-            expect(spy.calls.length).toBe(inst._$refsKeys.length);
+            expect(inst.closeRefs()).toBeA(Promise);
 
-            spy.calls.forEach((c) => {
-                expect(c.arguments).toMatch(['broadcast:test', 'string', 10]);
+        });
+
+        it('should log any catched error to `console.error`', (done) => {
+
+            const child = new Child(document.createElement('div'));
+            const err = new Error('MOCK');
+            expect.spyOn(child, 'destroy').andReturn(Promise.reject(err));
+
+            const spy = expect.spyOn(console, 'error');
+
+            inst.$refs.child = child;
+            inst._$refsKeys.push('child');
+
+            inst.closeRefs().then(() => {
+                expect(spy).toHaveBeenCalledWith('close refs', err);
+                spy.restore();
+                done();
             });
 
 
         });
 
+        it('should reset `$refs` and `_$refsKeys` properties', (done) => {
+
+            const child = new Child(document.createElement('div'));
+            inst.$refs.child = child;
+            inst._$refsKeys.push('child');
+
+            inst.closeRefs().then(() => {
+                expect(inst.$refs).toMatch({});
+                expect(inst._$refsKeys.length).toBe(0);
+                done();
+            });
+        });
+
     });
+
+
+    describe('`destroy()`', () => {
+
+        let inst;
+        let root;
+
+        beforeEach(() => {
+
+            inst = new Component();
+            mount('component.html');
+            root = document.getElementById('ref');
+
+            inst.mount(root).init();
+
+        });
+
+        it('should call `beforeDestroy` lifecycle hook', () => {
+            const spy = expect.spyOn(inst, 'beforeDestroy');
+
+            inst.destroy();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should detach any DOM event', () => {
+            const spy = expect.spyOn(inst.$ev, 'off');
+
+            inst.destroy();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should detach any event handler', () => {
+            const spy = expect.spyOn(inst, 'off');
+
+            inst.destroy();
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should remove the `data-yzid` attribute from the element', () => {
+            expect(inst.el.hasAttribute('data-yzid')).toBe(true);
+
+            inst.destroy();
+            expect(inst.el.hasAttribute('data-yzid')).toBe(false);
+        });
+
+        it('should call `closeRefs()` and deactivate the instance', (done) => {
+            const spy = expect.spyOn(inst, 'closeRefs').andCallThrough();
+
+            inst.destroy().then(() => {
+                expect(inst._active).toBe(false);
+                expect(spy).toHaveBeenCalled();
+                done();
+            });
+
+        });
+
+        it('should return a promise', () => {
+            expect(inst.destroy()).toBeA(Promise);
+        });
+
+        it('should log any catched error to `console.error`', (done) => {
+
+            const err = new Error('MOCK');
+            expect.spyOn(inst, 'closeRefs').andReturn(Promise.reject(err));
+
+            const spy = expect.spyOn(console, 'error');
+
+            inst.destroy().then(() => {
+                expect(spy).toHaveBeenCalledWith('destroy catch: ', err);
+                spy.restore();
+                done();
+            });
+        });
+
+    });
+
 
 });
