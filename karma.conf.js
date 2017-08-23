@@ -1,6 +1,7 @@
 // Karma configuration
 // Generated on Fri Jul 07 2017 15:57:57 GMT+0200 (CEST)
 
+const path = require('path');
 const production = process.env.PRODUCTION === 'true';
 
 const baseConfig = {
@@ -16,6 +17,7 @@ const baseConfig = {
 
     // list of files / patterns to load in the browser
     files: [
+        'node_modules/es6-promise/dist/es6-promise.auto.js',
         { pattern: 'src/*.js', included: false },
         { pattern: 'test/utils.js', included: false },
         'test/**/*.spec.js',
@@ -43,6 +45,11 @@ const baseConfig = {
 
     rollupPreprocessor: {
         plugins: [
+            require('rollup-plugin-alias')({ //eslint-disable-line
+                'tsumami-real-events': path.resolve(__dirname, 'node_modules/tsumami/lib/events.js'),
+                'tsumami-real': path.resolve(__dirname, 'node_modules/tsumami/lib/dom.js'),
+                tsumami: path.resolve(__dirname, 'test/mocks/tsumami')
+            }),
             require('rollup-plugin-node-resolve')({//eslint-disable-line
                 preferBuiltins: false
             }),
@@ -53,7 +60,6 @@ const baseConfig = {
             require('rollup-plugin-replace')({ //eslint-disable-line
                 'process.env.NODE_DEBUG': !production
             }),
-            require('rollup-plugin-stub')(), //eslint-disable-line
             require('rollup-plugin-node-globals')() //eslint-disable-line
         ],
         format: 'iife',               // Helps prevent naming collisions.
