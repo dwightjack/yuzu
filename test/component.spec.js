@@ -1,5 +1,7 @@
 import expect from 'expect';
+import dush from 'dush';
 import tsumami from 'tsumami';
+import { EventManager } from 'tsumami/lib/events';
 
 import Component from '../src/component';
 import { mount } from './utils';
@@ -80,6 +82,95 @@ describe('`Component`', () => {
             expect(MyComp.prototype.aMethod).toBeA(Function);
 
         });
+
+    });
+
+    describe('constructor', () => {
+
+        let inst;
+
+        beforeEach(() => {
+            inst = new Component();
+        });
+
+        it('extends instance with dush methods', () => {
+            const ev = dush();
+            Object.keys(ev).forEach((k) => {
+                expect(typeof inst[k]).toBe(typeof ev[k]);
+            });
+
+        });
+
+        it('should set an `_active` property to `false`', () => {
+            expect(inst._active).toBe(false);
+        });
+
+        it('should set an `$els` property to an empty object', () => {
+            expect(inst.$els).toMatch({});
+        });
+
+        it('should set a `$refs` property to an empty object', () => {
+            expect(inst.$refs).toMatch({});
+        });
+
+        it('should set a `_$refsKeys` property to an empty array', () => {
+            expect(inst._$refsKeys).toBeA(Array);
+            expect(inst._$refsKeys.length).toBe(0);
+        });
+
+        it('should expose an `options` object', () => {
+            expect(inst.options).toMatch({});
+        });
+
+        it('should merge default and passed-in options', () => {
+
+            const MyComp = Component.create({
+                getDefaultOptions() {
+                    return { a: 1, b: 0 };
+                }
+            });
+
+            const i = new MyComp(null, { b: 2 });
+            expect(i.options).toMatch({ a: 1, b: 2 });
+
+        });
+
+        it('should expose an instance of `tsumami/EventManager` under the `$ev` property', () => {
+            expect(inst.$ev).toBeA(EventManager);
+        });
+
+        it('should expose an empty state object', () => {
+            expect(inst.state).toMatch({});
+        });
+
+        it('should execute the created lifecycle hook', () => {
+            const spy = expect.createSpy();
+            const MyComp = Component.create({
+                created: spy
+            });
+            new MyComp(); //eslint-disable-line
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should mount to a DOM node if provided', () => {
+            const spy = expect.createSpy();
+            const root = document.createElement('div');
+            const MyComp = Component.create({
+                mount: spy
+            });
+            new MyComp(root); //eslint-disable-line
+            expect(spy).toHaveBeenCalled(root);
+        });
+
+        it('should NOT mount to a DOM node if root element is missing', () => {
+            const spy = expect.createSpy();
+            const MyComp = Component.create({
+                mount: spy
+            });
+            new MyComp(); //eslint-disable-line
+            expect(spy).toNotHaveBeenCalled();
+        });
+
 
     });
 
