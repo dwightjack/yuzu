@@ -71,6 +71,8 @@ var MyComponent = YZ.Component.create({
 var app = new MyComponent('#app');
 ```
 
+Check out the [documentation](doc/README.md) for further details.
+
 ## Contributing
 
 1. Fork it or clone the repo

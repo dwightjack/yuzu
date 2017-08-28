@@ -11,27 +11,149 @@ const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 
 const UID_DATA_ATTR = 'data-yzid';
 
+/**
+ * @class
+ */
 export default class Component {
 
     el: Element;
+
+    /**
+     * Root element
+     */
     $el: Element;
+
+    /**
+     * Map of child elements reference
+     *
+     * @type {Object.<String,Element>}
+     */
     $els: {[element_id: string]: Element};
+
+    /**
+     * Map of references to child components
+     *
+     * @type {Object.<Component,Element>}
+     * @see {@link #setRef}
+     */
     $refs: {[ref_id: string]: Component};
+
+    /**
+     * @private
+     */
     _$refsKeys: string[];
+
+    /**
+     * Component options
+     */
     options: optionsType;
+
+    /**
+     * DOM event manager
+     *
+     * @see {@link https://github.com/dwightjack/tsumami/blob/master/doc/events.md#eventmanager}
+     */
     $ev: EventManager;
+
+    /**
+     * Component state
+     *
+     * @type {Object.<string, any>}
+     */
     state: stateType;
     ctx: Component;
+
+    /**
+     * @private
+     */
     _uid: string;
+
+    /**
+     * @private
+     */
     _active: boolean;
 
+    /**
+     * Attaches an event handler
+     *
+     * @type function
+     * @see https://github.com/charlike/dush#on
+     * @example
+     * instance.on('myevent', (param) => {
+     *  ...
+     * });
+     */
     on: dushInstance.on;
+
+    /**
+     * Removes an event handler
+     *
+     * @type function
+     * @see https://github.com/charlike/dush#off
+     * @example
+     *
+     * const handler = (param) => { ... };
+     *
+     * //attach an event handler
+     * instance.on('myevent', handler);
+     *
+     * //remove it
+     * instance.off('myevent', handler);
+     */
     off: dushInstance.off;
+
+    /**
+     * Attaches a one-time event handler
+     *
+     * @type function
+     * @see https://github.com/charlike/dush#once
+     * @example
+     * const handlerOnce = (param) => { ... };
+     *
+     * //attach an event handler
+     * instance.once('myevent', handlerOnce)
+     */
     once: dushInstance.once;
+
+    /**
+     * Emits an event
+     *
+     * @type function
+     * @see https://github.com/charlike/dush#emit
+     * const handler = (...params) => { console.log(params); };
+     *
+     * //attach an event handler
+     * instance.on('log', handler);
+     *
+     * instance.emit('log', 'test', 1); //logs ['test', 1]
+     */
     emit: dushInstance.emit;
+
     use: dushInstance.use;
     _allEvents: dushInstance._allEvents;
 
+    /**
+     * Returns a new Component constructor with optional proptotype and static methods
+     *
+     * For usage in ES5 environments. In ES2015+ you can extend the `Component` class itself.
+     * @example
+     * var ChildComponent = Component.create({
+     *      myMethod: function () {
+     *          return this.options.str
+     *      }
+     * }, {
+     *      myStatic: function () {
+     *          return 'a string';
+     *      }
+     * });
+     *
+     * ChildComponent.myStatic(); // returns 'a string'
+     *
+     * var child = new ChildComponent('.child', { str: 'demo' });
+     * child.init();
+     *
+     * child.myMethod(); // returns 'demo'
+     */
     //adapted from https://github.com/jashkenas/backbone/blob/master/backbone.js#L2050
     static create(obj?: { [string]: any}, statics?: { [string]: any}) {
 
@@ -90,6 +212,15 @@ export default class Component {
         }
     }
 
+    /**
+     * Mounts the compontent instance onto a DOM element
+     *
+     * @example
+     * const instance = new Component();
+     *
+     * instance.mount('#app');
+     * //instance.$el.id === 'app'
+     */
     mount(el: RootElement) {
 
         if (this.$el) {
@@ -109,6 +240,16 @@ export default class Component {
         return this;
     }
 
+    /**
+     * Initializes a component instance with optional state
+     *
+     * @param {Object} [state]
+     *
+     * @example
+     * const instance = new Component('#app');
+     * instance.init({ a: 1 });
+     * instance.getState('a'); // 1
+     */
     init(state?: stateType = {}): Component {
 
         const { $el } = this;
@@ -155,6 +296,23 @@ export default class Component {
         return this;
     }
 
+    /**
+     * Returns an event binding configuration object to be used during initialization.
+     *
+     * Object values can be either a function or a string pointing to an instance's method
+     *
+     * @example
+     * class Child extends Component {
+     *  bindStateEvents() {
+     *      return { a: (a) => console.log(`value is ${a}`) }
+     *  }
+     * }
+     *
+     * const instance = new Child('#app').init();
+     *
+     * instance.setState('a', 1); //logs: value is 1
+     *
+     */
     bindStateEvents(): { [event_id: string]: Function | string } { //eslint-disable-line class-methods-use-this
         return {};
     }
@@ -163,28 +321,87 @@ export default class Component {
         console.log('\u2615 enjoy!');  //eslint-disable-line no-console
     }
 
+    /**
+     * Returns an object with the component default state
+     *
+     * @example
+     * class Gallery extends Component {
+     *  getInitialState() {
+     *      return { currentImage: 0 };
+     *  }
+     * }
+     *
+     * const gallery = new Gallery().init();
+     * //gallery.getState('currentImage') === 0
+     */
     getInitialState(): stateType { //eslint-disable-line class-methods-use-this
         return {};
     }
 
+    /**
+     * Returns an object with the component default options
+     *
+     * @example
+     * class Gallery extends Component {
+     *  getDefaultOptions() {
+     *      return { pagination: true };
+     *  }
+     * }
+     *
+     * const gallery = new Gallery().init();
+     * //gallery.options.pagination === true
+     */
     getDefaultOptions(): optionsType { //eslint-disable-line class-methods-use-this
         return {};
     }
 
+    /**
+     * Lifecycle hook called on instance creation
+     */
     created(): void {} //eslint-disable-line class-methods-use-this
 
+    /**
+     * Lifecycle hook called when the instance got mount onto a DOM element
+     */
     mounted(): void {} //eslint-disable-line class-methods-use-this
 
+    /**
+     * Lifecycle hook called before instance inizialization. At this stage component's state is empty
+     */
     beforeInit(): void {} //eslint-disable-line class-methods-use-this
 
+    /**
+     * Lifecycle hook called after instance inizialization. State and event binding are already in place
+     */
     afterInit(): void {} //eslint-disable-line class-methods-use-this
 
+    /**
+     * Lifecycle hook called just before closing child refs
+     */
     beforeDestroy(): void {} //eslint-disable-line class-methods-use-this
 
+    /**
+     * Returns a state property
+     *
+     * @example
+     * const instance = new Component('#app').init({ a: 1 });
+     * // instancce.getState('a') === 1
+     */
     getState(key: string): any {
         return this.state[key];
     }
 
+    /**
+     * Sets a state property. If the new value is different from the old one it emits a `change:<property>` event.
+     * To prevent this behavior set the 3rd argument to `true`
+     *
+     * @example
+     * instance.on('change:a', (next, prev) => console.log(next, prev));
+     * instance.setState('a', 1); //emits 'change:a' -> logs undefined,1
+     *
+     * instance.setState('a', 1); //nothing happens
+     * instance.setState('a', 2, true); //nothing happens, again...
+     */
     setState(key: string, newValue: any, silent?: boolean = false) {
         const oldValue = this.getState(key);
         if (oldValue !== newValue) {
@@ -195,6 +412,16 @@ export default class Component {
         }
     }
 
+    /**
+     * Emits a `broadcast:<eventname>` event to every child element listed as a `$ref`
+     *
+     * @example
+     * const child = new Component('#child');
+     * child.on('broadcast:log', (str) => console.log(str));
+     *
+     * instance.setRef({ id: 'child', component: child });
+     * instance.broadcast('log', 'test') // child component logs 'test'
+     */
     broadcast(event: string, ...params?: Array<any>) {
         const { _$refsKeys, $refs } = this;
 
@@ -204,6 +431,25 @@ export default class Component {
         }
     }
 
+    /**
+     * Attaches a reference to a child component.
+     * If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
+     *
+     * @example
+     * // as Constructor
+     * instance.setRef({
+     *  id: 'child',
+     *  component: ChildComponent,
+     *  el: '#child',
+     *  options: { ... }
+     * });
+     *
+     * // as instance
+     * instance.setRef({
+     *  id: 'child',
+     *  component: new ChildComponent('#child', { ... }) // <-- don't call `init`
+     * });
+     */
     setRef(refCfg: refConstructorType | refInstanceType): Promise<Component> {
 
         let ref: Component;
@@ -259,6 +505,11 @@ export default class Component {
         return Promise.resolve(ref.init(inheritedState));
     }
 
+    /**
+     * Calls `.destroy()` on every child references and detaches them from the parent component.
+     *
+     * @private
+     */
     closeRefs(): Promise<void> {
         const { $refs, _$refsKeys } = this;
         return Promise.all(_$refsKeys.map((ref: string): Promise<any> => {
@@ -271,6 +522,9 @@ export default class Component {
         });
     }
 
+    /**
+     * Detaches DOM events, instance's events and destroys all references as well
+     */
     destroy(): Promise<void> {
         this.beforeDestroy();
         this.$ev.off();
