@@ -12,7 +12,7 @@ const mount = function mount(
 
     const component = new ComponentConstructor(undefined, options || {});
 
-    return function mounter(state?: stateType, ctx?: Component): Promise<Component> {
+    return function mounter(state?: stateType, ctx?: Component): Component {
 
         const root = typeof el === 'string' && ctx ? qs(el, ctx.$el) : el;
 
