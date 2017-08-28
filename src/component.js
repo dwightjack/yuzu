@@ -262,7 +262,7 @@ export default class Component {
         let uid: ?string = $el.getAttribute(UID_DATA_ATTR);
 
         if (uid) {
-            console.log(`Element ${uid} is already initilized... skipping`, $el); //eslint-disable-line no-console
+            console.warn(`Element ${uid} is already initilized... skipping`, $el); //eslint-disable-line no-console
             this._uid = uid;
             return this;
         }
