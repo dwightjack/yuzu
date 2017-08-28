@@ -32,7 +32,8 @@ const mount = function mount(
             const child = childrenList[i];
             const inst = child(undefined, component);
             const { id, props } = inst.options;
-            component.setRef({ component: inst, id: (id || inst._uid), props });
+
+            component.setRef({ component: inst, id: (id || `${component._uid}__${i}`), props });
         }
 
         return component;
