@@ -267,7 +267,7 @@ describe('`Component`', () => {
         });
 
         it('should check if a component has already been initialized on the DOM element', () => {
-            const spy = expect.spyOn(console, 'log');
+            const spy = expect.spyOn(console, 'warn');
             const root = document.getElementById('app-fake-uid');
             const uid = root.getAttribute('data-yzid');
             inst.mount(root);
@@ -277,7 +277,7 @@ describe('`Component`', () => {
             const args = spy.calls[0].arguments;
             expect(args[0]).toContain(uid);
             expect(args[1]).toBe(inst.$el);
-            console.log.restore();
+            console.warn.restore(); //eslint-disable-line no-console
         });
 
         it('should set a unique `_uid` property', () => {
