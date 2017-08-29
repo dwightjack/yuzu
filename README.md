@@ -25,7 +25,9 @@ add the following script tags before your code
 
 Yuzu modules will be available in the global scope under the `YZ` namespace:
 
-* `YZ.Component`: Component constructor [docs](doc/index.md)
+* `YZ.Component`: Component constructor [docs](doc/component.md)
+* `YZ.Children`: children elements iterator founction [docs](doc/children.md)
+* `YZ.mount`: functional components' tree generator [docs](doc/mount.md)
 
 ## Usage
 
@@ -71,7 +73,11 @@ var MyComponent = YZ.Component.create({
 var app = new MyComponent('#app');
 ```
 
-Check out the [documentation](doc/README.md) for further details.
+## Documentation
+
+* [Component](doc/component.md)
+* [Children](doc/children.md)
+* [mount](doc/mount.md)
 
 ## Contributing
 
