@@ -1,4 +1,4 @@
-# Yuzu (WIP)
+# Yuzu
 
 > old school component management
 
