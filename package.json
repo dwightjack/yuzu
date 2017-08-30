@@ -1,7 +1,7 @@
 {
   "name": "yuzu",
   "description": "in-DOM component lifecycle",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "homepage": "https://github.com/dwightjack/yuzu",
   "author": "Marco Solazzi",
   "license": "MIT",
@@ -29,8 +29,8 @@
     "build:es": "rimraf es && cross-env BABEL_ENV=es babel ./src -d es --ignore umd.js",
     "build:cjs": "rimraf lib && cross-env BABEL_ENV=cjs babel ./src -d lib --ignore umd.js",
     "build:umd": "rimraf umd && cross-env BABEL_ENV=rollup rollup -c rollup.config.js",
-    "lint": "eslint -c ./src/.eslintrc.json src flow-typed",
-    "docs": "rimraf doc && node ./scripts/docs.js",
+    "lint": "eslint test src flow-typed",
+    "docs": "rimraf doc && node ./scripts/doc.js",
     "start": "node ./scripts/server.js",
     "test": "cross-env BABEL_ENV=test karma start karma.conf.js --single-run --browsers PhantomJS",
     "test:remote": "cross-env BABEL_ENV=test karma start karma.sauce.conf.js --single-run"
@@ -44,6 +44,8 @@
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-es2015": "6.24.1",
     "cross-env": "5.0.1",
+    "documentation": "5.2.2",
+    "es6-promise": "4.1.1",
     "eslint": "3.19.0",
     "eslint-config-airbnb-base": "11.2.0",
     "eslint-plugin-flowtype": "2.35.0",
@@ -51,7 +53,8 @@
     "expect": "1.20.2",
     "expect-element": "1.1.1",
     "express": "4.15.3",
-    "flow-bin": "^0.50.0",
+    "flow-bin": "0.53.0",
+    "glob": "7.1.2",
     "karma": "1.7.0",
     "karma-html2js-preprocessor": "1.1.0",
     "karma-mocha": "1.3.0",
@@ -59,11 +62,12 @@
     "karma-rollup-preprocessor": "4.0.1",
     "karma-sauce-launcher": "1.1.0",
     "lodash": "4.17.4",
-    "markdox": "0.1.10",
     "mocha": "3.4.2",
     "rimraf": "2.6.1",
     "rollup": "0.45.2",
+    "rollup-plugin-alias": "1.3.1",
     "rollup-plugin-babel": "2.7.1",
+    "rollup-plugin-bundle-size": "1.0.1",
     "rollup-plugin-commonjs": "8.0.2",
     "rollup-plugin-node-globals": "1.1.0",
     "rollup-plugin-node-resolve": "3.0.0",
@@ -73,7 +77,7 @@
     "serve-index": "1.9.0"
   },
   "dependencies": {
-    "events": "1.1.1",
+    "dush": "3.0.5",
     "tsumami": "1.0.3"
   }
 }

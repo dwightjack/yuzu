@@ -3,8 +3,13 @@
         "browser": true,
         "es6": true,
 				"mocha": true
-    },
-    "extends": "airbnb-base",
+		},
+
+		"root": true,
+
+		"extends": "airbnb-base",
+
+		"parser": "babel-eslint",
 
     "rules": {
         "indent": [2, 4],
@@ -20,6 +25,8 @@
         "arrow-body-style": 0,
 				"prefer-template": 0,
 				"camelcase": 0,
+				"no-underscore-dangle": 0,
+				"func-names": 0,
 
         "import/no-dynamic-require": 0,
         "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
