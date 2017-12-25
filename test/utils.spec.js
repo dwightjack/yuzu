@@ -97,18 +97,6 @@ describe('`Utils`', () => {
             expect(utils.isPlainObject({ valueOf: 0 })).toBe(true);
         });
 
-        it('should return `true` for objects with a writable `Symbol.toStringTag` property', function sym() {
-
-            if (window.Symbol && window.Symbol.toStringTag) {
-                const object = {};
-                object[window.Symbol.toStringTag] = 'X';
-
-                expect(utils.isPlainObject(object)).toBe(true);
-            } else {
-                this.skip();
-            }
-        });
-
         it('should return `false` for objects with a custom `[[Prototype]]`', () => {
 
             const object = Object.create({ a: 1 });
