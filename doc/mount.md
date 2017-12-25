@@ -2,9 +2,9 @@
 
 ## mount
 
-Returns a mount function which in turn accepts a state object and a parent component.
+`mount` is an helper function to setup trees of components in a functional way.
 
-This function is useful to setup trees of components in a functional way
+Returns a mount function which in turn accepts a state object and a parent component.
 
 It accepts 4 arguments:
 
@@ -13,12 +13,12 @@ It accepts 4 arguments:
 -   component options _(optional)_
 -   An optional array of children mount functions OR a function returning an array of children mount functions (usually yuzu's [`Children`](./children.md) function)
 
-Instances of components passed as children will be set a parent's components references (uses: [`Component#setRef`](./component.md#setref))
+Child components will be automatically set as references in the parent component (uses: [`Component#setRef`](./component.md#setref))
 
 ### A simple, single component example:
 
 ```js
-import { mount, Component } from 'yuzu';
+import { mount } from 'yuzu';
 
 import GalleryComponent from './components/Gallery';
 
@@ -37,7 +37,7 @@ const gallery = tree({ startIndex: 1 })
 Props can be passed to children components by setting a `prop` property on the `options` object
 
 ```js
-import { mount, Component } from 'yuzu';
+import { mount } from 'yuzu';
 
 import List from './components/List';
 import ListItem from './components/ListItem';
@@ -45,15 +45,19 @@ import ListItem from './components/ListItem';
 const tree = mount(
  List,
  '#list', //mount point,
- null //empty options
+ null, //empty options
  [
-     mount(ListItem, '.list-item1', { props: { currentItem: 'current'} }),
-     mount(ListItem, '.list-item2', { props: { currentItem: 'current'} })
+     mount(ListItem, '.list-item1', { id: 'item1', props: { currentItem: 'current'} }),
+     mount(ListItem, '.list-item2', { id: 'item2', props: { currentItem: 'current'} })
  ]
 );
 
 //attach the tree with an initial state passed to the root component
 const list = tree({ currentItem: 0 })
+
+//access child components
+list.$refs.item1.$el.className === '.list-item1';
+list.$refs.item2.$el.className === '.list-item2';
 ```
 
 ### A dynamic components' tree example
@@ -61,7 +65,7 @@ const list = tree({ currentItem: 0 })
 Props can be passed to children components by setting a `prop` property on the `options` object
 
 ```js
-import { mount, Component, Children } from 'yuzu';
+import { mount, Children } from 'yuzu';
 
 import List from './components/List';
 import ListItem from './components/ListItem';
@@ -69,10 +73,40 @@ import ListItem from './components/ListItem';
 const tree = mount(
  List,
  '#list', //mount point,
- null //empty options
+ null, //empty options
  Children('.list-item', (el, id) => {
-     return mount(ListItem, el, { id: `list-item-${i}`, props: { currentItem: 'current'} });
+     return mount(ListItem, el, { id: `item${i}`, props: { currentItem: 'current'} });
  })
+);
+
+//attach the tree with an initial state passed to the root component
+const list = tree({ currentItem: 0 })
+```
+
+### Mixed dynamic and static child tree
+
+```js
+import { mount, Children } from 'yuzu';
+
+import List from './components/List';
+import ListItem from './components/ListItem';
+import Navigation from './components/Navigation';
+
+// setup a dynamic child list function
+const listItemsTree = Children('.list-item', (el, id) => {
+     return mount(ListItem, el, { id: `list-item-${i}`, props: { currentItem: 'current'} });
+});
+
+const tree = mount(
+ List,
+ '#list', //mount point,
+ null, //empty options
+ (parent) => { // <-- parent is the current instance of `List`
+     return [
+         ...listItemsTree(parent),
+         mount(Navigation, '.nav')
+     ]
+ }
 );
 
 //attach the tree with an initial state passed to the root component
@@ -82,8 +116,8 @@ const list = tree({ currentItem: 0 })
 **Parameters**
 
 -   `ComponentConstructor` **Class&lt;Component>** 
--   `el` **([Element](https://developer.mozilla.org/en-US/docs/Web/API/Element) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))** 
+-   `el` **([Element](https://developer.mozilla.org/docs/Web/API/Element) \| [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String))** 
 -   `options` **any** 
--   `children` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)>)** 
+-   `children` **([Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function) \| [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)>)** 
 
-Returns **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** 

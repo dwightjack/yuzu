@@ -2,6 +2,46 @@
 
 ## Component
 
+`Component` is an extensible class constructor which provides the building block of Yuzu component system.
+
+### Signature summary
+
+#### Lifecycle methods
+
+-   [init](./#init)
+-   [mount](./#mount)
+-   [destroy](./#destroy)
+
+#### Initialization hooks
+
+-   [getInitialState](./#getinitialstate)
+-   [getDefaultOptions](./#getdefaultoptions)
+-   [bindStateEvents](./#bindstateevents)
+
+#### State management
+
+-   [getState](./#getstate)
+-   [setState](./#setstate)
+
+#### Lifecycle hooks
+
+-   [created](./#created) (instance created)
+-   [mounted](./#mounted) (mounted onto the DOM)
+-   [beforeInit](./#beforeinit) (just before state and event bindings evaluation)
+-   [afterInit](./#afterinit) (instance fully initialized)
+-   [beforeDestroy](./#beforedestroy) (just before tearing down the instance)
+
+#### Event bus
+
+-   [on](./#on)
+-   [off](./#off)
+-   [emit](./#emit)
+
+#### Child management methods
+
+-   [setRef](./#setref)
+-   [broadcast](./#broadcast)
+
 **Parameters**
 
 -   `el` **RootElement** 
@@ -11,7 +51,7 @@
 
 Root element
 
-Type: [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element)
+Type: [Element](https://developer.mozilla.org/docs/Web/API/Element)
 
 ### $els
 
@@ -102,13 +142,22 @@ instance.once('myevent', handlerOnce)
 
 ### emit
 
--   **See: <https://github.com/charlike/dush#emit>
-    const handler = (...params) => { console.log(params); };//attach an event handler
-    instance.on('log', handler);instance.emit('log', 'test', 1); //logs ['test', 1]**
+-   **See: <https://github.com/charlike/dush#emit>**
 
 Emits an event
 
 Type: dushInstance.emit
+
+**Examples**
+
+```javascript
+const handler = (...params) => { console.log(params); };
+
+//attach an event handler
+instance.on('log', handler);
+
+instance.emit('log', 'test', 1); //logs ['test', 1]
+```
 
 ### mount
 
@@ -133,7 +182,7 @@ Initializes a component instance with optional state
 
 **Parameters**
 
--   `state` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?**  (optional, default `{}`)
+-   `state` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**  (optional, default `{}`)
 
 **Examples**
 
@@ -241,7 +290,7 @@ Returns a state property
 
 **Parameters**
 
--   `key` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `key` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 **Examples**
 
@@ -259,9 +308,9 @@ To prevent this behavior set the 3rd argument to `true`
 
 **Parameters**
 
--   `key` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `key` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 -   `newValue` **any** 
--   `silent` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)**  (optional, default `false`)
+-   `silent` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)**  (optional, default `false`)
 
 **Examples**
 
@@ -279,8 +328,8 @@ Emits a `broadcast:<eventname>` event to every child element listed as a `$ref`
 
 **Parameters**
 
--   `event` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `params` **...[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
+-   `event` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `params` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** 
 
 **Examples**
 
@@ -319,13 +368,13 @@ instance.setRef({
 });
 ```
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Component](#component)>** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Component](#component)>** 
 
 ### destroy
 
 Detaches DOM events, instance's events and destroys all references as well
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;void>** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;void>** 
 
 ### create
 

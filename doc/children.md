@@ -4,7 +4,7 @@
 
 Child iterator
 
-Type: function (ctx: Component): [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>
+Type: function (ctx: Component): [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>
 
 ## Children
 
@@ -15,8 +15,8 @@ DOM elements are selected from a CSS selector in the context of the passed-in pa
 
 **Parameters**
 
--   `selector` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `fn` **function (el: [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element), index: [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)): any** 
+-   `selector` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `fn` **function (el: [Element](https://developer.mozilla.org/docs/Web/API/Element), index: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): any** 
 
 **Examples**
 

@@ -12,6 +12,46 @@ const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 const UID_DATA_ATTR = 'data-yzid';
 
 /**
+ * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
+ *
+ * ### Signature summary
+ *
+ * #### Lifecycle methods
+ *
+ * * [init](./#init)
+ * * [mount](./#mount)
+ * * [destroy](./#destroy)
+ *
+ * #### Initialization hooks
+ *
+ * * [getInitialState](./#getinitialstate)
+ * * [getDefaultOptions](./#getdefaultoptions)
+ * * [bindStateEvents](./#bindstateevents)
+ *
+ * #### State management
+
+ * * [getState](./#getstate)
+ * * [setState](./#setstate)
+ *
+ * #### Lifecycle hooks
+ *
+ * * [created](./#created) (instance created)
+ * * [mounted](./#mounted) (mounted onto the DOM)
+ * * [beforeInit](./#beforeinit) (just before state and event bindings evaluation)
+ * * [afterInit](./#afterinit) (instance fully initialized)
+ * * [beforeDestroy](./#beforedestroy) (just before tearing down the instance)
+ *
+ * #### Event bus
+ *
+ * * [on](./#on)
+ * * [off](./#off)
+ * * [emit](./#emit)
+ *
+ * #### Child management methods
+ *
+ * * [setRef](./#setref)
+ * * [broadcast](./#broadcast)
+ *
  * @class
  */
 export default class Component {
@@ -120,6 +160,7 @@ export default class Component {
      *
      * @type function
      * @see https://github.com/charlike/dush#emit
+     * @example
      * const handler = (...params) => { console.log(params); };
      *
      * //attach an event handler

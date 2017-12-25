@@ -18,7 +18,6 @@ yarn add yuzu
 
 add the following script tags before your code
 ```html
-<script src="https://unpkg.com/desandro-classie"></script> <!-- hard dependency -->
 <script src="https://unpkg.com/tsumami"></script> <!-- hard dependency -->
 <script src="https://unpkg.com/yuzu"></script>
 ```
@@ -30,6 +29,8 @@ Yuzu modules will be available in the global scope under the `YZ` namespace:
 * `YZ.mount`: functional components' tree generator [docs](doc/mount.md)
 
 ## Usage
+
+### ES6+ usage
 
 Import `Component` constructor into your project and use it
 
@@ -71,6 +72,62 @@ var MyComponent = YZ.Component.create({
 });
 
 var app = new MyComponent('#app');
+```
+
+### Functional composition
+
+To compose nested components you can simply use parent's [`setRef`](doc/component.md#setref) method to register child components:
+
+```js
+
+class Navigation extends Component {
+	// ...
+}
+
+class Gallery extends Component {
+	beforeInit() {
+
+		this.setRef({
+			id: 'navigation',
+			component: Navigation,
+			el: '.gallery__nav'
+		});
+		// this.$refs.navigation.$el === '<ul class="gallery__nav" />'
+	}
+}
+
+const gallery = new Gallery('#gallery');
+```
+
+If you prefer a more _functional_ approach you can use the [`mount`](doc/mount.md) helper:
+
+```js
+import { Component, Children, mount } from 'yuzu';
+
+
+class Navigation extends Component {
+	// ...
+}
+
+class Gallery extends Component {
+	// ...
+}
+
+//setup a component tree
+const galleryTree = mount(
+	Gallery,
+	'#gallery',
+	null, // <-- options
+	[
+		mount(
+			Navigation,
+			'.gallery__nav'
+		)
+	]
+);
+
+//mount it onto the DOM
+const gallery = galleryTree();
 ```
 
 ## Documentation
