@@ -48,7 +48,7 @@ const baseConfig = {
             require('rollup-plugin-alias')({ //eslint-disable-line
                 'tsumami/lib/events': path.resolve(__dirname, 'node_modules/tsumami/lib/events.js'),
                 'tsumami-real': path.resolve(__dirname, 'node_modules/tsumami/lib/dom.js'),
-                tsumami: path.resolve(__dirname, 'test/mocks/tsumami')
+                tsumami: path.resolve(__dirname, 'test/mocks/tsumami.js')
             }),
             require('rollup-plugin-node-resolve')({//eslint-disable-line
                 preferBuiltins: false
