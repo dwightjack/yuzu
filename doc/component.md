@@ -8,39 +8,39 @@
 
 #### Lifecycle methods
 
--   [init](./#init)
--   [mount](./#mount)
--   [destroy](./#destroy)
+-   [init](./component.md#init)
+-   [mount](./component.md#mount)
+-   [destroy](./component.md#destroy)
 
 #### Initialization hooks
 
--   [getInitialState](./#getinitialstate)
--   [getDefaultOptions](./#getdefaultoptions)
--   [bindStateEvents](./#bindstateevents)
+-   [getInitialState](./component.md#getinitialstate)
+-   [getDefaultOptions](./component.md#getdefaultoptions)
+-   [bindStateEvents](./component.md#bindstateevents)
 
 #### State management
 
--   [getState](./#getstate)
--   [setState](./#setstate)
+-   [getState](./component.md#getstate)
+-   [setState](./component.md#setstate)
 
 #### Lifecycle hooks
 
--   [created](./#created) (instance created)
--   [mounted](./#mounted) (mounted onto the DOM)
--   [beforeInit](./#beforeinit) (just before state and event bindings evaluation)
--   [afterInit](./#afterinit) (instance fully initialized)
--   [beforeDestroy](./#beforedestroy) (just before tearing down the instance)
+-   [created](./component.md#created) (instance created)
+-   [mounted](./component.md#mounted) (mounted onto the DOM)
+-   [beforeInit](./component.md#beforeinit) (just before state and event bindings evaluation)
+-   [afterInit](./component.md#afterinit) (instance fully initialized)
+-   [beforeDestroy](./component.md#beforedestroy) (just before tearing down the instance)
 
 #### Event bus
 
--   [on](./#on)
--   [off](./#off)
--   [emit](./#emit)
+-   [on](./component.md#on)
+-   [off](./component.md#off)
+-   [emit](./component.md#emit)
 
 #### Child management methods
 
--   [setRef](./#setref)
--   [broadcast](./#broadcast)
+-   [setRef](./component.md#setref)
+-   [broadcast](./component.md#broadcast)
 
 **Parameters**
 
