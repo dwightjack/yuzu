@@ -78,6 +78,6 @@
   },
   "dependencies": {
     "dush": "3.0.5",
-    "tsumami": "1.0.6"
+    "tsumami": "^1.0.0"
   }
 }
