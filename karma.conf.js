@@ -45,6 +45,10 @@ const baseConfig = {
 
     rollupPreprocessor: {
         plugins: [
+            require('rollup-plugin-babel')({ //eslint-disable-line
+                plugins: ['external-helpers', 'transform-flow-strip-types'],
+                exclude: 'node_modules/**'
+            }),
             require('rollup-plugin-alias')({ //eslint-disable-line
                 'tsumami/lib/events': path.resolve(__dirname, 'node_modules/tsumami/lib/events.js'),
                 'tsumami-real': path.resolve(__dirname, 'node_modules/tsumami/lib/dom.js'),
@@ -54,17 +58,16 @@ const baseConfig = {
                 preferBuiltins: false
             }),
             require('rollup-plugin-commonjs')(), //eslint-disable-line
-            require('rollup-plugin-babel')({ //eslint-disable-line
-                exclude: 'node_modules/**'
-            }),
             require('rollup-plugin-replace')({ //eslint-disable-line
                 'process.env.NODE_DEBUG': !production
             }),
             require('rollup-plugin-node-globals')() //eslint-disable-line
         ],
-        format: 'iife',               // Helps prevent naming collisions.
-        moduleName: 'Yuzu', // Required for 'iife' format.
-        sourceMap: 'inline'          // Sensible for testing.
+        output: {
+            format: 'iife',               // Helps prevent naming collisions.
+            name: 'Yuzu', // Required for 'iife' format.
+            sourcemap: 'inline'          // Sensible for testing.
+        }
     },
 
     // test results reporter to use

@@ -2,7 +2,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
-import bundlesize from 'rollup-plugin-bundle-size'
+import filesize from 'rollup-plugin-filesize'
 
 import { version, name, license, author, homepage } from './package.json';
 
@@ -16,36 +16,41 @@ const banner = `
 `;
 
 const plugins = [
+    babel({
+        plugins: ['external-helpers', 'transform-flow-strip-types'],
+        exclude: 'node_modules/**' // only transpile our source code
+    }),
     resolve({
         preferBuiltins: false
     }),
-    commonjs(),
-    babel({
-        exclude: 'node_modules/**' // only transpile our source code
-    })
+    commonjs()
 ];
 
 const baseConfig = {
-    entry: 'src/index.js',
-    format: 'umd',
-    moduleName: 'YZ',
+    input: 'src/index.js',
     amd: { id: 'yuzu' },
     external: ['tsumami', 'tsumami/lib/events'],
+    banner
+};
+
+const output = (file) => ({
+    file,
+    format: 'umd',
+    sourcemap: true,
+    name: 'YZ',
     globals: {
         tsumami: 'tsumami.dom',
         'tsumami/lib/events': 'tsumami'
-    },
-    banner,
-    sourceMap: true
-};
+    }
+});
 
 export default [
     Object.assign({
-        dest: 'umd/index.js',
-        plugins: [...plugins, bundlesize()]
+        output: output('umd/index.js'),
+        plugins: [...plugins, filesize()]
     }, baseConfig),
     Object.assign({
-        dest: 'umd/index.min.js',
+        output: output('umd/index.min.js'),
         plugins: [...plugins, uglify({
             warnings: false,
             mangle: true,
@@ -55,6 +60,6 @@ export default [
             output: {
                 beautify: false
             }
-        }), bundlesize()]
+        }), filesize()]
     }, baseConfig)
 ];

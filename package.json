@@ -26,17 +26,18 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "npm run test && npm run lint && npm run docs && npm run build:cjs && npm run build:es && cross-env NODE_ENV=production npm run build:umd",
-    "build:es": "rimraf es && cross-env BABEL_ENV=es babel ./src -d es --ignore umd.js",
+    "build:es": "rimraf es && babel ./src -d es --ignore umd.js",
     "build:cjs": "rimraf lib && cross-env BABEL_ENV=cjs babel ./src -d lib --ignore umd.js",
-    "build:umd": "rimraf umd && cross-env BABEL_ENV=rollup rollup -c rollup.config.js",
+    "build:umd": "rimraf umd && rollup -c rollup.config.js",
     "lint": "eslint test src flow-typed",
     "docs": "rimraf doc && node ./scripts/doc.js",
     "start": "node ./scripts/server.js",
-    "test": "cross-env BABEL_ENV=test karma start karma.conf.js --single-run --browsers PhantomJS",
-    "test:remote": "cross-env BABEL_ENV=test karma start karma.sauce.conf.js --single-run"
+    "test": "karma start karma.conf.js --single-run --browsers PhantomJS",
+    "test:remote": "karma start karma.sauce.conf.js --single-run"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
+    "babel-core": "6",
     "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-external-helpers": "6.22.0",
@@ -67,8 +68,8 @@
     "rollup": "0.53.0",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-babel": "3.0.3",
-    "rollup-plugin-bundle-size": "1.0.1",
     "rollup-plugin-commonjs": "8.2.6",
+    "rollup-plugin-filesize": "1.5.0",
     "rollup-plugin-node-globals": "1.1.0",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-replace": "2.0.0",
