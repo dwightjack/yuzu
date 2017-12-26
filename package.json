@@ -1,7 +1,7 @@
 {
   "name": "yuzu",
   "description": "Old school component management",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/dwightjack/yuzu",
   "author": "Marco Solazzi",
   "license": "MIT",
