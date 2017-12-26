@@ -468,8 +468,8 @@ export default class Component {
      * instance.setState('a', 1); //nothing happens
      * instance.setState('a', 2, true); //nothing happens, again...
      *
-     * // use the current state to calculate the next value
-     * instance.setState('count', ({ count }) => count + 1);
+     * // use the current state to calculate its next value
+     * instance.setState('a', ({ a }) => a + 1);
      */
     setState(key: string, newValue: any, silent?: boolean = false) {
         const val = typeof newValue !== 'function' ? newValue : newValue(this.state);
@@ -506,6 +506,10 @@ export default class Component {
      * If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
      *
      * @example
+     * const instance = new Component('#root');
+     *
+     * class ChildComponent extends Component {}
+     *
      * // as Constructor
      * instance.setRef({
      *  id: 'child',

@@ -13,8 +13,10 @@ type childIterator = (ctx: Component) => Array<any>;
 /**
  * Element array Iterator.
  *
- * Returns a function that iterates an iterator over an array of DOM elements.
- * DOM elements are selected from a CSS selector in the context of the passed-in parent's [`$el`](./component.md#$el) property.
+ * Accepts a CSS selector and an iterator function.
+ *
+ * Returns a function that accepts a parent component as first argument and iterates the iterator over an array of DOM elements.
+ * DOM elements are selected from the CSS selector in the context of the passed-in parent's [`$el`](./component.md#$el) property.
  *
  * @example
  * const parent = new ParentComponent('#list');
