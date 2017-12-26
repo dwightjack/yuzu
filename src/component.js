@@ -53,6 +53,28 @@ const UID_DATA_ATTR = 'data-yzid';
  * * [broadcast](./component.md#broadcast)
  *
  * @class
+ * @example
+ * import { Component } from 'yuzu';
+ *
+ * class Counter extends Component {
+ *
+ *   getInitialState() {
+ *      return { count: 0 };
+ *   }
+ *
+ *   created() {
+ *      this.increment = () => this.setState('count', ({ count}) => count + 1);
+ *      this.decrement = () => this.setState('count', ({ count}) => count - 1);
+ *   }
+ *
+ *   beforeInit() {
+ *      this.$ev.delegate(this.$el, '.add', this.increment);
+ *      this.$ev.delegate(this.$el, '.remove', this.decrement);
+ *   }
+ *
+ * }
+ *
+ * const counter = new Counter('#counter');
  */
 export default class Component {
 
@@ -437,19 +459,25 @@ export default class Component {
      * Sets a state property. If the new value is different from the old one it emits a `change:<property>` event.
      * To prevent this behavior set the 3rd argument to `true`
      *
+     * If the new value argument is a function, it will be executed with the current state as argument. The returned value will be used as new state value.
+     *
      * @example
      * instance.on('change:a', (next, prev) => console.log(next, prev));
      * instance.setState('a', 1); //emits 'change:a' -> logs undefined,1
      *
      * instance.setState('a', 1); //nothing happens
      * instance.setState('a', 2, true); //nothing happens, again...
+     *
+     * // use the current state to calculate the next value
+     * instance.setState('count', ({ count }) => count + 1);
      */
     setState(key: string, newValue: any, silent?: boolean = false) {
+        const val = typeof newValue !== 'function' ? newValue : newValue(this.state);
         const oldValue = this.getState(key);
-        if (oldValue !== newValue) {
-            this.state[key] = newValue;
+        if (oldValue !== val) {
+            this.state[key] = val;
             if (!silent) {
-                this.emit('change:' + key, newValue, oldValue);
+                this.emit('change:' + key, val, oldValue);
             }
         }
     }
