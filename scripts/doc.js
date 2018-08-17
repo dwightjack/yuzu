@@ -10,10 +10,10 @@ if (!fs.existsSync(dest)) {
 }
 
 glob
-  .sync('es/*.js', {
+  .sync('dist/*.js', {
     cwd: path.resolve(__dirname, '..'),
     absolute: true,
-    ignore: ['es/index.js'],
+    ignore: ['dist/index.js'],
   })
   .forEach((file) => {
     const filename = file

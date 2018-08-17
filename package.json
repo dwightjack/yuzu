@@ -38,7 +38,7 @@
     "build:umd": "rimraf umd && rollup -c rollup.config.js",
     "types": "rimraf typings && tsc --declaration --emitDeclarationOnly --declarationDir typings",
     "type-check": "tsc --noEmit --pretty",
-    "docs": "yarn build:es && rimraf doc && node ./scripts/doc.js",
+    "docs": "yarn build:cjs && rimraf doc && node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run"
   },
   "devDependencies": {
