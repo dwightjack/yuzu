@@ -11,6 +11,8 @@ export type childIterator<T = any> = (el: Element, index: number) => T;
  * Returns a function that accepts a parent component as first argument and iterates the iterator over an array of DOM elements.
  * DOM elements are selected from the CSS selector in the context of the passed-in parent's [`$el`](./component.md#$el) property.
  *
+ * @param {string} selector Elements CSS selector
+ * @param {function} fn Iterator function
  * @example
  * const parent = new ParentComponent('#list');
  * const iterator = (el, i) => new ChildComponent(el, { index: i });

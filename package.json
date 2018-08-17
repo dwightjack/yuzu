@@ -38,15 +38,18 @@
     "build:umd": "rimraf umd && rollup -c rollup.config.js",
     "types": "rimraf typings && tsc --declaration --emitDeclarationOnly --declarationDir typings",
     "type-check": "tsc --noEmit --pretty",
+    "docs": "yarn build:es && rimraf doc && node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.8",
     "core-js": "~2.5.7",
+    "documentation": "^8.1.0",
     "eslint": "~5.3.0",
     "eslint-config-prettier": "~3.0.1",
     "eslint-plugin-node": "~7.0.1",
     "eslint-plugin-prettier": "~2.6.2",
+    "fast-glob": "^2.2.2",
     "jasmine-core": "~3.2.1",
     "karma": "~3.0.0",
     "karma-chrome-launcher": "~2.2.0",
