@@ -6,6 +6,26 @@ JavaScript view libraries such as Vue and React are cool, but sometimes you just
 
 In those scenarios Yuzu can help you to keep your frontend application organized.
 
+<!-- TOC -->
+
+- [Installation](#installation)
+  - [as NPM package](#as-npm-package)
+  - [CDN delivered `<script>`](#cdn-delivered-script)
+- [Browser support](#browser-support)
+- [Basic usage](#basic-usage)
+  - [ES6+ usage](#es6-usage)
+  - [ES5 usage](#es5-usage)
+- [Example application](#example-application)
+- [Component State and update tracking](#component-state-and-update-tracking)
+  - [Tracking updates](#tracking-updates)
+- [Child components definition](#child-components-definition)
+  - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
+- [Functional composition](#functional-composition)
+- [API Documentation](#api-documentation)
+- [Contributing](#contributing)
+
+<!-- /TOC -->
+
 ## Installation
 
 ### as NPM package
@@ -28,11 +48,11 @@ add the following script tags before your code
 
 Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ.Component`, `YZ.Sandbox`, etc...)
 
-### Browser support
+## Browser support
 
 Although Yuzu is compiled to ES5, it uses some features available in ES6+. In order to make it work in older browsers you need to include in your scripts polyfills from the [core-js](https://www.npmjs.com/package/core-js) and [element-closest](https://www.npmjs.com/package/element-closest) packages.
 
-## Usage
+## Basic usage
 
 ### ES6+ usage
 
@@ -108,7 +128,282 @@ Counter.defaultOptions = function() {
 var counter = new Counter('#app');
 ```
 
-### Functional composition
+## Example application
+
+Here is a _Counter_ component example:
+
+```html
+<div class="Counter">
+  <span class="Counter__value"></span>
+  <div>
+    <button type="button" class="Counter__increment">Increment</button>
+    <button type="button" class="Counter__decrement">Decrement</button>
+  </div>
+</div>
+```
+
+```js
+import { Component } from 'yuzu';
+
+class Counter extends Component {
+  // Root element CSS selector
+  static root = '.Counter';
+
+  static defaultOptions = () => ({
+    label: 'Count',
+  });
+
+  // DOM management
+
+  selectors = {
+    increment: '.Counter__increment',
+    decrement: '.Counter__decrement',
+    value: '.Counter__value',
+  };
+
+  listeners = {
+    'click @increment': () => {
+      this.setState(({ count }) => ({ count: count + 1 }));
+    },
+    'click @decrement': () => {
+      this.setState(({ count }) => ({ count: count - 1 }));
+    },
+  };
+
+  // internal state management
+
+  state = {
+    count: 0,
+  };
+
+  actions = {
+    count: 'update',
+  };
+
+  // methods
+
+  update() {
+    const { count } = this.state;
+    const { label } = this.options;
+    this.$els.value.innerText = `${label}: ${count}`;
+  }
+}
+
+const counter = new Counter().mount(Counter.root);
+```
+
+**`root` (string)** is the root element CSS selector. It must be a static property and is required
+
+**`defaultOptions` (function)** returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static
+
+**`selectors` (object)** is used to set a reference to component's child elements. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
+If you need to access the component's root element use `this.$el`
+
+**`listeners` (object)** is a shortcut to set DOM event listeners on a given element. Each key has the following syntax:
+
+```
+eventName [CSS selector | @elementReference]
+```
+
+If the second part of the key starts with `@` a listener will be attached to the corresponding element referenced in `this.$els`. For example the key `click @increment` will attach a click listener to `this.$els.increment`
+
+Using just the event name will attach the listener to the component's root element.
+
+Event listeners are automatically removed when the component's `.destroy()` method is invoked.
+
+**`state` (object)** is the component's internal state
+
+**`actions` (object)** is a map listing functions to execute whenever the state property defined in the property key has changed. If the property value is a string it will search the corresponding method on the class.
+
+The function is invoked with the current and previous value as arguments.
+
+In the counter example above the `toggle` method is executed whenever the state's `expanded` value changes.
+
+## Component State and update tracking
+
+Every component has a `state` property that reflects the component's internal state.
+
+An initial state can be set as a class property or in the `created` lifecycle hook.
+**Note:** setting a property's initial state is the only way to allow subsequent updates to it.
+
+To update the state you use the `setState` method. The first argument is an object with the part of the state you wan to update:
+
+```js
+this.setState({ count: 1 });
+```
+
+If you want to compute the new state values from the previous ones, pass a function instead of an object:
+
+```js
+this.setState((prevState) => ({ count: prevState.count + 1 }));
+```
+
+### Tracking updates
+
+Every call to `setState` will emit a `change:<property>` event on the component for every property updated.
+
+```js
+this.on('change:count', (value, preValue) => {
+  console.log(`current: ${value}, (was ${prevValue})`);
+});
+this.setState({ count: 1 });
+// logs: `current: 1, (was 0)`
+```
+
+To track every change to the state attach a listener to the special `change:*` event. The event handler will receive as arguments the new state as well as the previous one.
+
+If you want to prevent change events to be emitted, pass a second argument `true` to `setState`
+
+## Child components definition
+
+In some scenarios you might need to control the lifecycle and state of components nested inside another component.
+
+In this case you can use the `.setRef` method to link a child component's instance to its parent.
+
+As bonus point, when the parent's `destroy` method is executed, every children's `destroy` method is called as well before tearing down the instance (`destroy` is an async method)
+
+A full example below
+
+```html
+<div class="Counter">
+  <span class="Text"></span>
+  <div>
+    <button type="button" class="Counter__increment">Increment</button>
+    <button type="button" class="Counter__decrement">Decrement</button>
+  </div>
+</div>
+```
+
+```js
+import Component from '@/components/Component';
+
+class Text extends Component {
+  static root = '.Text';
+
+  state = {
+    content: '',
+  };
+
+  actions = {
+    content(value) {
+      this.$el.textContent = value;
+    },
+  };
+}
+
+class Counter extends Component {
+  // Root element selector (required)
+  static root = '.Counter';
+
+  static defaultOptions = () => ({
+    label: 'Count',
+  });
+
+  // DOM management
+
+  selectors = {
+    increment: '.Counter__increment',
+    decrement: '.Counter__decrement',
+    text: '.Text',
+  };
+
+  listeners = {
+    'click @increment': () => {
+      this.setState(({ count }) => ({ count: count + 1 }));
+    },
+    'click @decrement': () => {
+      this.setState(({ count }) => ({ count: count - 1 }));
+    },
+  };
+
+  // internal state management
+
+  state = {
+    count: 0,
+  };
+
+  actions = {
+    count: 'update',
+  };
+
+  // set here the child reference
+  initialize() {
+    this.setRef({
+      id: 'text',
+      component: Text,
+      el: this.$els.text,
+    });
+  }
+
+  // methods
+
+  update() {
+    const { count } = this.state;
+    const { label } = this.options;
+    this.$refs.text.setState({ content: `${label}: ${count}` });
+  }
+}
+
+const counter = new Counter().mount(Counter.root);
+```
+
+### Child components' initial state and computed state
+
+`setRef` accepts a second argument which is an object used as the child component's initial state during initialization. If a property value is a function it will be used to compute the child state value. Changes to the parent state will be propagated to the child state as well.
+
+The `Counter` component above could be refactored like this
+
+```diff
+class Counter extends Component {
+  // ...
+
+-  actions = {
+-    count: 'update',
+-  }
+
+  initialize() {
+    this.setRef({
+      id: 'text',
+      component: Text,
+      el: this.$els.text,
+-    })
++    }, {
++      content: ({ count }) => `${this.options.label}: ${count}`
++    })
+  }
+
+-  update() {
+-    const { count } = this.state
+-    const { label } = this.options
+-    this.$refs.text.setState({ content: `${label}: ${count}` })
+-  }
+}
+```
+
+The function associated to `content` will receive the parent state and the child instance reference as first and second argument.
+
+**Note:** `Component` is not able to guess which properties are involved during the computation so it will listen for every state change and propagate that change to the child component.
+
+While this is pretty fine (and necessary) when computing a state property from multiple parent's state properties, it could raise edge cases and performance issues.
+
+To mitigate this problem you can leverage the special `from>to`syntax to create a one to one mapping between child and parent properties:
+
+```diff
+  initialize() {
+    this.setRef({
+      id: 'text',
+      component: Text,
+      el: this.$els.text,
+    }, {
+-      content: ({ count }) => `${this.options.label}: ${count}`
++      'count>content': (value) => `${this.options.label}: ${value}`
+    })
+  }
+```
+
+The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes to that property.
+
+## Functional composition
 
 To compose nested components you can simply use parent's [`setRef`](doc/component.md#setref) method to register child components:
 
@@ -156,7 +451,7 @@ const galleryTree = mount(
 const gallery = galleryTree();
 ```
 
-## Documentation
+## API Documentation
 
 - [Component](doc/component.md)
 - [Children](doc/children.md)
