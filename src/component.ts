@@ -28,6 +28,10 @@ const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 // tslint:disable-next-line: interface-name no-empty-interface
 export interface Component extends Idush {}
 
+/**
+ * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
+ * @class
+ */
 export class Component implements Idush {
   public static root?: string;
 

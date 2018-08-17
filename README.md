@@ -20,6 +20,13 @@ In those scenarios Yuzu can help you to keep your frontend application organized
   - [Tracking updates](#tracking-updates)
 - [Child components definition](#child-components-definition)
   - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
+- [API summary](#api-summary)
+  - [Lifecycle methods](#lifecycle-methods)
+  - [State management](#state-management)
+  - [Lifecycle hooks](#lifecycle-hooks)
+  - [Event bus](#event-bus)
+  - [Child management methods](#child-management-methods)
+- [Lifecycle diagram](#lifecycle-diagram) - [Stage: _create_](#stage-_create_) - [Stage: _mount_](#stage-_mount_) - [Sub-stage: _init_](#sub-stage-_init_) - [Stage: _destroy_](#stage-_destroy_)
 - [Functional composition](#functional-composition)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
@@ -402,6 +409,75 @@ To mitigate this problem you can leverage the special `from>to`syntax to create 
 ```
 
 The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes to that property.
+
+## API summary
+
+### Lifecycle methods
+
+- `init` Initializes the component with state
+- `mount` Mounts a component instance onto a DOM element and initializes it
+- `destroy` Unmounts a component and its children (_async_)
+
+### State management
+
+- `getState` Returns a value from the state
+- `setState` Updates the internal state
+
+### Lifecycle hooks
+
+- `created` instance created
+- `beforeMount` before mounting onto the DOM
+- `mounted` mounted onto the DOM
+- `initialize` just before component actions evaluation
+- `ready` instance fully initialized
+- `beforeDestroy` just before tearing down the instance (_async_)
+
+### Event bus
+
+- `on`
+- `off`
+- `emit`
+
+See [dush](https://github.com/tunnckocore/dush) for details
+
+### Child management methods
+
+- `setRef` (_async_)
+- `broadcast`
+
+## Lifecycle diagram
+
+#### Stage: _create_
+
+```js
+const inst = new Component();
+```
+
+- sets: `this.options`
+- calls hook: `created`
+
+#### Stage: _mount_
+
+```js
+inst.mount('#el');
+```
+
+- sets: event listeners and `this.$els` references
+
+##### Sub-stage: _init_
+
+- calls hook: `initialize`
+- sets: actions, state
+- calls hooks: `ready`, `mounted`
+
+#### Stage: _destroy_
+
+```js
+inst.destroy();
+```
+
+- calls hook: `beforeDestroy`
+- destroys child component, listeners, DOM listeners
 
 ## Functional composition
 
