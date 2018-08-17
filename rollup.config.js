@@ -1,65 +1,78 @@
-import commonjs from 'rollup-plugin-commonjs';
-import resolve from 'rollup-plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
-import filesize from 'rollup-plugin-filesize'
+const path = require('path');
+const commonjs = require('rollup-plugin-commonjs');
+const resolve = require('rollup-plugin-node-resolve');
+const typescript = require('rollup-plugin-typescript2');
+const { uglify } = require('rollup-plugin-uglify');
+const replace = require('rollup-plugin-replace');
+const filesize = require('rollup-plugin-filesize');
 
-import { version, name, license, author, homepage } from './package.json';
+const { version, name, license, author, homepage } = require('./package.json');
 
 const banner = `
-/**!
- * ${name} - v${version}
+/*! ${name} - v${version}
  * ${homepage}
- * Copyright (c) ${(new Date().getFullYear())} - ${author};
- * @license Licensed ${license}
+ * Copyright (c) ${new Date().getFullYear()} - ${author};
+ * Licensed ${license}
  */
 `;
 
 const plugins = [
-    babel({
-        plugins: ['external-helpers', 'transform-flow-strip-types'],
-        exclude: 'node_modules/**' // only transpile our source code
-    }),
-    resolve({
-        preferBuiltins: false
-    }),
-    commonjs()
+  resolve(),
+  commonjs(),
+  typescript({
+    tsconfig: path.join(__dirname, 'tsconfig.json'),
+    typescript: require('typescript'),
+    exclude: 'node_modules/**',
+    tsconfigOverride: {
+      compilerOptions: {
+        module: 'ES2015',
+      },
+    },
+  }),
 ];
 
-const baseConfig = {
-    input: 'src/index.js',
-    amd: { id: 'yuzu' },
-    external: ['tsumami', 'tsumami/lib/events'],
-    banner
-};
+const output = (obj) =>
+  Object.assign(
+    {
+      format: 'umd',
+      name: 'MyLib',
+      sourcemap: true,
+      banner,
+    },
+    obj,
+  );
 
-const output = (file) => ({
-    file,
-    format: 'umd',
-    sourcemap: true,
-    name: 'YZ',
-    globals: {
-        tsumami: 'tsumami.dom',
-        'tsumami/lib/events': 'tsumami'
-    }
-});
-
-export default [
-    Object.assign({
-        output: output('umd/index.js'),
-        plugins: [...plugins, filesize()]
-    }, baseConfig),
-    Object.assign({
-        output: output('umd/index.min.js'),
-        plugins: [...plugins, uglify({
-            warnings: false,
-            mangle: true,
-            compress: {
-                pure_funcs: ['classCallCheck']
-            },
-            output: {
-                beautify: false
-            }
-        }), filesize()]
-    }, baseConfig)
+module.exports = [
+  {
+    input: './src/index.ts',
+    output: output({ file: './umd/index.js' }),
+    plugins: [
+      replace({
+        'process.env.NODE_ENV': JSON.stringify('development'),
+      }),
+      ...plugins,
+      filesize(),
+    ],
+  },
+  {
+    input: './src/index.ts',
+    output: output({ file: './umd/index.min.js' }),
+    plugins: [
+      replace({
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+      ...plugins,
+      uglify({
+        warnings: false,
+        mangle: true,
+        compress: {
+          pure_funcs: ['warn'],
+        },
+        output: {
+          comments: /^!/,
+        },
+      }),
+      filesize(),
+    ],
+  },
 ];

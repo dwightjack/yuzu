@@ -1,7 +1,17 @@
-// @flow
-import { qs } from 'tsumami';
+import { qs } from './utils';
+import { Component } from './component';
+import { isElement } from './utils';
+import { childIterator, Children } from './children';
+import { IObject, IState, IRefConstructor } from '../types/yuzu';
 
-import type Component from './component';
+export type mounterFn = (ctx: Component) => Component;
+
+export interface IMountProps extends IObject {
+  state?: IState;
+  id?: string;
+}
+
+export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
 
 /**
  * `mount` is an helper function to setup trees of components in a functional way.
@@ -115,41 +125,45 @@ import type Component from './component';
  * const list = tree({ currentItem: 0 })
  * ```
  */
-const mount = function mount(
-    ComponentConstructor: Class<Component>,
-    el: Element | string,
-    options?: optionsType & { props?: { [prop_id: string]: string}},
-    children?: Function | Function[]
-): Function {
+export function mount(
+  ComponentConstructor: typeof Component,
+  el: HTMLElement,
+  props: IMountProps = {},
+  children: mountChildren,
+) {
+  const { state = {}, id, ...options } = props;
+  const component = new ComponentConstructor(options);
 
-    const component = new ComponentConstructor(undefined, options || {});
+  return function mounter(ctx: Component) {
+    const root =
+      typeof el === 'string' && ctx ? qs(el, ctx.$el as Element) : el;
 
-    return function mounter(state?: stateType, ctx?: Component): Component {
+    if (isElement(root)) {
+      component.mount(root, ctx ? null : state);
+    }
 
-        const root = typeof el === 'string' && ctx ? qs(el, ctx.$el) : el;
+    if (ctx) {
+      ctx.setRef(
+        {
+          el,
+          component: ComponentConstructor,
+          id: id || `${component.$uid}__ref`,
+        },
+        state,
+      );
+    }
 
-        component.mount(root);
+    const childrenList = Array.isArray(children) ? children : [];
 
-        if (!ctx) {
-            component.init(state);
-        }
+    if (typeof children === 'function') {
+      childrenList.push(...children(component));
+    }
 
-        const childrenList: Function[] = Array.isArray(children) ? children : [];
+    for (let i = 0, l = childrenList.length; i < l; i += 1) {
+      const child = childrenList[i];
+      child(component);
+    }
 
-        if (typeof children === 'function') {
-            childrenList.push(...children(component));
-        }
-
-        for (let i = 0, l = childrenList.length; i < l; i++) { //eslint-disable-line no-plusplus
-            const child = childrenList[i];
-            const inst = child(undefined, component);
-            const { id, props } = inst.options;
-
-            component.setRef({ component: inst, id: (id || `${component._uid}__${i}`), props });
-        }
-
-        return component;
-    };
-};
-
-export default mount;
+    return component;
+  };
+}
