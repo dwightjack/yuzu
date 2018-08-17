@@ -12,6 +12,7 @@
   "files": [
     "dist",
     "es",
+    "src",
     "types",
     "umd",
     "typings"
