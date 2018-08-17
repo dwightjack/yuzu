@@ -1,4 +1,5 @@
 dist
 es
 umd
+tmp
 node_modules

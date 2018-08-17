@@ -16,7 +16,7 @@ Returns a sequential uid
 
 ### Parameters
 
--   `prefix`  
+-   `prefix`   (optional, default `UID_PREFIX`)
 
 ## isObjectLike
 
@@ -61,7 +61,7 @@ Parses an element's `dataset` with optional filtering
 ### Parameters
 
 -   `el`  
--   `matcher` **[RegExp][2]?** Optional matcher to filter dataset by key
+-   `matcher` **[RegExp][2]?** Optional matcher to filter dataset by key (optional, default `INLINE_STATE_REGEXP`)
 
 Returns **[object][3]** 
 

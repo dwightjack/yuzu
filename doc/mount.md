@@ -117,7 +117,7 @@ const list = tree({ currentItem: 0 })
 
 -   `ComponentConstructor`  
 -   `el`  
--   `props`  
+-   `props`   (optional, default `{}`)
 -   `children`  
 
 [1]: ./component.md#create

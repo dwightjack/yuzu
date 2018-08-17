@@ -8,3 +8,4 @@ examples
 karma*.conf.js
 rollup.*
 .rpt2_cache
+tmp
