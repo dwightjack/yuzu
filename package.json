@@ -53,6 +53,7 @@
     "jasmine-core": "~3.2.1",
     "karma": "~3.0.0",
     "karma-chrome-launcher": "~2.2.0",
+    "karma-html2js-preprocessor": "^1.1.0",
     "karma-jasmine": "~1.1.2",
     "karma-typescript": "~3.0.13",
     "karma-typescript-es6-transform": "~1.0.4",

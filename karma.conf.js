@@ -13,11 +13,21 @@ module.exports = (config) => {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine', 'karma-typescript'],
 
-    files: ['src/*.ts', 'test/**/*.spec.ts'],
+    files: [
+      'test/__fixtures__/*.html',
+      'src/*.ts',
+      'test/utils.ts',
+      'test/**/*.spec.ts',
+    ],
+
+    html2JsPreprocessor: {
+      stripPrefix: 'test/__fixtures__/',
+    },
 
     preprocessors: {
       // add webpack as preprocessor
       '**/*.ts': 'karma-typescript',
+      '**/*.html': 'html2js',
     },
 
     karmaTypescriptConfig: {

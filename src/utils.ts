@@ -77,8 +77,11 @@ export const evaluate = <T = any>(
 };
 
 export const bindMethod = (ctx: any, method: string | fn): fn => {
-  if (typeof method === 'string' && typeof ctx[method] === 'function') {
-    return (...args: any[]) => ctx[method](...args);
+  if (typeof method === 'string') {
+    if (typeof ctx[method] === 'function') {
+      return (...args: any[]) => ctx[method](...args);
+    }
+    throw new TypeError(`Property ${method} should be a function`);
   }
   return (method as fn).bind(ctx);
 };
