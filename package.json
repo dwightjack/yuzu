@@ -29,15 +29,11 @@
   ],
   "types": "typings/index.d.ts",
   "scripts": {
-    "prepublishOnly": "npm run build:all",
-    "build:all": "yarn lint && yarn type-check && yarn types && yarn build:cjs && yarn build:es && yarn build:umd",
+    "prepublishOnly": "npm run release",
+    "release": "yarn lint && yarn types && yarn docs && yarn bundle",
     "lint": "tslint ./src/**/*.ts",
-    "build:cjs": "rimraf dist && tsc",
-    "build:es": "rimraf es && tsc --outDir es --module ES2015",
-    "build:umd": "rimraf umd && rollup -c rollup.config.js",
     "bundle": "rimraf dist && rollup -c rollup.config.js",
     "types": "rimraf typings && tsc --declaration --emitDeclarationOnly --declarationDir typings",
-    "type-check": "tsc --noEmit --pretty",
     "docs": "rimraf tmp && tsc --outDir tmp --module ES2015 --target es2017 && rimraf doc && node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run"
   },
