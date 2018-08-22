@@ -20,22 +20,27 @@ const plugins = [
   resolve(),
   commonjs(),
   typescript({
-    tsconfig: path.join(__dirname, 'tsconfig.json'),
+    tsconfig: path.join(__dirname, 'tsconfig.rollup.json'),
     typescript: require('typescript'),
     exclude: 'node_modules/**',
-    tsconfigOverride: {
-      compilerOptions: {
-        module: 'ES2015',
-      },
-    },
   }),
 ];
+
+const cwd = process.cwd();
+const file = (filepath) => path.resolve(cwd, filepath);
+let pkg = {};
+
+try {
+  pkg = require(path.resolve(cwd, 'package.json'));
+} catch (e) {
+  console.warn(e);
+}
+
+const external = Object.keys(pkg.dependencies || {});
 
 const output = (obj) =>
   Object.assign(
     {
-      format: 'umd',
-      name: 'MyLib',
       sourcemap: true,
       banner,
     },
@@ -45,7 +50,11 @@ const output = (obj) =>
 module.exports = [
   {
     input: './src/index.ts',
-    output: output({ file: './umd/index.js' }),
+    output: [
+      output({ file: file(pkg.main), format: 'cjs' }),
+      output({ file: file(pkg.module), format: 'esm' }),
+    ],
+    external,
     plugins: [
       replace({
         'process.env.NODE_ENV': JSON.stringify('development'),
@@ -56,7 +65,16 @@ module.exports = [
   },
   {
     input: './src/index.ts',
-    output: output({ file: './umd/index.min.js' }),
+    output: output({
+      file: file(pkg.unpkg),
+      format: 'umd',
+      name: pkg.amdName,
+      extend: true,
+      globals: {
+        dush: 'dush',
+      },
+    }),
+    external,
     plugins: [
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),

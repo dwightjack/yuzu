@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "lib": ["es2017", "dom"]
+  }
+}
