@@ -6,27 +6,33 @@ const { uglify } = require('rollup-plugin-uglify');
 const replace = require('rollup-plugin-replace');
 const filesize = require('rollup-plugin-filesize');
 
-const { version, name, license, author, homepage } = require('./package.json');
-
-const banner = `
-/*! ${name} - v${version}
- * ${homepage}
- * Copyright (c) ${new Date().getFullYear()} - ${author};
- * Licensed ${license}
+const banner = (pkg) => `
+/*! ${pkg.name} - v${pkg.version}
+ * ${pkg.homepage}
+ * Copyright (c) ${new Date().getFullYear()} - ${pkg.author};
+ * Licensed ${pkg.license}
  */
 `;
+
+const cwd = process.cwd();
 
 const plugins = [
   resolve(),
   commonjs(),
   typescript({
-    tsconfig: path.join(__dirname, 'tsconfig.rollup.json'),
+    tsconfig: path.join(__dirname, '../tsconfig.rollup.json'),
     typescript: require('typescript'),
     exclude: 'node_modules/**',
+    useTsconfigDeclarationDir: true,
+    tsconfigDefaults: {
+      compilerOptions: {
+        baseUrl: cwd,
+        typeRoots: ['./types', path.resolve(cwd, '../../node_modules/@types')],
+      },
+    },
   }),
 ];
 
-const cwd = process.cwd();
 const file = (filepath) => path.resolve(cwd, filepath);
 let pkg = {};
 
@@ -42,17 +48,16 @@ const output = (obj) =>
   Object.assign(
     {
       sourcemap: true,
-      banner,
     },
     obj,
   );
 
-module.exports = [
+module.exports = (pkg) => [
   {
     input: './src/index.ts',
     output: [
-      output({ file: file(pkg.main), format: 'cjs' }),
-      output({ file: file(pkg.module), format: 'esm' }),
+      output({ file: file(pkg.main), format: 'cjs', banner: banner(pkg) }),
+      output({ file: file(pkg.module), format: 'esm', banner: banner(pkg) }),
     ],
     external,
     plugins: [
@@ -70,6 +75,7 @@ module.exports = [
       format: 'umd',
       name: pkg.amdName,
       extend: true,
+      banner: banner(pkg),
       globals: {
         dush: 'dush',
       },

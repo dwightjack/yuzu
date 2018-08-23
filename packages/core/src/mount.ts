@@ -1,8 +1,6 @@
-import { qs } from './utils';
+import { qs, isElement } from '@yuzu/utils';
 import { Component } from './component';
-import { isElement } from './utils';
-import { childIterator, Children } from './children';
-import { IObject, IState, IRefConstructor } from '../types/yuzu';
+import { IObject, IState } from '../types';
 
 export type mounterFn = (ctx: Component) => Component;
 

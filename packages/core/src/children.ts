@@ -1,4 +1,4 @@
-import { qsa } from './utils';
+import { qsa } from '@yuzu/utils';
 import { Component } from './component';
 
 export type childIterator<T = any> = (el: Element, index: number) => T;

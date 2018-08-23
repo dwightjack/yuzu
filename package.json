@@ -1,6 +1,7 @@
 {
   "name": "yuzu",
   "description": "Old school component management",
+  "private": true,
   "version": "2.0.0",
   "license": "MIT",
   "homepage": "https://github.com/dwightjack/yuzu",
@@ -10,11 +11,8 @@
   "jsnext:main": "dist/index.m.js",
   "module": "dist/index.m.js",
   "amdName": "YZ",
-  "files": [
-    "dist",
-    "src",
-    "types",
-    "typings"
+  "workspaces": [
+    "packages/*"
   ],
   "engines": {
     "node": ">=8.9.0"
@@ -24,16 +22,12 @@
     "url": "https://github.com/dwightjack/yuzu.git"
   },
   "bugs": "https://github.com/dwightjack/yuzu/issues",
-  "keywords": [
-    "component"
-  ],
-  "types": "typings/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm run release",
     "release": "yarn lint && yarn types && yarn docs && yarn bundle",
     "lint": "tslint ./src/**/*.ts",
-    "bundle": "rimraf dist && rollup -c rollup.config.js",
-    "types": "rimraf typings && tsc --declaration --emitDeclarationOnly --declarationDir typings",
+    "bundle": "lerna run bundle",
+    "types": "lerna run types",
     "docs": "rimraf tmp && tsc --outDir tmp --module ES2015 --target es2017 && rimraf doc && node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run"
   },

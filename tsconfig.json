@@ -10,8 +10,13 @@
     "declaration": false,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "lib": ["es2017", "dom"]
+    "lib": ["es2017", "dom"],
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "baseUrl": "./",
+    "paths": {
+      "@yuzu/*": ["packages/*"]
+    }
   },
-  "include": ["./src/**/*", "./types/**/*"],
+  "include": ["./packages/*/src/**/*", "./types/**/*"],
   "exclude": ["node_modules"]
 }

@@ -1,0 +1,34 @@
+{
+  "name": "@yuzu/core",
+  "description": "Yuzu Core Component",
+  "version": "2.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/core",
+  "author": "Marco Solazzi",
+  "unpkg": "dist/index.umd.js",
+  "main": "dist/index.js",
+  "jsnext:main": "dist/index.m.js",
+  "module": "dist/index.m.js",
+  "amdName": "YZ",
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "files": [
+    "src",
+    "dist",
+    "types"
+  ],
+  "types": "./src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dwightjack/yuzu.git"
+  },
+  "bugs": "https://github.com/dwightjack/yuzu/issues",
+  "scripts": {
+    "bundle": "rimraf dist && rollup -c rollup.config.js"
+  },
+  "dependencies": {
+    "@yuzu/utils": "^2.0.0",
+    "dush": "^3.0.0"
+  }
+}

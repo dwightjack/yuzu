@@ -1,5 +1,4 @@
 import dush, { Idush } from 'dush';
-import { qs } from './utils';
 
 import {
   nextUid,
@@ -7,7 +6,8 @@ import {
   isPlainObject,
   evaluate,
   bindMethod,
-} from './utils';
+  qs,
+} from '@yuzu/utils';
 
 import {
   IObject,
@@ -19,7 +19,7 @@ import {
   IRefFactory,
   eventHandlerFn,
   stateUpdaterFn,
-} from '../types/yuzu';
+} from '../types';
 
 const UID_DATA_ATTR = 'data-cid';
 

@@ -1,4 +1,4 @@
-import { fn, IObject } from '../types/yuzu';
+import { fn, IObject } from '@yuzu/core/types';
 /**
  * uid prefix
  *
