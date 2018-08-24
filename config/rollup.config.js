@@ -42,7 +42,10 @@ try {
   console.warn(e);
 }
 
-const external = Object.keys(pkg.dependencies || {});
+const external = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {}),
+];
 
 const output = (obj) =>
   Object.assign(
@@ -52,7 +55,7 @@ const output = (obj) =>
     obj,
   );
 
-module.exports = (pkg) => [
+module.exports = (pkg, globals) => [
   {
     input: './src/index.ts',
     output: [
@@ -76,9 +79,12 @@ module.exports = (pkg) => [
       name: pkg.amdName,
       extend: true,
       banner: banner(pkg),
-      globals: {
-        dush: 'dush',
-      },
+      globals: Object.assign(
+        {
+          dush: 'dush',
+        },
+        globals,
+      ),
     }),
     external,
     plugins: [

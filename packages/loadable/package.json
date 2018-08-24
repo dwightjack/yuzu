@@ -1,28 +1,30 @@
 {
-  "name": "@yuzu/core",
-  "description": "Yuzu Core Component",
+  "name": "@yuzu/loadable",
+  "description": "Yuzu Async Component Loader",
   "version": "2.0.0",
   "license": "MIT",
-  "homepage": "https://github.com/dwightjack/yuzu/packages/core",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/loadable",
   "author": "Marco Solazzi",
   "unpkg": "dist/index.umd.js",
   "main": "dist/index.js",
   "jsnext:main": "dist/index.m.js",
   "module": "dist/index.m.js",
   "amdName": "YZ",
-  "engines": {
-    "node": ">=8.9.0"
-  },
   "publishConfig": {
     "access": "public"
   },
+  "engines": {
+    "node": ">=8.9.0"
+  },
   "files": [
     "src",
-    "dist",
-    "types"
+    "dist"
   ],
   "keywords": [
-    "component"
+    "async",
+    "lazy",
+    "loadable",
+    "yuzu"
   ],
   "types": "./src/index.ts",
   "repository": {
@@ -33,8 +35,10 @@
   "scripts": {
     "bundle": "rimraf dist && rollup -c rollup.config.js"
   },
+  "peerDependencies": {
+    "@yuzu/core": "^2.0.0"
+  },
   "dependencies": {
-    "@yuzu/utils": "^2.0.0",
-    "dush": "^3.0.0"
+    "@yuzu/utils": "^2.0.0"
   }
 }

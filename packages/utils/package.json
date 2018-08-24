@@ -9,14 +9,21 @@
   "main": "dist/index.js",
   "jsnext:main": "dist/index.m.js",
   "module": "dist/index.m.js",
-  "amdName": "YZ",
+  "amdName": "YZ.Utils",
   "engines": {
     "node": ">=8.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "src",
     "dist",
     "types"
+  ],
+  "keywords": [
+    "yuzu",
+    "utilities"
   ],
   "repository": {
     "type": "git",

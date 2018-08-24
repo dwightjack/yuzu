@@ -1,6 +1,6 @@
 import { noop, isElement, evaluate } from '@yuzu/utils';
-import { Component } from './component';
-import { IObject } from '../types';
+import { Component } from '@yuzu/core';
+import { IObject } from '@yuzu/core/types';
 
 export interface ILoadableOptions {
   component: typeof Component;

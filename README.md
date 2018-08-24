@@ -57,7 +57,9 @@ Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ
 
 ## Browser support
 
-Although Yuzu is compiled to ES5, it uses some features available in ES6+. In order to make it work in older browsers you need to include in your scripts polyfills from the [core-js](https://www.npmjs.com/package/core-js) and [element-closest](https://www.npmjs.com/package/element-closest) packages.
+Although Yuzu is compiled to ES5, it uses some features available in ES6+. In order to make it work in older browsers you need to include polyfills from the [core-js](https://www.npmjs.com/package/core-js) and [element-closest](https://www.npmjs.com/package/element-closest) packages.
+
+If you're using Babel + Webpack, you can install [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add import it at the top of your entry point.
 
 ## Basic usage
 

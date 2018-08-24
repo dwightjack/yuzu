@@ -10,6 +10,9 @@
   "jsnext:main": "dist/index.m.js",
   "module": "dist/index.m.js",
   "amdName": "YZ.Application",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8.9.0"
   },
@@ -17,6 +20,12 @@
     "src",
     "dist",
     "types"
+  ],
+  "keywords": [
+    "yuzu",
+    "sandbox",
+    "context",
+    "application"
   ],
   "types": "./src/index.ts",
   "repository": {
@@ -31,7 +40,8 @@
     "@yuzu/core": "^2.0.0"
   },
   "dependencies": {
-    "@yuzu/utils": "^2.0.0"
+    "@yuzu/utils": "^2.0.0",
+    "dush": "^3.0.0"
   },
   "devDependencies": {
     "@yuzu/core": "^2.0.0"
