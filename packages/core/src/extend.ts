@@ -1,8 +1,8 @@
 import { Component } from './component';
 
-export const create = (
+export const extend = (
+  parent: typeof Component,
   props: { [key: string]: any } = {},
-  parent = Component,
 ) => {
   const child = props.hasOwnProperty('constructor')
     ? props.constructor

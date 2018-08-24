@@ -115,10 +115,10 @@ const counter = new Counter('#app');
 
 ### ES5 usage
 
-In development environments that don't support `extends` (such as ES5), you can use the static `Component.create` method to achieve the same result:
+In development environments that don't support `extends` (such as ES5), you can use the static `YZ.extend` function to achieve the same result:
 
 ```js
-var Counter = YZ.Component.create({
+var Counter = YZ.extend(Component, {
   created: function() {
     this.state = {
       count: 0,
