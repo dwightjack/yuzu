@@ -6,8 +6,8 @@ export const extend = (
 ) => {
   const child = props.hasOwnProperty('constructor')
     ? props.constructor
-    : function ChildConstructor(...args: any[]) {
-        return parent.apply(parent, ...args);
+    : function ChildConstructor(this: Component, ...args: any[]) {
+        return parent.apply(this, args);
       };
 
   // https://github.com/mridgway/hoist-non-react-statics/blob/master/index.js#L51

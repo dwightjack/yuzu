@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Component ES5</title>
+</head>
+
+<body>
+
+  <div id="app">
+    <input type="text" class="input">
+    <p class="status"></p>
+  </div>
+
+  <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
+  <script src="../packages/utils/dist/index.umd.js"></script>
+  <script src="../packages/core/dist/index.umd.js"></script>
+  <script>
+    (function () {
+      var App = YZ.extend(YZ.Component, {
+        created: function () {
+          this.selectors = {
+            input: '.input',
+            status: '.status'
+          }
+
+          this.state = {
+            message: ''
+          }
+
+          this.listeners = {
+            'keydown @input': function (e) {
+              this.setState({message: e.currentTarget.value})
+            }
+          }
+
+          this.actions = {
+            message: 'update'
+          }
+        },
+
+        update: function () {
+          this.$els.status.textContent = this.state.message
+        }
+      })
+
+      window.app = new App().mount('#app')
+
+    }())
+  </script>
+</body>
+
+</html>
