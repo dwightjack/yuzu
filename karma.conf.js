@@ -3,7 +3,7 @@ process.env.CHROME_BIN = require('puppeteer').executablePath();
 module.exports = (config) => {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: './',
 
     browsers: ['ChromeHeadless'],
 
@@ -14,18 +14,19 @@ module.exports = (config) => {
     frameworks: ['jasmine', 'karma-typescript'],
 
     files: [
-      'test/__fixtures__/*.html',
-      'src/*.ts',
-      'test/utils.ts',
-      'test/**/*.spec.ts',
+      'shared/utils.ts',
+      'shared/__fixtures__/*.html',
+      'packages/*/src/*.ts',
+      'packages/*/test/*.spec.ts',
     ],
 
     html2JsPreprocessor: {
-      stripPrefix: 'test/__fixtures__/',
+      processPath: function(filePath) {
+        return (filePath.match(/.+?\/__fixtures__\/(.+)/) || [])[1];
+      },
     },
 
     preprocessors: {
-      // add webpack as preprocessor
       '**/*.ts': 'karma-typescript',
       '**/*.html': 'html2js',
     },
@@ -35,11 +36,11 @@ module.exports = (config) => {
       tsconfig: './tsconfig.json',
       include: {
         mode: 'merge',
-        values: ['./test/**/*'],
+        values: ['packages/*/test/*.spec.ts'],
       },
       remapOptions: {
         //warnMissingSourceMaps: false //not supported by currently included remap-istanbul
-        warn(warning) {
+        warn: function(warning) {
           if (
             warning &&
             !/^Could not find source map for/.test(warning.message)
@@ -49,6 +50,7 @@ module.exports = (config) => {
         },
       },
       bundlerOptions: {
+        exclude: ['@yuzu/core/types'],
         transforms: [require('karma-typescript-es6-transform')()],
       },
     },

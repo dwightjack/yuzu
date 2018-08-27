@@ -1,5 +1,5 @@
-import * as utils from '../src/utils';
-import { mount } from './utils';
+import * as utils from '../src/index';
+import { mount } from '../../../shared/utils';
 
 describe('`Utils`', () => {
   describe('`noop`', () => {
