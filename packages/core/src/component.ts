@@ -19,6 +19,7 @@ import {
   IRefFactory,
   eventHandlerFn,
   stateUpdaterFn,
+  ReadyStateFn,
 } from '../types';
 
 const UID_DATA_ATTR = 'data-cid';
@@ -76,6 +77,7 @@ export class Component implements Idush {
 
   public $refsStore: Map<string, Component>;
   public $listeners: Map<eventHandlerFn, IListener>;
+  public readyState?: ReadyStateFn;
 
   /**
    * Component constructor
@@ -226,6 +228,18 @@ export class Component implements Idush {
     this.replaceState(initialState);
 
     this.$active = true;
+
+    if (this.readyState) {
+      // is it a promise ?
+      const watcher = (current: IState, prev: IState) => {
+        if ((this.readyState as ReadyStateFn)(current, prev)) {
+          this.off('change:*', watcher);
+          this.ready();
+        }
+      };
+      this.on('change:*', watcher);
+      return this;
+    }
 
     this.ready();
 
@@ -482,7 +496,7 @@ export class Component implements Idush {
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
 
     if (Component.isComponent(ChildComponent) && el) {
-      ref = new ChildComponent(options).mount(el, null);
+      ref = new ChildComponent(options);
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
     } else if (typeof ChildComponent === 'function' && el) {
@@ -515,6 +529,11 @@ export class Component implements Idush {
     const prevRef = $refs[id];
     const refState: IState = {};
     $refs[id] = ref;
+    this.$refsStore.set(id, ref);
+
+    if (!ref.$el && el) {
+      ref.mount(el, null);
+    }
 
     if (props) {
       Object.entries(props).forEach(([name, value]) => {
@@ -556,9 +575,6 @@ export class Component implements Idush {
     if (ref.$el && !$el.contains(ref.$el)) {
       $el.appendChild(ref.$el);
     }
-
-    this.$refsStore.set(id, ref);
-
     return ref.init(refState);
   }
 

@@ -37,3 +37,4 @@ export interface IRefFactory<T> {
 export type fn = (...args: any[]) => any;
 export type eventHandlerFn = (e: Event, ...args: any[]) => void;
 export type stateUpdaterFn<T = IState> = (state: T) => Partial<T>;
+export type ReadyStateFn = (current: IState, prev: IState) => boolean;
