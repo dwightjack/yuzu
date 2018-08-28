@@ -63,12 +63,12 @@ export class Component implements Idush {
 
   public $active: boolean;
 
+  public $el!: Element;
+  public el!: Element;
+  public $uid!: string;
   public $els: { [key: string]: Element | null };
   public $refs: { [key: string]: Component };
   public state: IState;
-  public $el?: Element | null;
-  public el?: Element | null;
-  public $uid?: string;
   public $context?: IObject;
 
   public selectors?: IObject<string>;
@@ -147,19 +147,21 @@ export class Component implements Idush {
       throw new Error('Component is already mounted');
     }
 
-    this.el = this.$el = typeof el === 'string' ? qs(el) : el; // eslint-disable-line no-multi-assign
+    const $el = typeof el === 'string' ? qs(el) : el;
 
-    if (!isElement(this.$el)) {
+    if (!isElement($el)) {
       // fail silently (kinda...);
-      console.warn('Element is not a DOM element', this.$el); // tslint:disable-line no-console
+      console.warn('Element is not a DOM element', $el); // tslint:disable-line no-console
       return this;
     }
+
+    this.el = this.$el = $el; // eslint-disable-line no-multi-assign
 
     this.beforeMount();
 
     if (this.selectors) {
       Object.entries(this.selectors).forEach(([key, selector]) => {
-        this.$els[key] = qs(selector, this.$el as Element);
+        this.$els[key] = qs(selector, this.$el);
       });
     }
 
@@ -195,7 +197,7 @@ export class Component implements Idush {
     if (!isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
-    const $el = this.$el as Element;
+    const { $el } = this;
 
     // initialization placeholder
     let uid = $el.getAttribute(UID_DATA_ATTR);
@@ -408,7 +410,7 @@ export class Component implements Idush {
     let selector;
     const match = def && def.match(LISTENER_REGEXP);
     if (match) {
-      const $el = this.$el as Element;
+      const $el = this.$el;
       [, event, selector = $el] = match;
       let element;
 
@@ -555,7 +557,7 @@ export class Component implements Idush {
         }
       });
     }
-    const $el = this.$el as Element;
+    const { $el } = this;
 
     if (prevRef) {
       await prevRef.destroy();
