@@ -123,16 +123,19 @@ export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
  * const list = tree({ currentItem: 0 })
  * ```
  */
+
+let childRefIdx = 0;
+
 export function mount(
   ComponentConstructor: typeof Component,
-  el: HTMLElement,
+  el: HTMLElement | string,
   props: IMountProps = {},
-  children: mountChildren,
+  children?: mountChildren,
 ) {
   const { state = {}, id, ...options } = props;
   const component = new ComponentConstructor(options);
 
-  return function mounter(ctx: Component) {
+  return function mounter(ctx?: Component) {
     const root =
       typeof el === 'string' && ctx ? qs(el, ctx.$el as Element) : el;
 
@@ -143,9 +146,8 @@ export function mount(
     if (ctx) {
       ctx.setRef(
         {
-          el,
-          component: ComponentConstructor,
-          id: id || `${component.$uid}__ref`,
+          component,
+          id: id || `ref__${++childRefIdx}`,
         },
         state,
       );
