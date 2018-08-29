@@ -81,15 +81,43 @@ describe('`mount`', () => {
       expect(spy).toHaveBeenCalledWith(root, {});
     });
 
-    it('should NOT initialize generated component if a context is provided', () => {
-      const ctx = new Component().mount('#ref');
-      spyOn(ctx, 'setRef'); // inhibit setRef
+    it('should NOT call `.mount()` on generated component if root is not an element', () => {
+      const root: any = null;
+
       class MyComponent extends Component {} // tslint:disable-line
-      const spy = spyOn(MyComponent.prototype, 'init').and.callThrough();
+      const spy = spyOn(MyComponent.prototype, 'mount');
 
-      mount(MyComponent, '.child')(ctx);
-
+      mount(MyComponent, root)();
       expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should initialize generated component with provided state', () => {
+      class MyComponent extends Component {} // tslint:disable-line
+      const spy = spyOn(MyComponent.prototype, 'mount');
+      const state = {};
+      const root = document.getElementById('app') as HTMLElement;
+
+      mount(MyComponent, root, { state })();
+
+      expect(spy).toHaveBeenCalledWith(root, state);
+    });
+
+    it('should return a component instance', () => {
+      class MyComponent extends Component {} // tslint:disable-line
+
+      const component = mount(MyComponent, '#app')();
+
+      expect(component).toEqual(jasmine.any(Component));
+    });
+
+    it('should NOT pass the state if a context is provided', () => {
+      const ctx = new Component().mount('#ref');
+      class MyComponent extends Component {} // tslint:disable-line
+      const spy = spyOn(MyComponent.prototype, 'mount').and.callThrough();
+      const state = {};
+      mount(MyComponent, '.child', { state })(ctx);
+
+      expect(spy).toHaveBeenCalledWith(document.querySelector('.child'), null);
     });
 
     it('should set the generated component as a child of its context', () => {
@@ -108,131 +136,30 @@ describe('`mount`', () => {
         state,
       );
     });
-
-    //   it('should initialize generated component with provided state', () => {
-    //     const MyComponent = Component.create();
-    //     const spy = expect.spyOn(MyComponent.prototype, 'init').andCallThrough();
-    //     const state = {};
-
-    //     mount(MyComponent, '#app')(state);
-
-    //     expect(spy).toHaveBeenCalledWith(state);
-    //   });
-
-    //   it('should return a component instance', () => {
-    //     const MyComponent = Component.create();
-
-    //     const returned = mount(MyComponent, '#app')();
-
-    //     expect(returned).toBeA(MyComponent);
-    //   });
   });
 
-  // describe('Children management', () => {
-  //   it('should execute child-as-a-function children argument', () => {
-  //     const spy = jasmine.createSpy().andReturn([]);
-  //     const MyComponent = Component.create();
+  describe('Children management', () => {
+    it('should execute child-as-a-function children argument', () => {
+      const spy = jasmine.createSpy().and.returnValue([]);
+      class MyComponent extends Component {} // tslint:disable-line
 
-  //     mount(MyComponent, '#app', null, spy)();
+      const component = mount(MyComponent, '#app', null, spy)();
 
-  //     expect(spy).toHaveBeenCalled();
-  //     expect(spy.calls[0].arguments.length).toBe(1);
-  //     expect(spy.calls[0].arguments[0]).toBeA(MyComponent);
-  //   });
+      expect(spy).toHaveBeenCalledWith(component);
+    });
 
-  //   it('should cycle children and call them with no state and root component as arguments', () => {
-  //     const spy = expect
-  //       .createSpy()
-  //       .andReturn(new Component(document.createElement('div')));
-  //     const MyComponent = Component.create();
+    it('should iterate over children function and execute them with the component as context', () => {
+      const spy = jasmine.createSpy();
+      class MyComponent extends Component {} // tslint:disable-line
+      const children = [spy, spy];
+      const component = mount(MyComponent, '#app', null, children)();
 
-  //     mount(MyComponent, '#app', null, [spy, spy])();
+      const calls = spy.calls.all();
 
-  //     expect(spy.calls.length).toBe(2);
-
-  //     for (let i = 0; i < spy.calls.length; i += 1) {
-  //       const call = spy.calls[i];
-  //       expect(call.arguments.length).toBe(2);
-  //       expect(call.arguments[0]).toBe(undefined);
-  //       expect(call.arguments[1]).toBeA(MyComponent);
-  //     }
-  //   });
-
-  //   it('should cycle children as-a-function results', () => {
-  //     const spy = expect
-  //       .createSpy()
-  //       .andReturn(new Component(document.createElement('div')));
-  //     const MyComponent = Component.create();
-
-  //     mount(MyComponent, '#app', null, () => [spy, spy])();
-
-  //     expect(spy.calls.length).toBe(2);
-
-  //     for (let i = 0; i < spy.calls.length; i += 1) {
-  //       const call = spy.calls[i];
-  //       expect(call.arguments.length).toBe(2);
-  //       expect(call.arguments[0]).toBe(undefined);
-  //       expect(call.arguments[1]).toBeA(MyComponent);
-  //     }
-  //   });
-
-  //   it('should attach children to root component', () => {
-  //     const child = () => new Component(document.createElement('div'));
-  //     const MyComponent = Component.create();
-  //     const spy = expect.spyOn(MyComponent.prototype, 'setRef');
-
-  //     mount(MyComponent, '#app', null, [child])();
-
-  //     expect(spy).toHaveBeenCalled();
-  //   });
-
-  //   it('should pass child component instance', () => {
-  //     const childInstance = new Component(document.createElement('div'));
-  //     const child = () => childInstance;
-  //     const MyComponent = Component.create();
-  //     const spy = expect.spyOn(MyComponent.prototype, 'setRef');
-
-  //     mount(MyComponent, '#app', null, [child])();
-  //     const arg = spy.calls[0].arguments[0];
-  //     expect(arg.component).toBe(childInstance);
-  //   });
-
-  //   it('should assign `options.id` as the reference id', () => {
-  //     const childInstance = new Component(document.createElement('div'), {
-  //       id: 'X',
-  //     });
-  //     const child = () => childInstance;
-  //     const MyComponent = Component.create();
-  //     const spy = expect.spyOn(MyComponent.prototype, 'setRef');
-
-  //     mount(MyComponent, '#app', null, [child])();
-  //     const arg = spy.calls[0].arguments[0];
-  //     expect(arg.id).toBe('X');
-  //   });
-
-  //   it('should assign an auto-generated id if NOTprovided', () => {
-  //     const childInstance = new Component(document.createElement('div'));
-  //     const child = () => childInstance;
-  //     const MyComponent = Component.create();
-  //     const spy = expect.spyOn(MyComponent.prototype, 'setRef');
-
-  //     const root = mount(MyComponent, '#app', null, [child])();
-  //     const arg = spy.calls[0].arguments[0];
-  //     expect(arg.id).toBe(`${root._uid}__0`);
-  //   });
-
-  //   it('should pass configured props to the reference', () => {
-  //     const props = {};
-  //     const childInstance = new Component(document.createElement('div'), {
-  //       props,
-  //     });
-  //     const child = () => childInstance;
-  //     const MyComponent = Component.create();
-  //     const spy = expect.spyOn(MyComponent.prototype, 'setRef');
-
-  //     mount(MyComponent, '#app', null, [child])();
-  //     const arg = spy.calls[0].arguments[0];
-  //     expect(arg.props).toBe(props);
-  //   });
-  // });
+      expect(calls.length).toBe(children.length);
+      calls.forEach(({ args }) => {
+        expect(args[0]).toBe(component);
+      });
+    });
+  });
 });

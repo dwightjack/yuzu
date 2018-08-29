@@ -129,15 +129,14 @@ let childRefIdx = 0;
 export function mount(
   ComponentConstructor: typeof Component,
   el: HTMLElement | string,
-  props: IMountProps = {},
+  props: IMountProps | null = {},
   children?: mountChildren,
 ) {
-  const { state = {}, id, ...options } = props;
+  const { state = {}, id, ...options } = props || ({} as IMountProps);
   const component = new ComponentConstructor(options);
 
   return function mounter(ctx?: Component) {
-    const root =
-      typeof el === 'string' && ctx ? qs(el, ctx.$el as Element) : el;
+    const root = typeof el === 'string' && ctx ? qs(el, ctx.$el) : el;
 
     if (isElement(root)) {
       component.mount(root, ctx ? null : state);
