@@ -92,8 +92,13 @@ export class Component implements Idush {
    * @returns {Component}
    */
   constructor(options: IObject = {}) {
-    const defaultOptions = (this
-      .constructor as typeof Component).defaultOptions.call(this, this);
+    const defaultOptionsFn = (this.constructor as typeof Component)
+      .defaultOptions;
+
+    const defaultOptions =
+      typeof defaultOptionsFn === 'function'
+        ? defaultOptionsFn.call(this, this)
+        : {};
 
     this.state = {};
 
