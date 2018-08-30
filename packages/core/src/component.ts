@@ -52,11 +52,10 @@ export class Component implements Idush {
    * @returns {boolean}
    */
   public static isComponent(value: any): value is typeof Component {
-    return (
-      value &&
-      value.defaultOptions &&
-      typeof value.defaultOptions === 'function'
-    );
+    if (!value || !value.defaultOptions) {
+      return false;
+    }
+    return typeof value.defaultOptions === 'function';
   }
 
   public options: IObject;

@@ -5,7 +5,33 @@ import { mount } from '../../../shared/utils';
 import * as utils from '@yuzu/utils';
 
 describe('`Component`', () => {
-  //
+  describe('defaultOptions', () => {
+    it('should have a static "defaultOptions" method', () => {
+      expect(Component.defaultOptions).toEqual(jasmine.any(Function));
+    });
+    it('should return an object', () => {
+      expect(Component.defaultOptions()).toEqual({});
+    });
+  });
+
+  describe('isComponent', () => {
+    it('should return false if argument in falsy', () => {
+      expect(Component.isComponent(null)).toBe(false);
+    });
+    it('should return false if argument has a non-function "defaultOptions" property ', () => {
+      const value = {
+        defaultOptions: {},
+      };
+      expect(Component.isComponent(value)).toBe(false);
+    });
+    it('should return true if argument has a "defaultOptions" property  and it is a function', () => {
+      const value = {
+        defaultOptions: () => ({}),
+      };
+      expect(Component.isComponent(value)).toBe(true);
+    });
+  });
+
   describe('constructor', () => {
     let inst: Component;
 
@@ -99,62 +125,99 @@ describe('`Component`', () => {
       expect(spy).toHaveBeenCalled();
     });
   });
-  //     describe('`.mount()`', () => {
-  //         let inst;
-  //         let root;
-  //         beforeEach(() => {
-  //             expect.spyOn(window.console, 'warn');
-  //             root = document.createElement('div');
-  //             inst = new Component();
-  //             mount('component.html');
-  //         });
-  //         afterEach(() => {
-  //             window.console.warn.restore();
-  //         });
-  //         it('should check if component is already mounted', () => {
-  //             expect(() => {
-  //                 inst.$el = root;
-  //                 inst.mount(root);
-  //             }).toThrow(/mounted/);
-  //         });
-  //         it('should assign passed-in DOM element to both `el` and `$el` properties', () => {
-  //             inst.mount(root);
-  //             expect(inst.el).toBe(root);
-  //             expect(inst.$el).toBe(root);
-  //         });
-  //         it('should accept a CSS selector string as mount target', () => {
-  //             const selector = '#app';
-  //             const spy = tsumami.qs.mock();
-  //             inst.mount(selector);
-  //             expect(spy).toHaveBeenCalledWith(selector);
-  //             tsumami.qs.restore();
-  //         });
-  //         it('should call `mouted()` lifecycle method after mounting', () => {
-  //             inst.mounted = expect.createSpy();
-  //             inst.mount(root);
-  //             expect(inst.mounted).toHaveBeenCalled();
-  //         });
-  //         it('should fail silently when passed-in argument does not resolve to a DOM element', () => {
-  //             const spy = window.console.warn;
-  //             expect(() => {
-  //                 inst.mount(null);
-  //             }).toNotThrow();
-  //             expect(spy).toHaveBeenCalled();
-  //             expect(spy.calls[0].arguments[0]).toBeA('string');
-  //             expect(spy.calls[0].arguments[1]).toBe(inst.$el);
-  //         });
-  //         it('should NOT call `mounted()` lifecycle when mount target is not a DOM element', () => {
-  //             inst.mounted = expect.createSpy();
-  //             inst.mount(null);
-  //             expect(inst.mounted).toNotHaveBeenCalled();
-  //         });
-  //         it('should return the instance', () => {
-  //             expect(inst.mount(root)).toBe(inst);
-  //         });
-  //         it('should return the instance when root element is invalid', () => {
-  //             expect(inst.mount(null)).toBe(inst);
-  //         });
-  //     });
+  describe('`.mount()`', () => {
+    let inst: Component;
+    let root: HTMLElement;
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Component();
+      mount('component.html');
+    });
+    it('should check if component is already mounted', () => {
+      expect(() => {
+        inst.$el = root;
+        inst.mount(root);
+      }).toThrow();
+    });
+    it('should emit a warning if passed-in root is not an element', () => {
+      const spy = spyOn(console, 'warn');
+      const spyHook = spyOn(inst, 'beforeMount');
+      spyOn(utils, 'isElement').and.returnValue(false);
+      expect(() => {
+        inst.mount(root);
+      }).not.toThrow();
+      expect(spy).toHaveBeenCalled();
+      expect(spyHook).not.toHaveBeenCalled();
+    });
+
+    it('should return the instance when root element is invalid', () => {
+      spyOn(utils, 'isElement').and.returnValue(false);
+      expect(inst.mount(root)).toBe(inst);
+    });
+    it('should assign passed-in DOM element to both `el` and `$el` properties', () => {
+      inst.mount(root);
+      expect(inst.el).toBe(root);
+      expect(inst.$el).toBe(root);
+    });
+    it('should accept a CSS selector string as mount target', () => {
+      const selector = '#app';
+      const spy = spyOn(utils, 'qs');
+      inst.mount(selector);
+      expect(spy).toHaveBeenCalledWith(selector);
+    });
+    it('should call `beforeMount()` lifecycle method', () => {
+      const spy = spyOn(inst, 'beforeMount');
+      inst.mount(root);
+      expect(spy).toHaveBeenCalled();
+    });
+    it('should call `mounted()` lifecycle method after mounting', () => {
+      const spy = spyOn(inst, 'mounted');
+      inst.mount(root);
+      expect(spy).toHaveBeenCalled();
+    });
+    it('should resolve child elements selectors', () => {
+      const child = document.createElement('div');
+      const spy = spyOn(utils, 'qs').and.returnValue(child);
+      inst.selectors = {
+        child: '.child-demo',
+      };
+      inst.mount(root);
+      expect(spy).toHaveBeenCalledWith('.child-demo', root);
+      expect(inst.$els.child).toBe(child);
+    });
+    it('should attach event listeners. handlers are binded to the instance', () => {
+      const fn = () => undefined;
+      const handler = fn;
+      const def = 'click @def';
+      const spy = spyOn(utils, 'bindMethod').and.returnValue(fn);
+      const spy2 = spyOn(inst, 'setListener').and.returnValue(fn);
+      inst.listeners = {
+        [def]: handler,
+      };
+      inst.mount(root);
+      expect(spy).toHaveBeenCalledWith(inst, handler);
+      expect(spy2).toHaveBeenCalledWith(def, fn);
+    });
+    it('should call init method by default', () => {
+      const spy = spyOn(inst, 'init');
+      inst.mount(root);
+      expect(spy).toHaveBeenCalled();
+    });
+    it('should call init method with passed-in state', () => {
+      const state = {};
+      const spy = spyOn(inst, 'init');
+      inst.mount(root, state);
+      expect(spy).toHaveBeenCalledWith(state);
+    });
+    it('should NOT call init method when passed-in state is falsy', () => {
+      const spy = spyOn(inst, 'init');
+      inst.mount(root, null);
+      expect(spy).not.toHaveBeenCalled();
+    });
+    it('should return the instance', () => {
+      expect(inst.mount(root)).toBe(inst);
+    });
+  });
   //     describe('`init()`', () => {
   //         let inst;
   //         beforeEach(() => {
