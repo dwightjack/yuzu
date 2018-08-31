@@ -154,9 +154,8 @@ describe('`Component`', () => {
       spyOn(utils, 'isElement').and.returnValue(false);
       expect(inst.mount(root)).toBe(inst);
     });
-    it('should assign passed-in DOM element to both `el` and `$el` properties', () => {
+    it('should assign passed-in DOM element to `$el` properties', () => {
       inst.mount(root);
-      expect(inst.el).toBe(root);
       expect(inst.$el).toBe(root);
     });
     it('should accept a CSS selector string as mount target', () => {
@@ -218,157 +217,176 @@ describe('`Component`', () => {
       expect(inst.mount(root)).toBe(inst);
     });
   });
-  //     describe('`init()`', () => {
-  //         let inst;
-  //         beforeEach(() => {
-  //             inst = new Component();
-  //             mount('component.html');
-  //         });
-  //         it('should check if component is mounted onto a DOM element', () => {
-  //             inst.$el = null;
-  //             expect(() => {
-  //                 inst.init();
-  //             }).toThrow();
-  //         });
-  //         it('should check if a component has already been initialized on the DOM element', () => {
-  //             const spy = expect.spyOn(console, 'warn');
-  //             const root = document.getElementById('app-fake-uid');
-  //             const uid = root.getAttribute('data-yzid');
-  //             inst.mount(root);
-  //             inst.init();
-  //             expect(spy).toHaveBeenCalled();
-  //             const args = spy.calls[0].arguments;
-  //             expect(args[0]).toContain(uid);
-  //             expect(args[1]).toBe(inst.$el);
-  //             console.warn.restore(); //eslint-disable-line no-console
-  //         });
-  //         it('should set a unique `_uid` property', () => {
-  //             inst.mount('#app').init();
-  //             expect(inst._uid).toBeA('string');
-  //         });
-  //         it('should set `_uid` as `data-yzid` attribute on the root DOM element', () => {
-  //             const root = document.getElementById('app');
-  //             inst.mount(root).init();
-  //             expect(root.getAttribute('data-yzid')).toBe(inst._uid);
-  //         });
-  //         it('should set a generated `id` DOM attribute onto the root element if not present', () => {
-  //             const root = document.createElement('div');
-  //             inst.mount(root).init();
-  //             expect(root.id).toBe(`yuzu${inst._uid}`);
-  //         });
-  //         it('should keep the original id DOM attribute if already set', () => {
-  //             const root = document.createElement('div');
-  //             root.id = 'myId';
-  //             inst.mount(root).init();
-  //             expect(root.id).toBe('myId');
-  //         });
-  //         it('should call `.beforeInit()` lifecycle hook', () => {
-  //             const spy = expect.spyOn(inst, 'beforeInit');
-  //             inst.mount('#app').init();
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should NOT call `.beforeInit()` lifecycle hook if component id already initialized', () => {
-  //             const spy = expect.spyOn(inst, 'beforeInit');
-  //             inst.mount('#app-fake-uid').init();
-  //             expect(spy).toNotHaveBeenCalled();
-  //         });
-  //         it('should call `beforeInit` lifecycle hook before state is initialized', () => {
-  //             const state = { a: 0 };
-  //             inst.afterInit = function afterInit() {
-  //                 expect(this.state).toMatch({});
-  //             };
-  //             inst.mount('#app').init(state);
-  //         });
-  //         it('should set state event bindings', () => {
-  //             const noop = () => {};
-  //             const fn = () => {};
-  //             noop.bind = () => fn;
-  //             inst.bindStateEvents = () => ({ fn: noop });
-  //             const onSpy = expect.spyOn(inst, 'on');
-  //             inst.mount('#app').init();
-  //             expect(onSpy).toHaveBeenCalledWith('change:fn', fn);
-  //         });
-  //         it('should set state event bindings', () => {
-  //             const noop = () => {};
-  //             inst.bindStateEvents = () => ({ fn: noop });
-  //             const onSpy = expect.spyOn(inst, 'on');
-  //             inst.mount('#app').init();
-  //             expect(onSpy).toHaveBeenCalled();
-  //         });
-  //         it('should attach state event to a change event', () => {
-  //             const noop = () => {};
-  //             inst.bindStateEvents = () => ({ fn: noop });
-  //             const spy = expect.spyOn(inst, 'on');
-  //             inst.mount('#app').init();
-  //             expect(spy.calls[0].arguments[0]).toBe('change:fn');
-  //         });
-  //         it('should bind state event handlers to the instance', () => {
-  //             const noop = () => {};
-  //             const fn = () => {};
-  //             noop.bind = expect.createSpy().andReturn(fn);
-  //             inst.bindStateEvents = () => ({ fn: noop });
-  //             inst.mount('#app').init();
-  //             expect(noop.bind).toHaveBeenCalledWith(inst);
-  //         });
-  //         it('should resolve string values to instance methods', () => {
-  //             inst.myMethod = () => {};
-  //             const fn = () => {};
-  //             inst.myMethod.bind = expect.createSpy().andReturn(fn);
-  //             inst.bindStateEvents = () => ({ str: 'myMethod' });
-  //             inst.mount('#app').init();
-  //             expect(inst.myMethod.bind).toHaveBeenCalledWith(inst);
-  //         });
-  //         it('should call `getInitialState()`', () => {
-  //             inst.getInitialState = expect.createSpy().andReturn({});
-  //             inst.mount('#app').init();
-  //             expect(inst.getInitialState).toHaveBeenCalled();
-  //         });
-  //         it('should call `setState` with computed initialstate from defaults and passed-in state', () => {
-  //             const spy = expect.spyOn(inst, 'setState');
-  //             const state = { a: 1, b: 2 };
-  //             inst.getInitialState = () => ({ a: 0, c: 3 });
-  //             const expected = utils.extend(inst.getInitialState(), state);
-  //             inst.mount('#app').init(state);
-  //             expect(spy.calls.length).toBe(Object.keys(expected).length);
-  //             Object.keys(expected).forEach((k, i) => {
-  //                 expect(spy.calls[i].arguments).toEqual([k, expected[k]]);
-  //             });
-  //         });
-  //         it('should set the `_active` flag to `true`', () => {
-  //             inst.mount('#app').init();
-  //             expect(inst._active).toBe(true);
-  //         });
-  //         it('should call `.afterInit()` lifecycle hook', () => {
-  //             const spy = expect.spyOn(inst, 'afterInit');
-  //             inst.mount('#app').init();
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should NOT call `.afterInit()` lifecycle hook if component id already initialized', () => {
-  //             const spy = expect.spyOn(inst, 'afterInit');
-  //             inst.mount('#app-fake-uid').init();
-  //             expect(spy).toNotHaveBeenCalled();
-  //         });
-  //         it('should call `afterInit` lifecycle hook after state is initialized', () => {
-  //             const state = { a: 0 };
-  //             inst.afterInit = function afterInit() {
-  //                 expect(this.state).toMatch(state);
-  //             };
-  //             inst.mount('#app').init(state);
-  //         });
-  //         it('should call `afterInit` lifecycle hook after state event bindings have been set', () => {
-  //             const state = { a: 0 };
-  //             const spy = expect.createSpy();
-  //             inst.bindStateEvents = () => ({ a: spy });
-  //             inst.afterInit = function afterInit() {
-  //                 this.setState('a', 2);
-  //             };
-  //             inst.mount('#app').init(state);
-  //             expect(spy).toHaveBeenCalled(0, 2);
-  //         });
-  //         it('should return the instance', () => {
-  //             expect(inst.mount('#app').init()).toBe(inst);
-  //         });
-  //     });
+  describe('`init()`', () => {
+    let inst: Component;
+    let root: HTMLElement;
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Component();
+      inst.$el = root;
+      mount('component.html');
+    });
+    it('should check if component is mounted onto a DOM element', () => {
+      spyOn(utils, 'isElement').and.returnValue(false);
+      expect(() => {
+        inst.init();
+      }).toThrow();
+    });
+    it('should check if a component has already been initialized on the DOM element', () => {
+      const spy = spyOn(console, 'warn');
+      const uid = 'fake-uid';
+      root.setAttribute('data-cid', uid);
+      inst.init();
+      expect(spy).toHaveBeenCalled();
+      const [msg, ref] = spy.calls.mostRecent().args;
+      expect(msg).toContain(uid);
+      expect(ref).toBe(inst.$el);
+    });
+    it('should set a unique `_uid` property', () => {
+      inst.init();
+      expect(inst.$uid).toEqual(jasmine.any(String));
+    });
+    it('should set `$uid` as `data-cid ` attribute on the root DOM element', () => {
+      inst.init();
+      expect(root.getAttribute('data-cid')).toBe(inst.$uid);
+    });
+    it('should set a generated `id` DOM attribute onto the root element if not present', () => {
+      inst.init();
+      expect(root.id).toBe(`c_${inst.$uid}`);
+    });
+    it('should keep the original id DOM attribute if already set', () => {
+      root.id = 'myId';
+      inst.init();
+      expect(root.id).toBe('myId');
+    });
+    it('should call `.initialize()` lifecycle hook', () => {
+      const spy = spyOn(inst, 'initialize');
+      inst.init();
+      expect(spy).toHaveBeenCalled();
+    });
+    it('should NOT call `.initialize()` lifecycle hook if component is already initialized', () => {
+      const spy = spyOn(inst, 'initialize');
+      root.setAttribute('data-cid', 'fake-id');
+      inst.init();
+      expect(spy).not.toHaveBeenCalled();
+    });
+    it('should call `initialize` lifecycle hook before passed-in state gets applied', () => {
+      const state = { a: 0 };
+      inst.initialize = () => {
+        expect(inst.state).toEqual({});
+      };
+      inst.init(state);
+    });
+    it('should bind configured actions', () => {
+      const handler = () => undefined;
+      const spyBind = spyOn(utils, 'bindMethod').and.returnValue(handler);
+      const spy = spyOn(inst, 'on');
+      inst.actions = {
+        count: 'increment',
+      };
+
+      inst.init();
+      expect(spy).toHaveBeenCalledWith('change:count', handler);
+      expect(spyBind).toHaveBeenCalledWith(inst, 'increment');
+      expect(spy.calls.count()).toBe(1);
+    });
+    it('should call replace state with initial and passed-in state', () => {
+      const inState = { surname: 'Doe' };
+      inst.state = { name: 'John' };
+      const expected = { ...inst.state, ...inState };
+      const spy = spyOn(inst, 'replaceState');
+      inst.init(inState);
+    });
+    // it('should set state event bindings', () => {
+    //   const noop = () => {};
+    //   const fn = () => {};
+    //   noop.bind = () => fn;
+    //   inst.bindStateEvents = () => ({ fn: noop });
+    //   const onSpy = expect.spyOn(inst, 'on');
+    //   inst.mount('#app').init();
+    //   expect(onSpy).toHaveBeenCalledWith('change:fn', fn);
+    // });
+    //         it('should set state event bindings', () => {
+    //             const noop = () => {};
+    //             inst.bindStateEvents = () => ({ fn: noop });
+    //             const onSpy = expect.spyOn(inst, 'on');
+    //             inst.mount('#app').init();
+    //             expect(onSpy).toHaveBeenCalled();
+    //         });
+    //         it('should attach state event to a change event', () => {
+    //             const noop = () => {};
+    //             inst.bindStateEvents = () => ({ fn: noop });
+    //             const spy = expect.spyOn(inst, 'on');
+    //             inst.mount('#app').init();
+    //             expect(spy.calls[0].arguments[0]).toBe('change:fn');
+    //         });
+    //         it('should bind state event handlers to the instance', () => {
+    //             const noop = () => {};
+    //             const fn = () => {};
+    //             noop.bind = expect.createSpy().andReturn(fn);
+    //             inst.bindStateEvents = () => ({ fn: noop });
+    //             inst.mount('#app').init();
+    //             expect(noop.bind).toHaveBeenCalledWith(inst);
+    //         });
+    //         it('should resolve string values to instance methods', () => {
+    //             inst.myMethod = () => {};
+    //             const fn = () => {};
+    //             inst.myMethod.bind = expect.createSpy().andReturn(fn);
+    //             inst.bindStateEvents = () => ({ str: 'myMethod' });
+    //             inst.mount('#app').init();
+    //             expect(inst.myMethod.bind).toHaveBeenCalledWith(inst);
+    //         });
+    //         it('should call `getInitialState()`', () => {
+    //             inst.getInitialState = expect.createSpy().andReturn({});
+    //             inst.mount('#app').init();
+    //             expect(inst.getInitialState).toHaveBeenCalled();
+    //         });
+    //         it('should call `setState` with computed initialstate from defaults and passed-in state', () => {
+    //             const spy = expect.spyOn(inst, 'setState');
+    //             const state = { a: 1, b: 2 };
+    //             inst.getInitialState = () => ({ a: 0, c: 3 });
+    //             const expected = utils.extend(inst.getInitialState(), state);
+    //             inst.mount('#app').init(state);
+    //             expect(spy.calls.length).toBe(Object.keys(expected).length);
+    //             Object.keys(expected).forEach((k, i) => {
+    //                 expect(spy.calls[i].arguments).toEqual([k, expected[k]]);
+    //             });
+    //         });
+    //         it('should set the `_active` flag to `true`', () => {
+    //             inst.mount('#app').init();
+    //             expect(inst._active).toBe(true);
+    //         });
+    //         it('should call `.afterInit()` lifecycle hook', () => {
+    //             const spy = expect.spyOn(inst, 'afterInit');
+    //             inst.mount('#app').init();
+    //             expect(spy).toHaveBeenCalled();
+    //         });
+    //         it('should NOT call `.afterInit()` lifecycle hook if component id already initialized', () => {
+    //             const spy = expect.spyOn(inst, 'afterInit');
+    //             inst.mount('#app-fake-uid').init();
+    //             expect(spy).toNotHaveBeenCalled();
+    //         });
+    //         it('should call `afterInit` lifecycle hook after state is initialized', () => {
+    //             const state = { a: 0 };
+    //             inst.afterInit = function afterInit() {
+    //                 expect(this.state).toMatch(state);
+    //             };
+    //             inst.mount('#app').init(state);
+    //         });
+    //         it('should call `afterInit` lifecycle hook after state event bindings have been set', () => {
+    //             const state = { a: 0 };
+    //             const spy = expect.createSpy();
+    //             inst.bindStateEvents = () => ({ a: spy });
+    //             inst.afterInit = function afterInit() {
+    //                 this.setState('a', 2);
+    //             };
+    //             inst.mount('#app').init(state);
+    //             expect(spy).toHaveBeenCalled(0, 2);
+    //         });
+    //         it('should return the instance', () => {
+    //             expect(inst.mount('#app').init()).toBe(inst);
+    //         });
+  });
   //     describe('`bindStateEvents()`', () => {
   //         it('should be a function', () => {
   //             const inst = new Component();
@@ -696,10 +714,10 @@ describe('`Component`', () => {
   //             inst.destroy();
   //             expect(spy).toHaveBeenCalled();
   //         });
-  //         it('should remove the `data-yzid` attribute from the element', () => {
-  //             expect(inst.el.hasAttribute('data-yzid')).toBe(true);
+  //         it('should remove the `data-cid ` attribute from the element', () => {
+  //             expect(inst.el.hasAttribute('data-cid ')).toBe(true);
   //             inst.destroy();
-  //             expect(inst.el.hasAttribute('data-yzid')).toBe(false);
+  //             expect(inst.el.hasAttribute('data-cid ')).toBe(false);
   //         });
   //         it('should call `closeRefs()` and deactivate the instance', (done) => {
   //             const spy = expect.spyOn(inst, 'closeRefs').andCallThrough();

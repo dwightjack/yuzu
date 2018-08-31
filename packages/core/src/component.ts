@@ -63,7 +63,6 @@ export class Component implements Idush {
   public $active: boolean;
 
   public $el!: Element;
-  public el!: Element;
   public $uid!: string;
   public $els: { [key: string]: Element | null };
   public $refs: { [key: string]: Component };
@@ -142,7 +141,7 @@ export class Component implements Idush {
    * - `ready` (if `state` !== null)
    * - `mounted`
    *
-   * @param {string|HTMLElement} el Component's root element
+   * @param {string|Element} el Component's root element
    * @param {object|null} [state={}] initial state
    * @returns {Component}
    */
@@ -159,7 +158,7 @@ export class Component implements Idush {
       return this;
     }
 
-    this.el = this.$el = $el; // eslint-disable-line no-multi-assign
+    this.$el = $el; // eslint-disable-line no-multi-assign
 
     this.beforeMount();
 
