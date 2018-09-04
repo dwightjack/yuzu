@@ -297,126 +297,83 @@ describe('`Component`', () => {
       const spy = spyOn(inst, 'replaceState');
       inst.init(inState);
     });
-    // it('should set state event bindings', () => {
-    //   const noop = () => {};
-    //   const fn = () => {};
-    //   noop.bind = () => fn;
-    //   inst.bindStateEvents = () => ({ fn: noop });
-    //   const onSpy = expect.spyOn(inst, 'on');
-    //   inst.mount('#app').init();
-    //   expect(onSpy).toHaveBeenCalledWith('change:fn', fn);
-    // });
-    //         it('should set state event bindings', () => {
-    //             const noop = () => {};
-    //             inst.bindStateEvents = () => ({ fn: noop });
-    //             const onSpy = expect.spyOn(inst, 'on');
-    //             inst.mount('#app').init();
-    //             expect(onSpy).toHaveBeenCalled();
-    //         });
-    //         it('should attach state event to a change event', () => {
-    //             const noop = () => {};
-    //             inst.bindStateEvents = () => ({ fn: noop });
-    //             const spy = expect.spyOn(inst, 'on');
-    //             inst.mount('#app').init();
-    //             expect(spy.calls[0].arguments[0]).toBe('change:fn');
-    //         });
-    //         it('should bind state event handlers to the instance', () => {
-    //             const noop = () => {};
-    //             const fn = () => {};
-    //             noop.bind = expect.createSpy().andReturn(fn);
-    //             inst.bindStateEvents = () => ({ fn: noop });
-    //             inst.mount('#app').init();
-    //             expect(noop.bind).toHaveBeenCalledWith(inst);
-    //         });
-    //         it('should resolve string values to instance methods', () => {
-    //             inst.myMethod = () => {};
-    //             const fn = () => {};
-    //             inst.myMethod.bind = expect.createSpy().andReturn(fn);
-    //             inst.bindStateEvents = () => ({ str: 'myMethod' });
-    //             inst.mount('#app').init();
-    //             expect(inst.myMethod.bind).toHaveBeenCalledWith(inst);
-    //         });
-    //         it('should call `getInitialState()`', () => {
-    //             inst.getInitialState = expect.createSpy().andReturn({});
-    //             inst.mount('#app').init();
-    //             expect(inst.getInitialState).toHaveBeenCalled();
-    //         });
-    //         it('should call `setState` with computed initialstate from defaults and passed-in state', () => {
-    //             const spy = expect.spyOn(inst, 'setState');
-    //             const state = { a: 1, b: 2 };
-    //             inst.getInitialState = () => ({ a: 0, c: 3 });
-    //             const expected = utils.extend(inst.getInitialState(), state);
-    //             inst.mount('#app').init(state);
-    //             expect(spy.calls.length).toBe(Object.keys(expected).length);
-    //             Object.keys(expected).forEach((k, i) => {
-    //                 expect(spy.calls[i].arguments).toEqual([k, expected[k]]);
-    //             });
-    //         });
-    //         it('should set the `_active` flag to `true`', () => {
-    //             inst.mount('#app').init();
-    //             expect(inst._active).toBe(true);
-    //         });
-    //         it('should call `.afterInit()` lifecycle hook', () => {
-    //             const spy = expect.spyOn(inst, 'afterInit');
-    //             inst.mount('#app').init();
-    //             expect(spy).toHaveBeenCalled();
-    //         });
-    //         it('should NOT call `.afterInit()` lifecycle hook if component id already initialized', () => {
-    //             const spy = expect.spyOn(inst, 'afterInit');
-    //             inst.mount('#app-fake-uid').init();
-    //             expect(spy).toNotHaveBeenCalled();
-    //         });
-    //         it('should call `afterInit` lifecycle hook after state is initialized', () => {
-    //             const state = { a: 0 };
-    //             inst.afterInit = function afterInit() {
-    //                 expect(this.state).toMatch(state);
-    //             };
-    //             inst.mount('#app').init(state);
-    //         });
-    //         it('should call `afterInit` lifecycle hook after state event bindings have been set', () => {
-    //             const state = { a: 0 };
-    //             const spy = expect.createSpy();
-    //             inst.bindStateEvents = () => ({ a: spy });
-    //             inst.afterInit = function afterInit() {
-    //                 this.setState('a', 2);
-    //             };
-    //             inst.mount('#app').init(state);
-    //             expect(spy).toHaveBeenCalled(0, 2);
-    //         });
-    //         it('should return the instance', () => {
-    //             expect(inst.mount('#app').init()).toBe(inst);
-    //         });
+    it('should set the `$active` flag to `true`', () => {
+      inst.init();
+      expect(inst.$active).toBe(true);
+    });
+    it('should call `.ready()` lifecycle hook', () => {
+      const spy = spyOn(inst, 'ready');
+      inst.init();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call `ready` lifecycle hook after state is initialized', () => {
+      const spy = spyOn(inst, 'replaceState').and.callThrough();
+
+      inst.ready = () => {
+        expect(spy).toHaveBeenCalled();
+      };
+      inst.init();
+    });
+    it('should call `ready` lifecycle hook after state event bindings have been set', () => {
+      const state = { a: 0 };
+      const fn = () => undefined;
+      const spy = spyOn(inst, 'on');
+      spyOn(utils, 'bindMethod').and.returnValue(fn);
+      inst.actions = {
+        a: fn,
+      };
+      inst.ready = function ready() {
+        expect(spy).toHaveBeenCalledWith('change:a', fn);
+      };
+      inst.init(state);
+    });
+    it('will not call "ready" if a readyState method is set', () => {
+      const spy = spyOn(inst, 'ready');
+      inst.readyState = () => false;
+      inst.init();
+      expect(spy).not.toHaveBeenCalled();
+    });
+    it('will call "readyState" on state change', () => {
+      inst.readyState = jasmine.createSpy().and.returnValue(false);
+      inst.state = { a: 0 };
+      inst.init();
+      expect(inst.readyState).not.toHaveBeenCalled();
+
+      inst.setState({ a: 1 });
+      expect(inst.readyState).toHaveBeenCalledWith({ a: 1 }, { a: 0 });
+    });
+
+    it('will NOT execute "ready" if "readyState" returns false', () => {
+      inst.readyState = () => false;
+      inst.ready = jasmine.createSpy();
+      inst.init({ a: 0 });
+      inst.setState({ a: 1 });
+      expect(inst.ready).not.toHaveBeenCalled();
+    });
+
+    it('will execute "ready" if "readyState" returns true', () => {
+      inst.readyState = () => true;
+      inst.ready = jasmine.createSpy();
+      inst.init({ a: 0 });
+      inst.setState({ a: 1 });
+      expect(inst.ready).toHaveBeenCalled();
+    });
+
+    it('will unbind "readyState" checks after ready is executed', () => {
+      inst.readyState = () => true;
+      const spy = spyOn(inst, 'ready');
+      inst.init({ a: 0 });
+      inst.setState({ a: 1 });
+      inst.setState({ a: 2 });
+      expect(spy.calls.count()).toBe(1);
+    });
+
+    it('should return the instance', () => {
+      expect(inst.init()).toBe(inst);
+    });
   });
-  //     describe('`bindStateEvents()`', () => {
-  //         it('should be a function', () => {
-  //             const inst = new Component();
-  //             expect(inst.bindStateEvents).toBeA(Function);
-  //         });
-  //         it('should return an emty object by default', () => {
-  //             const inst = new Component();
-  //             expect(inst.bindStateEvents()).toMatch({});
-  //         });
-  //     });
-  //     describe('`getInitialState()`', () => {
-  //         it('should be a function', () => {
-  //             const inst = new Component();
-  //             expect(inst.getInitialState).toBeA(Function);
-  //         });
-  //         it('should return an emty object by default', () => {
-  //             const inst = new Component();
-  //             expect(inst.getInitialState()).toMatch({});
-  //         });
-  //     });
-  //     describe('`getDefaultOptions()`', () => {
-  //         it('should be a function', () => {
-  //             const inst = new Component();
-  //             expect(inst.getDefaultOptions).toBeA(Function);
-  //         });
-  //         it('should return an emty object by default', () => {
-  //             const inst = new Component();
-  //             expect(inst.getDefaultOptions()).toMatch({});
-  //         });
-  //     });
+
   //     describe('lifecycle methods', () => {
   //         let inst;
   //         beforeEach(() => {
