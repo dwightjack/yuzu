@@ -17,6 +17,10 @@
       "@yuzu/*": ["packages/*"]
     }
   },
-  "include": ["./packages/*/src/**/*", "./types/**/*"],
+  "include": [
+    "./packages/*/src/**/*",
+    "./packages/*/test/**/*",
+    "./types/**/*"
+  ],
   "exclude": ["node_modules"]
 }

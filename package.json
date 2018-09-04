@@ -25,9 +25,8 @@
   "scripts": {
     "prepublishOnly": "npm run release",
     "release": "yarn lint && yarn types && yarn docs && yarn bundle",
-    "lint": "tslint ./src/**/*.ts",
+    "lint": "tslint ./packages/*/src/**/*.ts ./packages/*/test/**/*.ts",
     "bundle": "lerna run bundle",
-    "types": "lerna run types",
     "docs": "rimraf tmp && tsc --outDir tmp --module ES2015 --target es2017 && rimraf doc && node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run"
   },
