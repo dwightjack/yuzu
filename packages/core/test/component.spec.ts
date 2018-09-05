@@ -488,28 +488,145 @@ describe('`Component`', () => {
       expect(spy).not.toHaveBeenCalled();
     });
   });
-  //     describe('`broadcast()`', () => {
-  //         let inst;
-  //         let root;
-  //         let Child;
-  //         beforeEach(() => {
-  //             Child = Component.create();
-  //             inst = new Component();
-  //             mount('component.html');
-  //             root = document.getElementById('ref');
-  //             inst.mount(root).init({ a: 1, b: 2 });
-  //             inst.$refs.child = new Child(document.createElement('div'));
-  //             inst._$refsKeys.push('child');
-  //         });
-  //         it('should fire a `broadcast:*` event on every child', () => {
-  //             const spy = expect.spyOn(inst.$refs.child, 'emit');
-  //             inst.broadcast('test', 'string', 10);
-  //             expect(spy.calls.length).toBe(inst._$refsKeys.length);
-  //             spy.calls.forEach((c) => {
-  //                 expect(c.arguments).toMatch(['broadcast:test', 'string', 10]);
-  //             });
-  //         });
-  //     });
+
+  describe('`replaceState()`', () => {
+    let inst: Component;
+    beforeEach(() => {
+      inst = new Component();
+      inst.state = {
+        a: 1,
+      };
+    });
+    it('replaces current state', () => {
+      inst.replaceState({ b: 2 });
+      expect(inst.state).toEqual({ b: 2 });
+    });
+    it('clones the passed-in object', () => {
+      const state = { b: 2 };
+      inst.replaceState(state);
+      expect(inst.state).not.toBe(state);
+    });
+    it('emits a change event for each new key', () => {
+      const spy = spyOn(inst, 'emit');
+      inst.replaceState({ b: 2, c: 3 });
+      const [bCalls, cCalls] = spy.calls.allArgs();
+      expect(bCalls).toEqual(['change:b', 2, undefined]);
+      expect(cCalls).toEqual(['change:c', 3, undefined]);
+    });
+
+    it('emits a change:* event', () => {
+      const spy = spyOn(inst, 'emit');
+      const oldState = { ...inst.state };
+      inst.replaceState({ b: 2, c: 3 });
+      expect(spy.calls.mostRecent().args).toEqual([
+        'change:*',
+        { b: 2, c: 3 },
+        oldState,
+      ]);
+    });
+
+    it('does NOT emit events if silent is true', () => {
+      const spy = spyOn(inst, 'emit');
+      inst.replaceState({ b: 2, c: 3 }, true);
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+  describe('`broadcast()`', () => {
+    let inst: Component;
+    beforeEach(() => {
+      inst = new Component();
+      inst.mount(document.createElement('div'));
+      inst.setRef({
+        id: 'child',
+        component: Component,
+        el: document.createElement('div'),
+      });
+    });
+    it('should fire a `broadcast:*` event on every child', () => {
+      const spy = spyOn(inst.$refs.child, 'emit');
+      inst.broadcast('test', 'string', 10);
+      expect(spy.calls.count()).toBe(1);
+      spy.calls.allArgs().forEach((args) => {
+        expect(args).toEqual(['broadcast:test', 'string', 10]);
+      });
+    });
+  });
+
+  describe('`setListener()`', () => {
+    let inst: Component;
+    let btn: HTMLElement;
+    const handler = () => undefined;
+    beforeEach(() => {
+      inst = new Component();
+      btn = document.createElement('button');
+      inst.mount(document.createElement('div'));
+    });
+
+    it('selects a child element', () => {
+      const spy = spyOn(utils, 'qs').and.returnValue(btn);
+      inst.setListener('click .listener-btn', handler);
+      expect(spy).toHaveBeenCalledWith('.listener-btn', inst.$el);
+    });
+
+    it('add an event handler to the selected element', () => {
+      spyOn(utils, 'qs').and.returnValue(btn);
+      const spy = spyOn(btn, 'addEventListener');
+      inst.setListener('click .listener-btn', handler);
+
+      expect(spy).toHaveBeenCalledWith('click', handler);
+    });
+
+    it('will add a reference to the internal registry', () => {
+      spyOn(utils, 'qs').and.returnValue(btn);
+      inst.setListener('click .listener-btn', handler);
+      expect(inst.$listeners.get(handler)).toEqual({
+        event: 'click',
+        element: btn,
+      });
+    });
+
+    it('will lookup elements reference if the selector starts with "@"', () => {
+      inst.$els.btn = btn;
+      const spy = spyOn(btn, 'addEventListener');
+      inst.setListener('click @btn', handler);
+      expect(spy).toHaveBeenCalledWith('click', handler);
+    });
+
+    it('attaches an event to the root element if just the event is defined', () => {
+      const spy = spyOn(inst.$el, 'addEventListener');
+      inst.setListener('click', handler);
+      expect(spy).toHaveBeenCalledWith('click', handler);
+    });
+
+    it('does nothing if element is not found', () => {
+      spyOn(utils, 'qs').and.returnValue(undefined);
+      inst.setListener('click .demo', handler);
+      expect(inst.$listeners.get(handler)).toBe(undefined);
+    });
+  });
+
+  describe('`removeListeners()`', () => {
+    let inst: Component;
+    let btn: HTMLElement;
+    const handler = () => undefined;
+    beforeEach(() => {
+      inst = new Component();
+      btn = document.createElement('button');
+      inst.mount(document.createElement('div'));
+
+      inst.$listeners.set(handler, {
+        event: 'click',
+        element: btn,
+      });
+    });
+
+    it('cycles registered events and unbind them', () => {
+      const spy = spyOn(btn, 'removeEventListener');
+      inst.removeListeners();
+      expect(spy).toHaveBeenCalledWith('click', handler);
+    });
+  });
+
   //     describe('`setRef()`', () => {
   //         let inst;
   //         let root;
