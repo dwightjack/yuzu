@@ -374,92 +374,120 @@ describe('`Component`', () => {
     });
   });
 
-  //     describe('lifecycle methods', () => {
-  //         let inst;
-  //         beforeEach(() => {
-  //             inst = new Component();
-  //             mount('component.html');
-  //         });
-  //         it('should have a `created` method', () => {
-  //             expect(inst.created).toBeA(Function);
-  //         });
-  //         it('should have a `mounted` method', () => {
-  //             expect(inst.mounted).toBeA(Function);
-  //         });
-  //         it('should have a `beforeInit` method', () => {
-  //             expect(inst.beforeInit).toBeA(Function);
-  //         });
-  //         it('should have a `afterInit` method', () => {
-  //             expect(inst.afterInit).toBeA(Function);
-  //         });
-  //         it('should have a `beforeDestroy` method', () => {
-  //             expect(inst.beforeDestroy).toBeA(Function);
-  //         });
-  //     });
-  //     describe('`getState()`', () => {
-  //         let inst;
-  //         beforeEach(() => {
-  //             inst = new Component();
-  //             mount('component.html');
-  //             inst.mount('#app').init({ a: 1 });
-  //         });
-  //         it('should return a state property by key', () => {
-  //             expect(inst.getState('a')).toBe(1);
-  //         });
-  //         it('should return `undefined` if key is not found', () => {
-  //             expect(inst.getState('notFound')).toBe(undefined);
-  //         });
-  //     });
-  //     describe('`setState()`', () => {
-  //         let inst;
-  //         beforeEach(() => {
-  //             inst = new Component();
-  //             mount('component.html');
-  //             inst.mount('#app').init({ a: 1 });
-  //         });
-  //         it('should retrieve the old state', () => {
-  //             const spy = expect.spyOn(inst, 'getState').andCallThrough();
-  //             inst.setState('a', 2);
-  //             expect(spy).toHaveBeenCalledWith('a');
-  //         });
-  //         it('should set the new passed-in state', () => {
-  //             inst.setState('a', 2);
-  //             expect(inst.state.a).toBe(2);
-  //         });
-  //         it('should accept `undefined` and `null`', () => {
-  //             inst.setState('a', undefined);
-  //             expect(inst.state.a).toBe(undefined);
-  //             inst.setState('a', null);
-  //             expect(inst.state.a).toBe(null);
-  //         });
-  //         it('should emit an change event when new value differs from old value', () => {
-  //             const spy = expect.spyOn(inst, 'emit');
-  //             const prev = inst.state.a;
-  //             inst.setState('a', 2);
-  //             expect(spy).toHaveBeenCalledWith('change:a', 2, prev);
-  //         });
-  //         it('should NOT emit events when old and new value are the same', () => {
-  //             const spy = expect.spyOn(inst, 'emit');
-  //             inst.setState('a', 1);
-  //             expect(spy).toNotHaveBeenCalled();
-  //         });
-  //         it('should NOT emit events when the 3rd argument is true', () => {
-  //             const spy = expect.spyOn(inst, 'emit');
-  //             inst.setState('a', 2, true);
-  //             expect(spy).toNotHaveBeenCalled();
-  //         });
-  //         it('should perform a strict equality check', () => {
-  //             const spy = expect.spyOn(inst, 'emit');
-  //             inst.state.nulled = null;
-  //             inst.setState('nulled', undefined);
-  //             expect(spy).toHaveBeenCalled();
-  //             spy.reset();
-  //             inst.state.obj = {};
-  //             inst.setState('obj', {});
-  //             //called because two objects are different
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //     });
+  describe('lifecycle methods', () => {
+    let inst: Component;
+    beforeEach(() => {
+      inst = new Component();
+      mount('component.html');
+    });
+    it('should have a `created` method', () => {
+      expect(inst.created).toEqual(jasmine.any(Function));
+    });
+    it('should have a `beforeMount` method', () => {
+      expect(inst.beforeMount).toEqual(jasmine.any(Function));
+    });
+    it('should have a `mounted` method', () => {
+      expect(inst.mounted).toEqual(jasmine.any(Function));
+    });
+    it('should have a `initialize` method', () => {
+      expect(inst.initialize).toEqual(jasmine.any(Function));
+    });
+    it('should have a `ready` method', () => {
+      expect(inst.ready).toEqual(jasmine.any(Function));
+    });
+    it('should have a `beforeDestroy` method', () => {
+      expect(inst.beforeDestroy).toEqual(jasmine.any(Function));
+    });
+  });
+  describe('`getState()`', () => {
+    let inst: Component;
+    beforeEach(() => {
+      inst = new Component();
+      inst.state = {
+        a: 1,
+      };
+    });
+    it('should return a state property by key', () => {
+      expect(inst.getState('a')).toBe(1);
+    });
+    it('should return `undefined` if key is not found', () => {
+      expect(inst.getState('notFound')).toBe(undefined);
+    });
+  });
+  describe('`shouldUpdateState()`', () => {
+    let inst: Component;
+    beforeEach(() => {
+      inst = new Component();
+    });
+    it('should strictly compare 2 values and return true if they are different', () => {
+      expect(inst.shouldUpdateState('', 1, 1)).toBe(false);
+      expect(inst.shouldUpdateState('', '1', 1)).toBe(true);
+      expect(inst.shouldUpdateState('', {}, {})).toBe(true);
+    });
+  });
+  describe('`setState()`', () => {
+    let inst: Component;
+    beforeEach(() => {
+      inst = new Component();
+      inst.state = {
+        a: 1,
+        b: 2,
+      };
+    });
+    it('should evaluate the passed-in argument', () => {
+      const spy = spyOn(utils, 'evaluate').and.callThrough();
+      const updater = () => ({});
+      inst.setState(updater);
+      expect(spy).toHaveBeenCalledWith(updater, inst.state);
+    });
+
+    it('should cycle the current state and call shouldUpdateState on changed keys', () => {
+      const spy = spyOn(inst, 'shouldUpdateState').and.callThrough();
+      const updater = () => ({});
+      inst.setState({ a: 2 });
+      expect(spy).toHaveBeenCalledWith('a', 1, 2);
+      expect(spy.calls.count()).toBe(1);
+    });
+
+    it('if shouldUpdateState returns true the key is updated', () => {
+      const spy = spyOn(inst, 'shouldUpdateState').and.returnValue(true);
+      const updater = () => ({});
+      inst.setState({ a: 2 });
+      expect(inst.state.a).toBe(2);
+    });
+
+    it('if shouldUpdateState returns false the key is NOT updated', () => {
+      const spy = spyOn(inst, 'shouldUpdateState').and.returnValue(false);
+      const updater = () => ({});
+      inst.setState({ a: 2 });
+      expect(inst.state.a).not.toBe(2);
+    });
+
+    it('does NOT account for keys not already set on the state', () => {
+      inst.setState({ c: 1 });
+      expect(inst.state.c).toBeUndefined();
+    });
+
+    it('emits a `change:` event for every changed key', () => {
+      const spy = spyOn(inst, 'emit');
+      inst.setState({ a: 2, b: 2 });
+      expect(spy).toHaveBeenCalledWith('change:a', 2, 1);
+      expect(spy).not.toHaveBeenCalledWith('change:b', 2, 2);
+    });
+
+    it('emits a `change:*` with full state (prev and current)', () => {
+      const spy = spyOn(inst, 'emit');
+      const prev = { ...inst.state };
+      inst.setState({ a: 2, b: 2 });
+      expect(spy).toHaveBeenCalledWith('change:*', inst.state, prev);
+    });
+
+    it('does NOT emit when "silent" is true', () => {
+      const spy = spyOn(inst, 'emit');
+      inst.setState({ a: 2, b: 3 }, true);
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
   //     describe('`broadcast()`', () => {
   //         let inst;
   //         let root;
