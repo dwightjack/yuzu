@@ -4,6 +4,7 @@ import { Component } from '../src/component';
 import { mount } from '../../../shared/utils';
 import * as utils from '@yuzu/utils';
 
+/* tslint:disable max-classes-per-file */
 describe('`Component`', () => {
   describe('defaultOptions', () => {
     it('should have a static "defaultOptions" method', () => {
@@ -627,220 +628,96 @@ describe('`Component`', () => {
     });
   });
 
-  //     describe('`setRef()`', () => {
-  //         let inst;
-  //         let root;
-  //         let Child;
-  //         beforeEach(() => {
-  //             Child = Component.create();
-  //             inst = new Component();
-  //             mount('component.html');
-  //             root = document.getElementById('ref');
-  //             inst.mount(root).init({ a: 1, b: 2 });
-  //         });
-  //         it('should throw id passed-in argument is not an object', () => {
-  //             expect(() => {
-  //                 inst.setRef();
-  //             }).toThrow();
-  //         });
-  //         it('should accept a component instance as child', () => {
-  //             const childInst = new Child('.child');
-  //             expect(() => {
-  //                 inst.setRef({ id: 'child', component: childInst });
-  //             }).toNotThrow();
-  //         });
-  //         it('should accept a component constructor as child', () => {
-  //             expect(() => {
-  //                 inst.setRef({ id: 'child', component: Child, el: '.child' });
-  //             }).toNotThrow();
-  //         });
-  //         it('should throw when a child constructor does not have an el root element', () => {
-  //             expect(() => {
-  //                 inst.setRef({ id: 'child', component: Child });
-  //             }).toThrow();
-  //         });
-  //         it('should throw when an id is not set', () => {
-  //             expect(() => {
-  //                 inst.setRef({ id: null, component: Child });
-  //             }).toThrow();
-  //         });
-  //         it('should create a new instance from the passed-in component constructor', () => {
-  //             const spy = expect.createSpy();
-  //             const opts = { a: 1 };
-  //             const MockChild = Component.create({
-  //                 constructor(...args) {
-  //                     spy(...args);
-  //                     return Component.apply(this, args);
-  //                 }
-  //             });
-  //             inst.setRef({
-  //                 id: 'child',
-  //                 component: MockChild,
-  //                 el: '.child',
-  //                 opts
-  //             });
-  //             expect(spy).toHaveBeenCalledWith('.child', opts);
-  //         });
-  //         it('should throw when the passed-in component is neither an instance nor a constructor with root element', () => {
-  //             expect(() => {
-  //                 inst.setRef({ id: 'child', component: null });
-  //             }).toThrow();
-  //         });
-  //         it('should create child/parent reference', () => {
-  //             const childInst = new Child('.child');
-  //             inst.setRef({ id: 'child', component: childInst });
-  //             expect(inst.$refs.child).toBe(childInst);
-  //         });
-  //         it('should add an entry into the `_$refsKeys` array', () => {
-  //             const childInst = new Child('.child');
-  //             inst.setRef({ id: 'child', component: childInst });
-  //             expect(inst._$refsKeys).toContain('child');
-  //         });
-  //         it('should pass selected state to child', () => {
-  //             const component = new Child('.child');
-  //             const spy = expect.spyOn(component, 'init').andCallThrough();
-  //             const props = { b: 'b' };
-  //             const expected = { b: 2 };
-  //             inst.setRef({ id: 'child', component, props });
-  //             expect(spy.calls[0].arguments[0]).toMatch(expected);
-  //         });
-  //         it('should return a promise', () => {
-  //             const component = new Child('.child');
-  //             const ret = inst.setRef({ id: 'child', component });
-  //             expect(ret).toBeA(Promise);
-  //         });
-  //         it('should call previous reference\'s `destroy` method when a new reference is set', () => {
-  //             const child = new Child('.child');
-  //             const otherChild = new Child(document.createElement('p'));
-  //             const spy = expect.spyOn(child, 'destroy').andCallThrough();
-  //             inst.$refs.child = child;
-  //             const ret = inst.setRef({ id: 'child', component: otherChild });
-  //             expect(ret).toBeA(Promise);
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should replace previous reference\'s root element with the new reference `$el`', (done) => {
-  //             const child = new Child('.child');
-  //             const otherChild = new Child(document.createElement('p'));
-  //             const spy = expect.spyOn(inst.$el, 'replaceChild').andCallThrough();
-  //             expect.spyOn(inst.$el, 'contains').andReturn(true);
-  //             inst.$refs.child = child;
-  //             const ret = inst.setRef({ id: 'child', component: otherChild }).then(() => {
-  //                 expect(inst.$el.contains).toHaveBeenCalledWith(child.$el);
-  //                 expect(spy).toHaveBeenCalledWith(otherChild.$el, child.$el);
-  //                 done();
-  //             });
-  //             expect(ret).toBeA(Promise);
-  //         });
-  //         it('should append new reference `$el` when previuos `$el` is already detached', (done) => {
-  //             const child = new Child('.child');
-  //             const otherChild = new Child(document.createElement('p'));
-  //             const spy = expect.spyOn(inst.$el, 'appendChild').andCallThrough();
-  //             expect.spyOn(inst.$el, 'contains').andReturn(false);
-  //             inst.$refs.child = child;
-  //             inst.$el.removeChild(child.$el);
-  //             const ret = inst.setRef({ id: 'child', component: otherChild }).then(() => {
-  //                 expect(inst.$el.contains).toHaveBeenCalledWith(child.$el);
-  //                 expect(spy).toHaveBeenCalledWith(otherChild.$el);
-  //                 done();
-  //             });
-  //             expect(ret).toBeA(Promise);
-  //         });
-  //     });
-  //     describe('`setRef()`', () => {
-  //         let inst;
-  //         let root;
-  //         let Child;
-  //         beforeEach(() => {
-  //             Child = Component.create();
-  //             inst = new Component();
-  //             mount('component.html');
-  //             root = document.getElementById('ref');
-  //             inst.mount(root).init({ a: 1, b: 2 });
-  //         });
-  //         it('should cycle every ref and call its `destroy method`', () => {
-  //             const child = new Child(document.createElement('div'));
-  //             const spy = expect.spyOn(child, 'destroy').andCallThrough();
-  //             inst.$refs.child = child;
-  //             inst._$refsKeys.push('child');
-  //             inst.closeRefs();
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should return a Promise', () => {
-  //             expect(inst.closeRefs()).toBeA(Promise);
-  //         });
-  //         it('should log any catched error to `console.error`', (done) => {
-  //             const child = new Child(document.createElement('div'));
-  //             const err = new Error('MOCK');
-  //             expect.spyOn(child, 'destroy').andReturn(Promise.reject(err));
-  //             const spy = expect.spyOn(console, 'error');
-  //             inst.$refs.child = child;
-  //             inst._$refsKeys.push('child');
-  //             inst.closeRefs().then(() => {
-  //                 expect(spy).toHaveBeenCalledWith('close refs', err);
-  //                 spy.restore();
-  //                 done();
-  //             });
-  //         });
-  //         it('should reset `$refs` and `_$refsKeys` properties', (done) => {
-  //             const child = new Child(document.createElement('div'));
-  //             inst.$refs.child = child;
-  //             inst._$refsKeys.push('child');
-  //             inst.closeRefs().then(() => {
-  //                 expect(inst.$refs).toMatch({});
-  //                 expect(inst._$refsKeys.length).toBe(0);
-  //                 done();
-  //             });
-  //         });
-  //     });
-  //     describe('`destroy()`', () => {
-  //         let inst;
-  //         let root;
-  //         beforeEach(() => {
-  //             inst = new Component();
-  //             mount('component.html');
-  //             root = document.getElementById('ref');
-  //             inst.mount(root).init();
-  //         });
-  //         it('should call `beforeDestroy` lifecycle hook', () => {
-  //             const spy = expect.spyOn(inst, 'beforeDestroy');
-  //             inst.destroy();
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should detach any DOM event', () => {
-  //             const spy = expect.spyOn(inst.$ev, 'off');
-  //             inst.destroy();
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should detach any event handler', () => {
-  //             const spy = expect.spyOn(inst, 'off');
-  //             inst.destroy();
-  //             expect(spy).toHaveBeenCalled();
-  //         });
-  //         it('should remove the `data-cid ` attribute from the element', () => {
-  //             expect(inst.el.hasAttribute('data-cid ')).toBe(true);
-  //             inst.destroy();
-  //             expect(inst.el.hasAttribute('data-cid ')).toBe(false);
-  //         });
-  //         it('should call `closeRefs()` and deactivate the instance', (done) => {
-  //             const spy = expect.spyOn(inst, 'closeRefs').andCallThrough();
-  //             inst.destroy().then(() => {
-  //                 expect(inst._active).toBe(false);
-  //                 expect(spy).toHaveBeenCalled();
-  //                 done();
-  //             });
-  //         });
-  //         it('should return a promise', () => {
-  //             expect(inst.destroy()).toBeA(Promise);
-  //         });
-  //         it('should log any catched error to `console.error`', (done) => {
-  //             const err = new Error('MOCK');
-  //             expect.spyOn(inst, 'closeRefs').andReturn(Promise.reject(err));
-  //             const spy = expect.spyOn(console, 'error');
-  //             inst.destroy().then(() => {
-  //                 expect(spy).toHaveBeenCalledWith('destroy catch: ', err);
-  //                 spy.restore();
-  //                 done();
-  //             });
-  //         });
-  //     });
+  describe('`setRef()`', () => {
+    let inst: Component;
+    let root: HTMLElement;
+    const options = {};
+    const cfg = {
+      el: document.createElement('div'),
+      component: Component,
+      id: 'child',
+      options,
+    };
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Component().mount(root);
+    });
+    it('throws if passed-in parameter is not an object', async () => {
+      spyOn(utils, 'isPlainObject').and.returnValue(false);
+      let e: any;
+      try {
+        await inst.setRef(cfg);
+      } catch (err) {
+        e = err;
+      }
+      expect(e).toEqual(jasmine.any(TypeError));
+    });
+
+    it('calls component constructors with options', () => {
+      spyOn(Component, 'isComponent').and.returnValue(true);
+      const el = document.createElement('div');
+      const spy = jasmine.createSpy();
+      const childOpts = {};
+      class Child extends Component {
+        constructor(opts = {}) {
+          super(opts);
+          spy(this, options);
+        }
+      }
+      inst.setRef({
+        el,
+        id: 'child',
+        component: Child,
+        options: childOpts,
+      });
+
+      expect(spy).toHaveBeenCalledWith(jasmine.any(Child), childOpts);
+    });
+
+    it('calls component if it is a plain function', () => {
+      const spy = jasmine.createSpy().and.returnValue(new Component());
+      const el = document.createElement('div');
+
+      inst.setRef({
+        id: 'child',
+        el,
+        component: spy,
+      });
+
+      expect(spy).toHaveBeenCalledWith(el, inst.state);
+    });
+
+    it('accepts a child instance', async () => {
+      const el = document.createElement('div');
+      const component = new Component();
+      let e: any;
+
+      try {
+        inst.setRef({
+          id: 'child',
+          el,
+          component,
+        });
+      } catch (err) {
+        e = err;
+      }
+
+      expect(e).not.toEqual(jasmine.any(TypeError));
+    });
+
+    it('inherits parent context if present', () => {
+      inst.$context = {};
+      const component = new Component();
+      const el = document.createElement('div');
+
+      inst.setRef({
+        id: 'child',
+        el,
+        component,
+      });
+
+      expect(component.$context).toBe(inst.$context);
+    });
+  });
 });
+/* tslint:enable max-classes-per-file */

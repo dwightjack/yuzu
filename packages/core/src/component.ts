@@ -493,9 +493,8 @@ export class Component implements Idush {
     props?: IState,
   ) {
     let ref: Component;
-
     if (!isPlainObject(refCfg)) {
-      throw new Error('Invalid reference configuration');
+      throw new TypeError('Invalid reference configuration');
     }
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
@@ -505,9 +504,12 @@ export class Component implements Idush {
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
     } else if (typeof ChildComponent === 'function' && el) {
-      ref = (ChildComponent as IRefFactory<Component>['component'])(el);
+      ref = (ChildComponent as IRefFactory<Component>['component'])(
+        el,
+        this.state,
+      );
     } else {
-      throw new Error('Invalid reference configuration');
+      throw new TypeError('Invalid reference configuration');
     }
 
     // $context gets propagated to every child component

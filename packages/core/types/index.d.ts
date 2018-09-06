@@ -29,7 +29,7 @@ export interface IRefInstance<T> {
 export interface IRefFactory<T> {
   id: string;
   el: Element | HTMLElement | string;
-  component: (el: Element) => T;
+  component: (el: Element, state: IState) => T;
   on?: IObject<fn>;
   [key: string]: any;
 }
