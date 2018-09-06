@@ -555,7 +555,7 @@ export class Component implements Idush {
             ref,
           );
           this.on(`change:${src}`, (state) => {
-            ref.setState(key, value(state, ref));
+            ref.setState({ [key]: value(state, ref) });
           });
         } else {
           refState[name] = value;

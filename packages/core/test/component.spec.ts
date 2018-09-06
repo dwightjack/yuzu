@@ -718,6 +718,170 @@ describe('`Component`', () => {
 
       expect(component.$context).toBe(inst.$context);
     });
+
+    it('throws if "id" is not set', async () => {
+      const id: any = null;
+      let e: any;
+      try {
+        await inst.setRef({
+          id,
+          el: document.createElement('div'),
+          component: Component,
+        });
+      } catch (err) {
+        e = err;
+      }
+
+      expect(e).toEqual(jasmine.any(Error));
+    });
+
+    it('binds child instance events', () => {
+      const on = {
+        run: () => undefined,
+      };
+      const child = new Component();
+      const spy = spyOn(child, 'on');
+      const config = {
+        ...cfg,
+        on,
+        component: child,
+      };
+      inst.setRef(config);
+
+      expect(spy).toHaveBeenCalledWith('run', on.run);
+    });
+
+    it('stores a reference of the child component', () => {
+      const child = new Component();
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config);
+      expect(inst.$refsStore.get(cfg.id)).toBe(child);
+    });
+
+    it('mounts the child component', () => {
+      const child = new Component();
+      const spy = spyOn(child, 'mount').and.callThrough();
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config);
+      expect(spy).toHaveBeenCalledWith(cfg.el, null);
+    });
+
+    it('does NOT mount if the child component is already mounted', () => {
+      const child = new Component();
+      child.$el = cfg.el;
+      const spy = spyOn(child, 'mount').and.callThrough();
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('does NOT mount if el is falsy', () => {
+      const child = new Component();
+
+      const spy = spyOn(child, 'mount').and.callThrough();
+      const config = {
+        ...cfg,
+        el: null as any,
+        component: child,
+      };
+      inst.setRef(config);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('inits the child component', () => {
+      const child = new Component();
+
+      const spy = spyOn(child, 'init').and.callThrough();
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('inits the child component with passed-in state', () => {
+      const child = new Component();
+
+      const spy = spyOn(child, 'init').and.callThrough();
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config, { demo: true });
+      expect(spy).toHaveBeenCalledWith({ demo: true });
+    });
+
+    it('processes passed-in state values if functions', () => {
+      const child = new Component();
+
+      const spy = spyOn(child, 'init').and.callThrough();
+      const handler = jasmine.createSpy().and.returnValue(true);
+      const state = {
+        value: handler,
+      };
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config, state);
+
+      expect(handler).toHaveBeenCalledWith(inst.state, child);
+      expect(spy).toHaveBeenCalledWith({ value: true });
+    });
+
+    it('propagates parent state change to the child', () => {
+      const child = new Component();
+
+      const handler = jasmine.createSpy().and.returnValue(true);
+      const spy = spyOn(child, 'setState');
+      const state = {
+        value: handler,
+      };
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config, state);
+
+      const newState = {};
+      inst.emit('change:*', newState);
+      expect(handler).toHaveBeenCalledWith(newState, child);
+      expect(spy).toHaveBeenCalledWith({ value: true });
+    });
+
+    it('listen for a specific parent state key change', () => {
+      const child = new Component();
+      inst.state = {
+        parent: 0,
+      };
+      const handler = jasmine.createSpy().and.returnValue(true);
+      const spy = spyOn(child, 'setState');
+      const state = {
+        'parent>value': handler,
+      };
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      inst.setRef(config, state);
+
+      expect(handler).toHaveBeenCalledWith(0, child);
+      inst.emit('change:*', {});
+      expect(spy).not.toHaveBeenCalled();
+
+      inst.emit('change:parent', 2, 0);
+      expect(spy).toHaveBeenCalledWith({ value: true });
+    });
   });
 });
 /* tslint:enable max-classes-per-file */
