@@ -1,5 +1,4 @@
 import dush from 'dush';
-
 import { Component } from '../src/component';
 import { mount } from '../../../shared/utils';
 import * as utils from '@yuzu/utils';
@@ -881,6 +880,175 @@ describe('`Component`', () => {
 
       inst.emit('change:parent', 2, 0);
       expect(spy).toHaveBeenCalledWith({ value: true });
+    });
+
+    it('destroys any previous reference registered with the same name', () => {
+      const prev = new Component().mount(document.createElement('div'));
+      const spy = spyOn(prev, 'destroy').and.callThrough();
+      inst.$refs.child = prev;
+
+      inst.setRef(cfg);
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('replaces the old reference DOM element with the new one', async () => {
+      const prevEl = document.createElement('div');
+      const prev = new Component().mount(prevEl);
+      const newEl = document.createElement('div');
+      inst.$refs.child = prev;
+      inst.$el.appendChild(prevEl);
+      const spy = spyOn(inst.$el, 'replaceChild');
+
+      await inst.setRef({ ...cfg, el: newEl });
+      expect(spy).toHaveBeenCalledWith(newEl, prevEl);
+    });
+
+    it('it appends the new child if the previous element is NOT in the DOM', async () => {
+      const prevEl = document.createElement('div');
+      const prev = new Component().mount(prevEl);
+      const newEl = document.createElement('div');
+      inst.$refs.child = prev;
+      const spy = spyOn(inst.$el, 'replaceChild');
+      const spy2 = spyOn(inst.$el, 'appendChild');
+
+      await inst.setRef({ ...cfg, el: newEl });
+      expect(spy).not.toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalledWith(newEl);
+    });
+
+    it('just appends the element if it is not already a child of the parent', async () => {
+      const newEl = document.createElement('div');
+      const spy = spyOn(inst.$el, 'appendChild');
+      const spy2 = spyOn(inst.$el, 'contains').and.returnValue(false);
+      await inst.setRef({ ...cfg, el: newEl });
+      expect(spy).toHaveBeenCalledWith(newEl);
+      expect(spy2).toHaveBeenCalledWith(newEl);
+    });
+
+    it('just skips append the child', async () => {
+      const newEl = document.createElement('div');
+      const spy = spyOn(inst.$el, 'appendChild');
+      spyOn(inst.$el, 'contains').and.returnValue(true);
+      await inst.setRef({ ...cfg, el: newEl });
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('inits the component with the computed state', async () => {
+      const child = new Component();
+      const state = { demo: true };
+      const spy = spyOn(child, 'init');
+      await inst.setRef({ ...cfg, component: child }, state);
+      expect(spy).toHaveBeenCalledWith(state);
+    });
+
+    it('returns a promise that resolves to the child instance', async () => {
+      const child = new Component();
+      const promise = inst.setRef({ ...cfg, component: child });
+      expect(promise).toEqual(jasmine.any(Promise));
+      const res = await promise;
+      expect(res).toBe(child);
+    });
+  });
+
+  describe('`.closeRefs`', () => {
+    let inst: Component;
+    let child: Component;
+
+    beforeEach(() => {
+      inst = new Component();
+      child = new Component();
+      inst.$refs.child = child;
+      inst.$refsStore.set('child', child);
+    });
+
+    it('should cycle every ref and call its `destroy method`', async () => {
+      const spy = spyOn(child, 'destroy');
+      await inst.closeRefs();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should clear the reference store', async () => {
+      const spy = spyOn(inst.$refsStore, 'clear');
+      await inst.closeRefs();
+      expect(Object.keys(inst.$refs).length).toBe(0);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should return a Promise', () => {
+      expect(inst.closeRefs()).toEqual(jasmine.any(Promise));
+    });
+
+    it('should log any caught error to `console.error`', (done) => {
+      spyOn(child, 'destroy').and.throwError('MOCK');
+
+      const spy = spyOn(console, 'error');
+
+      inst.closeRefs().catch(() => {
+        expect(spy).toHaveBeenCalledWith('close refs', jasmine.any(Error));
+        done();
+      });
+    });
+  });
+
+  describe('`destroy()`', () => {
+    let inst: Component;
+
+    beforeEach(() => {
+      inst = new Component();
+      inst.mount(document.createElement('div'));
+    });
+
+    it('should call `beforeDestroy` lifecycle hook', async () => {
+      const spy = spyOn(inst, 'beforeDestroy');
+
+      await inst.destroy();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should detach any DOM listener', async () => {
+      const spy = spyOn(inst, 'removeListeners');
+
+      await inst.destroy();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should detach any event', async () => {
+      const spy = spyOn(inst, 'off');
+
+      await inst.destroy();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should remove the `data-cid` attribute from the element', async () => {
+      const spy = spyOn(inst.$el, 'removeAttribute');
+
+      await inst.destroy();
+      expect(spy).toHaveBeenCalledWith('data-cid');
+    });
+
+    it('should call `closeRefs()` and deactivate the instance', async () => {
+      const spy = spyOn(inst, 'closeRefs');
+
+      await inst.destroy();
+
+      expect(inst.$active).toBe(false);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should return a promise', () => {
+      expect(inst.destroy()).toEqual(jasmine.any(Promise));
+    });
+
+    it('should log any caught error to `console.error`', (done) => {
+      spyOn(inst, 'closeRefs').and.throwError('MOCK');
+
+      const spy = spyOn(console, 'error');
+
+      inst.destroy().catch(() => {
+        expect(spy).toHaveBeenCalledWith('destroy catch: ', jasmine.any(Error));
+        done();
+      });
     });
   });
 });

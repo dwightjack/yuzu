@@ -32,7 +32,9 @@ module.exports = (config) => {
     },
 
     karmaTypescriptConfig: {
-      reports: {},
+      reports: {
+        text: '',
+      },
       tsconfig: './tsconfig.json',
       include: {
         mode: 'merge',

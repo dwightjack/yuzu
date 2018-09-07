@@ -573,7 +573,7 @@ export class Component implements Idush {
         ref.$el
       ) {
         prevRef.$el.parentElement.replaceChild(ref.$el, prevRef.$el);
-      } else if (ref.$el) {
+      } else if (ref.$el && !$el.contains(ref.$el)) {
         $el.appendChild(ref.$el);
       }
       return ref.init(refState);
