@@ -53,21 +53,8 @@ let idx = -1;
 export interface Sandbox extends Idush {}
 
 export class Sandbox implements Idush {
-  /**
-   * Sets a `$context` property on the instance with the passed-in properties
-   *
-   * @param {Component} instance component instance
-   * @param {object} context context
-   */
-  public static inject(instance: Component, context: IObject) {
-    Object.defineProperty(instance, '$context', {
-      enumerable: false,
-      get: () => context,
-    });
-  }
-
   public $id: string;
-  public $root: Element | null;
+  public $root!: Element;
   public $registry: Map<typeof Component, IObject>;
   public $instances: Map<typeof Component, Component[]>;
   public $context?: IContext;
@@ -88,15 +75,17 @@ export class Sandbox implements Idush {
 
     this.$id = id || `_sbx-${++idx}`; // eslint-disable-line no-plusplus
 
-    this.$root = typeof root === 'string' ? qs(root) : root;
+    const $root = typeof root === 'string' ? qs(root) : root;
 
-    if (!isElement(this.$root)) {
+    if (!isElement($root)) {
       throw new Error(
         `Unable to initialize the sandbox on the following element: ${root}`,
       );
     }
 
-    (this.$root as HTMLElement).dataset.sandbox = this.$id;
+    this.$root = $root;
+
+    $root.setAttribute('data-sandbox', this.$id);
 
     this.$registry = new Map();
     this.$instances = new Map();
@@ -150,7 +139,7 @@ export class Sandbox implements Idush {
         console.warn(`Component ${ComponentConstructor} already initialized`); // tslint:disable-line no-console
         return;
       }
-      const $root = this.$root as HTMLElement;
+      const { $root } = this;
       const instances = qsa(selector, $root).reduce((acc: Component[], el) => {
         if (
           !el.dataset.skip &&
