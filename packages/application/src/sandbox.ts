@@ -4,11 +4,14 @@ import { IObject } from '@yuzu/core/types';
 import { Component } from '@yuzu/core';
 import { createContext, IContext } from './context';
 
-export type sandboxComponentOptions = [typeof Component, IObject];
+export type sandboxComponentOptions = [
+  typeof Component,
+  { [key: string]: any }
+];
 
 export interface ISandboxOptions {
-  components?: Array<typeof Component | sandboxComponentOptions>;
-  root?: HTMLElement;
+  components?: Array<(typeof Component) | sandboxComponentOptions>;
+  root?: HTMLElement | string;
   id?: string;
 }
 
@@ -55,9 +58,10 @@ export interface Sandbox extends Idush {}
 export class Sandbox implements Idush {
   public $id: string;
   public $root!: Element;
-  public $registry: Map<typeof Component, IObject>;
-  public $instances: Map<typeof Component, Component[]>;
   public $context?: IContext;
+
+  public $registry = new Map<typeof Component, IObject>();
+  public $instances = new Map<typeof Component, Component[]>();
 
   /**
    * Creates a sandbox instance
@@ -86,9 +90,6 @@ export class Sandbox implements Idush {
     this.$root = $root;
 
     $root.setAttribute('data-sandbox', this.$id);
-
-    this.$registry = new Map();
-    this.$instances = new Map();
 
     components.forEach((config) => {
       if (!Array.isArray(config)) {
