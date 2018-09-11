@@ -9,6 +9,12 @@ export type sandboxComponentOptions = [
   { [key: string]: any }
 ];
 
+export interface ISandboxRegistryEntry {
+  component: typeof Component;
+  selector: string;
+  [key: string]: any;
+}
+
 export interface ISandboxOptions {
   components?: Array<(typeof Component) | sandboxComponentOptions>;
   root?: HTMLElement | string;
@@ -60,7 +66,7 @@ export class Sandbox implements Idush {
   public $root!: Element;
   public $context?: IContext;
 
-  public $registry = new Map<typeof Component, IObject>();
+  public $registry: ISandboxRegistryEntry[] = [];
   public $instances = new Map<typeof Component, Component[]>();
 
   /**
@@ -111,15 +117,20 @@ export class Sandbox implements Idush {
    * @param {Component} params.component Component constructor
    * @param {*} params.* Every other property will be used as component option
    */
-  public register({
-    component,
-    ...params
-  }: IObject & { component: typeof Component; selector?: string }) {
-    if (!this.$registry.has(component)) {
-      this.$registry.set(component, params);
-    } else {
-      console.warn(`Component ${component} already registered`); // tslint:disable-line no-console
+  public register(
+    params: {
+      component?: typeof Component;
+      selector?: string;
+      [key: string]: any;
+    } = {},
+  ) {
+    if (!Component.isComponent(params.component)) {
+      throw new TypeError('Missing or invalid `component` property');
     }
+    if (typeof params.selector !== 'string') {
+      throw new TypeError('Missing `selector` property');
+    }
+    this.$registry.push(params as ISandboxRegistryEntry);
   }
 
   /**
@@ -134,37 +145,41 @@ export class Sandbox implements Idush {
   public start(context = {}) {
     this.$context = createContext(context);
     this.emit('beforeStart');
-    [...this.$registry.entries()].forEach(([ComponentConstructor, params]) => {
-      const { selector, ...options } = params;
-      if (this.$instances.has(ComponentConstructor)) {
-        console.warn(`Component ${ComponentConstructor} already initialized`); // tslint:disable-line no-console
-        return;
-      }
-      const { $root } = this;
-      const instances = qsa(selector, $root).reduce((acc: Component[], el) => {
-        if (
-          !el.dataset.skip &&
-          !el.closest('[data-skip]') &&
-          el.closest('[data-sandbox]') === this.$root
-        ) {
-          // extract state from html
-          const inlineOptions = datasetParser(el);
-          const instance = new ComponentConstructor({
-            ...options,
-            ...inlineOptions,
-          });
-
-          (this.$context as IContext).inject(instance);
-
-          instance.mount(el);
-
-          acc.push(instance);
+    this.$registry.forEach(
+      ({ component: ComponentConstructor, selector, ...options }) => {
+        if (this.$instances.has(ComponentConstructor)) {
+          console.warn(`Component ${ComponentConstructor} already initialized`); // tslint:disable-line no-console
+          return;
         }
-        return acc;
-      }, []);
+        const { $root } = this;
+        const instances = qsa(selector, $root).reduce(
+          (acc: Component[], el) => {
+            if (
+              !el.dataset.skip &&
+              !el.closest('[data-skip]') &&
+              el.closest('[data-sandbox]') === this.$root
+            ) {
+              // extract state from html
+              const inlineOptions = datasetParser(el);
+              const instance = new ComponentConstructor({
+                ...options,
+                ...inlineOptions,
+              });
 
-      this.$instances.set(ComponentConstructor, instances);
-    });
+              (this.$context as IContext).inject(instance);
+
+              instance.mount(el);
+
+              acc.push(instance);
+            }
+            return acc;
+          },
+          [],
+        );
+
+        this.$instances.set(ComponentConstructor, instances);
+      },
+    );
     this.emit('start');
   }
 

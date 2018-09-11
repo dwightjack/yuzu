@@ -1,5 +1,6 @@
 import dush from 'dush';
 import { Sandbox, sandboxComponentOptions } from '../src/sandbox';
+import * as context from '../src/context';
 import { Component } from '@yuzu/core';
 import * as utils from '@yuzu/utils';
 
@@ -52,10 +53,10 @@ describe('`Sandbox`', () => {
       expect(root.getAttribute('data-sandbox')).toBe('demo');
     });
 
-    it('creates an internal map to keep track of registered components', () => {
+    it('creates an internal arary to keep track of registered components', () => {
       const root = document.createElement('div');
       const inst = new Sandbox({ root });
-      expect(inst.$registry).toEqual(jasmine.any(Map));
+      expect(inst.$registry).toEqual(jasmine.any(Array));
     });
 
     it('creates an internal map to keep track of component instances', () => {
@@ -75,7 +76,7 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith({ component: Child, selector: 'demo' });
     });
 
-    it('calls register() for every passed-in component configuration', () => {
+    it('calls register() for every passed-in component configuration (with options)', () => {
       const root = document.createElement('div');
       class Child extends Component {
         public static root = 'demo';
@@ -88,8 +89,58 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         selector: 'custom',
-        props: true,
+        prop: true,
       });
+    });
+  });
+
+  describe('.register()', () => {
+    let inst: Sandbox;
+
+    beforeEach(() => {
+      inst = new Sandbox({ root: document.createElement('div') });
+    });
+
+    it('throws if "component" is not a Component constructor', () => {
+      spyOn(Component, 'isComponent').and.returnValue(false);
+      expect(() => {
+        inst.register({ component: Component, selector: 'demo' });
+      }).toThrowError(TypeError);
+    });
+
+    it('throws if "selector" is not a string', () => {
+      expect(() => {
+        inst.register({ component: Component, selector: null as any });
+      }).toThrowError(TypeError);
+    });
+
+    it('pushes the passed-in params to the internal registry', () => {
+      const params = { component: Component, selector: 'demo' };
+      inst.register(params);
+      expect(inst.$registry[0]).toBe(params);
+    });
+  });
+  describe('.start()', () => {
+    let inst: Sandbox;
+    const params = { component: Component, selector: 'demo' };
+    beforeEach(() => {
+      inst = new Sandbox({ root: document.createElement('div') });
+      inst.$registry = [params];
+    });
+
+    it('should create an internal context', () => {
+      const mock = context.createContext({});
+      const spy = spyOn(context, 'createContext').and.returnValue(mock);
+      const ctx = {};
+      inst.start(ctx);
+      expect(spy).toHaveBeenCalledWith(ctx);
+      expect(inst.$context).toBe(mock);
+    });
+
+    it('should emit a "beforeStart" event', () => {
+      const spy = spyOn(inst, 'emit');
+      inst.start();
+      expect(spy).toHaveBeenCalledWith('beforeStart');
     });
   });
 });
