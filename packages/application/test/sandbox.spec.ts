@@ -122,9 +122,11 @@ describe('`Sandbox`', () => {
   });
   describe('.start()', () => {
     let inst: Sandbox;
+    let root: HTMLElement;
     const params = { component: Component, selector: 'demo' };
     beforeEach(() => {
-      inst = new Sandbox({ root: document.createElement('div') });
+      root = document.createElement('div');
+      inst = new Sandbox({ root });
       inst.$registry = [params];
     });
 
@@ -141,6 +143,168 @@ describe('`Sandbox`', () => {
       const spy = spyOn(inst, 'emit');
       inst.start();
       expect(spy).toHaveBeenCalledWith('beforeStart');
+    });
+
+    it('should abort component initialization if it is already registered', () => {
+      const spy = spyOn(inst.$instances, 'has').and.returnValue(true);
+      const spyWarn = spyOn(console, 'warn');
+      inst.start();
+      expect(spy).toHaveBeenCalledWith(Component);
+      expect(spyWarn).toHaveBeenCalled();
+      expect(inst.$instances.size).toBe(0);
+    });
+
+    it('should query the root DOM tree', () => {
+      const spy = spyOn(utils, 'qsa').and.returnValue([]);
+      inst.start();
+      expect(spy).toHaveBeenCalledWith(params.selector, inst.$root);
+    });
+
+    it('should call "createInstance" for each matched element', () => {
+      const children = [
+        document.createElement('div'),
+        document.createElement('div'),
+      ];
+
+      children.forEach((el) => root.appendChild(el));
+
+      spyOn(utils, 'qsa').and.returnValue(children);
+      const spy = spyOn(inst, 'createInstance').and.callThrough();
+      inst.$registry[0].demo = true;
+      inst.start();
+      expect(spy.calls.count()).toBe(2);
+      const calls = spy.calls.allArgs();
+      calls.forEach((args, i) => {
+        expect(args).toEqual([Component, { demo: true }, children[i]]);
+      });
+    });
+
+    it('skips if the element has "data-skip"', () => {
+      const child = document.createElement('div');
+      root.appendChild(child);
+      child.setAttribute('data-skip', '');
+      spyOn(utils, 'qsa').and.returnValue([child]);
+      const spy = spyOn(inst, 'createInstance').and.callThrough();
+      inst.start();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('skips if the element is not a child of the root sandbox', () => {
+      const child = document.createElement('div');
+      const spy = spyOn(inst, 'createInstance').and.callThrough();
+      spyOn(utils, 'qsa').and.returnValue([child]);
+      inst.start();
+      expect(spy).not.toHaveBeenCalled();
+
+      const mid = document.createElement('div');
+
+      // child is nested inside another sandbox
+      mid.setAttribute('data-sandbox', 'mid');
+      mid.appendChild(child);
+      root.appendChild(mid);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('skips if the element is inside a [data-skip] element', () => {
+      const child = document.createElement('div');
+      const spy = spyOn(inst, 'createInstance').and.callThrough();
+      const mid = document.createElement('div');
+
+      spyOn(utils, 'qsa').and.returnValue([child]);
+
+      // child is nested inside a [data-skip] element
+      mid.setAttribute('data-skip', '');
+      mid.appendChild(child);
+      root.appendChild(mid);
+
+      inst.start();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('sets a record with component instances', () => {
+      const child = document.createElement('div');
+      root.appendChild(child);
+
+      spyOn(utils, 'qsa').and.returnValue([child]);
+      const childInstance = new Component();
+      spyOn(inst, 'createInstance').and.returnValue(childInstance);
+      const spy = spyOn(inst.$instances, 'set');
+      inst.start();
+
+      expect(spy).toHaveBeenCalledWith(Component, [childInstance]);
+    });
+
+    it('emits a "start" event', () => {
+      const spy = spyOn(inst, 'emit');
+      inst.start();
+      expect(spy).toHaveBeenCalledWith('start');
+    });
+  });
+
+  describe('.createInstance()', () => {
+    let inst: Sandbox;
+    let root: HTMLElement;
+    let el: HTMLElement;
+
+    beforeEach(() => {
+      el = document.createElement('div');
+      root = document.createElement('div');
+      inst = new Sandbox({ root });
+    });
+
+    it('initializes a child instance', () => {
+      const spy = jasmine.createSpy('created');
+      const options = {};
+      class Child extends Component {
+        constructor(opts: any) {
+          super(opts);
+          spy(this, opts);
+        }
+      }
+      inst.createInstance(Child, options, el);
+      expect(spy).toHaveBeenCalledWith(jasmine.any(Child), options);
+    });
+
+    it('returns a component instance', () => {
+      const ret = inst.createInstance(Component, {}, el);
+      expect(ret).toEqual(jasmine.any(Component));
+    });
+
+    it('extracts inline options and passes it to the constructor', () => {
+      const spy = jasmine.createSpy('created');
+      const options = { demo: true };
+      class Child extends Component {
+        constructor(opts: any) {
+          super(opts);
+          spy(opts);
+        }
+      }
+      spyOn(utils, 'datasetParser').and.returnValue({
+        inline: true,
+      });
+      inst.createInstance(Child, options, el);
+      expect(spy).toHaveBeenCalledWith({ demo: true, inline: true });
+    });
+
+    it('injects the context', () => {
+      class Child extends Component {}
+
+      const spy = jasmine.createSpy('inject');
+
+      inst.$context = context.createContext();
+      inst.$context.inject = spy;
+
+      inst.createInstance(Child, {}, el);
+      expect(spy).toHaveBeenCalledWith(jasmine.any(Child));
+    });
+
+    it('mounts the instance', () => {
+      class Child extends Component {}
+      const spy = spyOn(Child.prototype, 'mount');
+
+      inst.createInstance(Child, {}, el);
+      expect(spy).toHaveBeenCalledWith(el);
     });
   });
 });

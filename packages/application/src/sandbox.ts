@@ -142,7 +142,7 @@ export class Sandbox implements Idush {
    * @fires Sandbox#beforeStart
    * @fires Sandbox#start Events dispatched after all components are initialized
    */
-  public start(context = {}) {
+  public start(context = {}): Sandbox {
     this.$context = createContext(context);
     this.emit('beforeStart');
     this.$registry.forEach(
@@ -159,16 +159,11 @@ export class Sandbox implements Idush {
               !el.closest('[data-skip]') &&
               el.closest('[data-sandbox]') === this.$root
             ) {
-              // extract state from html
-              const inlineOptions = datasetParser(el);
-              const instance = new ComponentConstructor({
-                ...options,
-                ...inlineOptions,
-              });
-
-              (this.$context as IContext).inject(instance);
-
-              instance.mount(el);
+              const instance = this.createInstance(
+                ComponentConstructor,
+                options,
+                el,
+              );
 
               acc.push(instance);
             }
@@ -181,6 +176,26 @@ export class Sandbox implements Idush {
       },
     );
     this.emit('start');
+
+    return this;
+  }
+
+  public createInstance(
+    ComponentConstructor: typeof Component,
+    options: IObject,
+    el: HTMLElement,
+  ) {
+    const inlineOptions = datasetParser(el);
+    const instance = new ComponentConstructor({
+      ...options,
+      ...inlineOptions,
+    });
+
+    if (this.$context) {
+      this.$context.inject(instance);
+    }
+
+    return instance.mount(el);
   }
 
   /**
