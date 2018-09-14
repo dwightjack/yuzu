@@ -61,17 +61,45 @@ let idx = -1;
 // tslint:disable-next-line: interface-name no-empty-interface
 export interface Sandbox extends Idush {}
 
+/**
+ * Components' container
+ * @class
+ */
 export class Sandbox implements Idush {
+  /**
+   * Sandbox internal id
+   * @type {string}
+   */
   public $id: string;
+
+  /**
+   * Sandbox root element
+   * @type {HTMLElement}
+   */
   public $root!: Element;
+
+  /**
+   * Internal context. Used to share data across child instances
+   * @type {object}
+   */
   public $context?: IContext;
 
+  /**
+   * Registered components storage
+   * @type {object[]}
+   */
   public $registry: ISandboxRegistryEntry[] = [];
+
+  /**
+   * Running instances storage
+   * @type {Map}
+   */
   public $instances = new Map<typeof Component, Component[]>();
 
   /**
    * Creates a sandbox instance
    *
+   * @constructor
    * @param {object} config
    * @param {Component[]|[Component, object][]} [config.components] Array of: components constructor or array with [ComponentConstructor, option]
    * @param {HTMLElement|string} [config.root=document.body] Root element of the sandbox. Either a dom element
@@ -115,6 +143,7 @@ export class Sandbox implements Idush {
    *
    * @param {object} params
    * @param {Component} params.component Component constructor
+   * @param {string} params.selector Child component root CSS selector
    * @param {*} params.* Every other property will be used as component option
    */
   public register(
@@ -141,6 +170,7 @@ export class Sandbox implements Idush {
    * @param {object} [context] Optional context object to be injected into the child components.
    * @fires Sandbox#beforeStart
    * @fires Sandbox#start Events dispatched after all components are initialized
+   * @returns {Sandbox}
    */
   public start(context = {}): Sandbox {
     this.$context = createContext(context);
@@ -203,17 +233,21 @@ export class Sandbox implements Idush {
    *
    * @fires Sandbox#beforeStop
    * @fires Sandbox#stop
-   * @returns {Promise}
+   * @returns {Promise<void>}
    */
   public async stop() {
     this.emit('beforeStop');
 
-    const instances = [...this.$instances.values()].reduce((a, b) =>
-      a.concat(b),
-    );
-
     try {
-      await Promise.all(instances.map((instance) => instance.destroy()));
+      const maps: Array<Promise<void>> = [];
+      const groups = Array.from(this.$instances.values());
+      for (let i = 0, l = groups.length; i < l; i += 1) {
+        const instances = groups[i];
+        instances.forEach((instance) => {
+          maps.push(instance.destroy());
+        });
+      }
+      await Promise.all(maps);
     } catch (e) {
       this.emit('error', e);
       return Promise.reject(e);

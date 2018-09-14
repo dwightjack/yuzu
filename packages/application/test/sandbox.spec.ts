@@ -307,5 +307,122 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith(el);
     });
   });
+
+  describe('.stop()', () => {
+    let inst: Sandbox;
+    let spy: any;
+    class Child extends Component {}
+    class GrandChild extends Component {}
+
+    beforeEach(() => {
+      spy = jasmine
+        .createSpy('destroy')
+        .and.returnValue(Promise.resolve('ret'));
+      Child.prototype.destroy = spy;
+      GrandChild.prototype.destroy = spy;
+
+      inst = new Sandbox({ root: document.createElement('div') });
+      inst.$instances.set(Child, [
+        new Child().mount(document.createElement('div')),
+      ]);
+      inst.$instances.set(GrandChild, [
+        new GrandChild().mount(document.createElement('div')),
+      ]);
+    });
+    it('returns a promise', () => {
+      expect(inst.stop()).toEqual(jasmine.any(Promise));
+    });
+    it('cycles stored instances and calls destroy on them', async () => {
+      await inst.stop();
+      expect(spy.calls.count()).toBe(2);
+    });
+
+    it('waits until the destroy promises are resolved', (done) => {
+      let resolveFn: any;
+      let resolved = false;
+      const promise = new Promise((resolve) => {
+        resolveFn = () => {
+          resolved = true;
+          resolve();
+        };
+      });
+
+      spy.and.returnValue(promise);
+
+      inst.stop().then(() => {
+        expect(resolved).toBe(true);
+        done();
+      });
+
+      setTimeout(resolveFn, 1000);
+    });
+
+    it('rejects if something goes wrong', () => {
+      spy.and.throwError('MOCK');
+      return inst.stop().catch((e) => {
+        expect(e.message).toBe('MOCK');
+      });
+    });
+
+    it('clears the instances register', async () => {
+      await inst.stop();
+      expect(inst.$instances.size).toBe(0);
+    });
+
+    it('calls "clear()"', async () => {
+      const clearSpy = spyOn(inst, 'clear');
+      await inst.stop();
+      expect(clearSpy).toHaveBeenCalled();
+    });
+
+    it('emits  "beforeStop" asap', () => {
+      const emitSpy = spyOn(inst, 'emit');
+      inst.stop();
+      expect(emitSpy).toHaveBeenCalledWith('beforeStop');
+    });
+
+    it('emits  "stop" after the process has ended', (done) => {
+      const emitSpy = spyOn(inst, 'emit');
+      inst.stop().then(() => {
+        expect(emitSpy).toHaveBeenCalledWith('stop');
+        done();
+      });
+      expect(emitSpy).not.toHaveBeenCalledWith('stop');
+    });
+
+    it('emits  "error" on error', async () => {
+      const emitSpy = spyOn(inst, 'emit');
+      const err = new Error('MOCK');
+      spy.and.throwError(err);
+
+      try {
+        await inst.stop();
+      } catch {
+        expect(emitSpy).toHaveBeenCalledWith('error', err);
+      }
+    });
+  });
+
+  describe('.clear()', () => {
+    let inst: Sandbox;
+
+    beforeEach(() => {
+      inst = new Sandbox({ root: document.createElement('div') });
+      inst.$context = context.createContext({});
+    });
+
+    it('clears the context', () => {
+      inst.clear();
+      expect(inst.$context).toBeUndefined();
+    });
+
+    it('detaches events', () => {
+      const spyEmit = spyOn(inst, 'off');
+      inst.clear();
+      ['beforeStart', 'start', 'beforeStop', 'stop'].forEach((event) => {
+        expect(spyEmit).toHaveBeenCalledWith(event);
+      });
+    });
+  });
 });
 /* tslint:enable max-classes-per-file */
