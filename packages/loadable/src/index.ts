@@ -30,14 +30,13 @@ export const Loadable = (opts: ILoadableOptions) => {
       props: {},
     };
 
-    constructor(options: IObject) {
-      super(options);
-      Object.assign(this.options, params);
+    constructor(options: IObject = {}) {
+      super(Object.assign(params, options));
     }
 
     public async mounted() {
       const { fetchData } = this.options;
-      const $el = this.$el as Element;
+      const { $el } = this;
 
       // empty the component
       $el.textContent = '';
