@@ -103,7 +103,7 @@ export class Component implements Idush {
     this.options = Object.entries(defaultOptions).reduce(
       (opts: IObject, [key, value]) => {
         let v = options[key] !== undefined ? options[key] : value;
-        if (typeof v === 'function') {
+        if (typeof v === 'function' && !Component.isComponent(v)) {
           v = v.bind(this);
         }
         opts[key] = v; // eslint-disable-line no-param-reassign
