@@ -54,6 +54,11 @@ module.exports = (config) => {
       bundlerOptions: {
         exclude: ['@yuzu/core/types'],
         transforms: [require('karma-typescript-es6-transform')()],
+        entrypoints: /\.spec\.ts$/,
+      },
+
+      compilerOptions: {
+        sourceMap: true,
       },
     },
 
