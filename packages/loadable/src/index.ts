@@ -17,22 +17,22 @@ export const Loadable = (opts: ILoadableOptions) => {
   const LoadableComponent = class extends Component {
     public static root = `[data-loadable][data-component="${Child.name}"]`;
 
-    public static defaultOptions = (): ILoadableOptions => ({
-      fetchData: noop,
-      component: Component,
-      template: noop,
-      loader: null,
-      options: {},
-      props: {},
-    });
+    public static defaultOptions = (): ILoadableOptions =>
+      Object.assign(
+        {
+          fetchData: noop,
+          component: Child,
+          template: noop,
+          loader: null,
+          options: {},
+          props: {},
+        },
+        params,
+      );
 
     public state = {
       props: {},
     };
-
-    constructor(options: IObject = {}) {
-      super(Object.assign(params, options));
-    }
 
     public async mounted() {
       const { fetchData } = this.options;
