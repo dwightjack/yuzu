@@ -731,7 +731,7 @@ describe('`Component`', () => {
         e = err;
       }
 
-      expect(e).toEqual(jasmine.any(TypeError));
+      expect(e).toEqual(jasmine.any(Error));
     });
 
     it('binds child instance events', () => {
