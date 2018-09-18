@@ -233,6 +233,80 @@ describe('`Utils`', () => {
     });
   });
 
+  describe('`parseString()`', () => {
+    it('should accept just string values', () => {
+      const ps = utils.parseString;
+
+      expect(ps([])).toBe(undefined);
+      expect(ps({})).toBe(undefined);
+      expect(ps(10)).toBe(undefined);
+      expect(ps(true)).toBe(undefined);
+      expect(ps(null)).toBe(undefined);
+      expect(ps(undefined)).toBe(undefined);
+      expect(ps('string')).toEqual(jasmine.any(String));
+    });
+
+    it('should return string value', () => {
+      expect(utils.parseString('test')).toBe('test');
+    });
+
+    it('should return trimmed string value', () => {
+      expect(utils.parseString('   trim   ')).toBe('trim');
+    });
+
+    it('should parse a numeric value into a float', () => {
+      expect(utils.parseString('10')).toBe(10);
+      expect(utils.parseString('10.20')).toBe(10.2);
+      expect(utils.parseString('8e5')).toBe(8e5);
+    });
+
+    it('should parse string booleans in "real" booleans', () => {
+      expect(utils.parseString('true')).toBe(true);
+      expect(utils.parseString('false')).toBe(false);
+    });
+
+    it('should parse JSON strings', () => {
+      const obj = { test: 'stub', prop: 10 };
+      const str = JSON.stringify(obj);
+
+      expect(utils.parseString(str)).toEqual(obj);
+    });
+  });
+
+  describe('`datasetParser()`', () => {
+    let el: HTMLElement;
+    beforeEach(() => {
+      el = document.createElement('div');
+      el.dataset.demo = 'value';
+      el.dataset.uiValueString = 'value';
+      el.dataset.uiNum = '0';
+    });
+
+    it('cycles dataset and filters data by key', () => {
+      const matcher = /.*/;
+      const spy = spyOn(matcher, 'test').and.returnValue(false);
+      utils.datasetParser(el, matcher);
+      expect(spy.calls.count()).toBe(3);
+      expect(spy).toHaveBeenCalledWith('demo');
+    });
+
+    it('formats as pascalCase each matched Key', () => {
+      const ret = utils.datasetParser(el);
+      expect(Object.keys(ret)).toEqual(['valueString', 'num']);
+    });
+
+    it('calls the formatter on each matched key value', () => {
+      const formatter = jasmine.createSpy().and.returnValue('');
+      const ret = utils.datasetParser(el, utils.INLINE_STATE_REGEXP, formatter);
+      expect(formatter.calls.count()).toBe(2);
+      expect(formatter).toHaveBeenCalledWith('0');
+      expect(ret).toEqual({
+        valueString: '',
+        num: '',
+      });
+    });
+  });
+
   describe('`qs()`', () => {
     beforeEach(() => {
       mount('dom.html');

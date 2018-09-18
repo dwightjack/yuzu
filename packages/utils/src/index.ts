@@ -86,6 +86,49 @@ export const bindMethod = (ctx: any, method: string | fn): fn => {
   return (method as fn).bind(ctx);
 };
 
+/**
+ * Accepts a string and tries to parse it as boolean, number or string
+ *
+ * @param {string} v - Value to parse
+ * @returns {*}
+ */
+/**
+ * Accepts a value and tries to parse it as boolean, number or JSON
+ *
+ * @name parseString
+ * @function
+ * @private
+ * @param {any} value - Value to parse
+ * @returns {*}
+ */
+export const parseString = (value: any): any => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const v = value.trim();
+
+  if (v === '' || v === 'true') {
+    return true;
+  }
+
+  if (v === 'false') {
+    return false;
+  }
+
+  const n = Number(v);
+
+  if (!Number.isNaN(n)) {
+    return n;
+  }
+
+  try {
+    return JSON.parse(v);
+  } catch (e) {
+    return v;
+  }
+};
+
 export const INLINE_STATE_REGEXP = /^ui([A-Z].+)$/;
 
 /**
@@ -98,6 +141,7 @@ export const INLINE_STATE_REGEXP = /^ui([A-Z].+)$/;
 export const datasetParser = (
   el: HTMLElement,
   matcher = INLINE_STATE_REGEXP,
+  formatter = parseString,
 ) => {
   return Object.entries(el.dataset).reduce((acc: IObject, [key, value]) => {
     if (matcher.test(key)) {
@@ -105,7 +149,7 @@ export const datasetParser = (
         matcher,
         (_, m) => `${m[0].toLowerCase()}${m.slice(1)}`,
       );
-      acc[newKey] = value;
+      acc[newKey] = formatter(value);
     }
     return acc;
   }, {});
