@@ -24,10 +24,10 @@
   "bugs": "https://github.com/dwightjack/yuzu/issues",
   "scripts": {
     "prepublishOnly": "npm run release",
-    "release": "yarn lint && yarn types && yarn docs && yarn bundle",
+    "release": "yarn lint && yarn test && yarn docs && yarn bundle",
     "lint": "tslint ./packages/*/src/**/*.ts ./packages/*/test/**/*.ts",
     "bundle": "lerna run bundle",
-    "docs": "rimraf tmp && tsc --outDir tmp --module ES2015 --target es2017 && rimraf doc && node ./scripts/doc.js",
+    "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",
     "dev": "karma start karma.conf.js"
   },
@@ -48,6 +48,7 @@
     "karma-typescript": "~3.0.13",
     "karma-typescript-es6-transform": "~1.0.4",
     "lerna": "^3.1.4",
+    "make-dir": "^1.3.0",
     "prettier": "~1.13.5",
     "puppeteer": "~1.7.0",
     "rimraf": "~2.6.2",
