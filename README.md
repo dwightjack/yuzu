@@ -12,3 +12,4 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 - [@yuzu/application](packages/application)
 - [@yuzu/utils](packages/utils)
 - [@yuzu/loadable](packages/loadable)
+- [@yuzu/polyfills](packages/polyfills)
