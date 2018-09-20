@@ -11,16 +11,20 @@
 <body>
 
   <div id="app">
-    <input type="text" class="input">
-    <p class="status"></p>
+    <div class="type-input">
+      <input type="text" class="input">
+      <p class="status"></p>
+    </div>
   </div>
 
   <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
+  <script src="../packages/polyfills/dist/index.umd.js"></script>
   <script src="../packages/utils/dist/index.umd.js"></script>
   <script src="../packages/core/dist/index.umd.js"></script>
+  <script src="../packages/application/dist/index.umd.js"></script>
   <script>
     (function () {
-      var App = YZ.extend(YZ.Component, {
+      var TypeInput = YZ.extend(YZ.Component, {
         created: function () {
           this.selectors = {
             input: '.input',
@@ -47,7 +51,13 @@
         }
       })
 
-      window.app = new App().mount('#app')
+      TypeInput.root = '.type-input'
+      console.log(TypeInput.root)
+
+      window.app = new YZ.Application.Sandbox({
+        root: '#app',
+        components: [ TypeInput ]
+      }).start()
 
     }())
   </script>
