@@ -51,6 +51,7 @@ yarn add @yuzu/core
 add the following script tags before your code
 
 ```html
+<script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
 <script src="https://unpkg.com/@yuzu/core"></script>
 ```
 
