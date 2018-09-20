@@ -22,8 +22,6 @@ import {
   ReadyStateFn,
 } from '../types';
 
-const UID_DATA_ATTR = 'data-cid';
-
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 
 // tslint:disable-next-line: interface-name no-empty-interface
@@ -35,6 +33,14 @@ export interface Component extends Idush {}
  */
 export class Component implements Idush {
   public static root?: string;
+
+  /**
+   * Component root element attribute marker
+   *
+   * @static
+   * @returns {object}
+   */
+  public static UID_DATA_ATTR = 'data-cid';
 
   /**
    * Returns an object with default options
@@ -203,7 +209,7 @@ export class Component implements Idush {
     const { $el } = this;
 
     // initialization placeholder
-    let uid = $el.getAttribute(UID_DATA_ATTR);
+    let uid = $el.getAttribute(Component.UID_DATA_ATTR);
 
     if (uid) {
       console.warn(`Element ${uid} is already initialized... skipping`, $el); // tslint:disable-line no-console
@@ -215,7 +221,7 @@ export class Component implements Idush {
     uid = nextUid();
     this.$uid = uid;
 
-    $el.setAttribute(UID_DATA_ATTR, uid);
+    $el.setAttribute(Component.UID_DATA_ATTR, uid);
 
     if (!$el.id) {
       $el.id = `c_${uid}`;
@@ -622,7 +628,7 @@ export class Component implements Idush {
     this.removeListeners();
     this.off();
     if (this.$el) {
-      this.$el.removeAttribute(UID_DATA_ATTR); // eslint-disable-line no-console
+      this.$el.removeAttribute(Component.UID_DATA_ATTR); // eslint-disable-line no-console
     }
 
     try {

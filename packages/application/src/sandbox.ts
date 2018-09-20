@@ -66,6 +66,8 @@ export interface Sandbox extends Idush {}
  * @class
  */
 export class Sandbox implements Idush {
+  public static UID_DATA_ATTR = 'data-sandbox';
+
   /**
    * Sandbox internal id
    * @type {string}
@@ -123,7 +125,7 @@ export class Sandbox implements Idush {
 
     this.$root = $root;
 
-    $root.setAttribute('data-sandbox', this.$id);
+    $root.setAttribute(Sandbox.UID_DATA_ATTR, this.$id);
 
     components.forEach((config) => {
       if (!Array.isArray(config)) {
@@ -175,6 +177,9 @@ export class Sandbox implements Idush {
   public start(context = {}): Sandbox {
     this.$context = createContext(context);
     this.emit('beforeStart');
+
+    const sbSelector = `[${Sandbox.UID_DATA_ATTR}]`;
+
     this.$registry.forEach(
       ({ component: ComponentConstructor, selector, ...options }) => {
         if (this.$instances.has(ComponentConstructor)) {
@@ -187,7 +192,7 @@ export class Sandbox implements Idush {
             if (
               !el.dataset.skip &&
               !el.closest('[data-skip]') &&
-              el.closest('[data-sandbox]') === this.$root
+              el.closest(sbSelector) === this.$root
             ) {
               const instance = this.createInstance(
                 ComponentConstructor,

@@ -235,7 +235,7 @@ describe('`Component`', () => {
     it('should check if a component has already been initialized on the DOM element', () => {
       const spy = spyOn(console, 'warn');
       const uid = 'fake-uid';
-      root.setAttribute('data-cid', uid);
+      root.setAttribute(Component.UID_DATA_ATTR, uid);
       inst.init();
       expect(spy).toHaveBeenCalled();
       const [msg, ref] = spy.calls.mostRecent().args;
@@ -248,7 +248,7 @@ describe('`Component`', () => {
     });
     it('should set `$uid` as `data-cid ` attribute on the root DOM element', () => {
       inst.init();
-      expect(root.getAttribute('data-cid')).toBe(inst.$uid);
+      expect(root.getAttribute(Component.UID_DATA_ATTR)).toBe(inst.$uid);
     });
     it('should set a generated `id` DOM attribute onto the root element if not present', () => {
       inst.init();
@@ -266,7 +266,7 @@ describe('`Component`', () => {
     });
     it('should NOT call `.initialize()` lifecycle hook if component is already initialized', () => {
       const spy = spyOn(inst, 'initialize');
-      root.setAttribute('data-cid', 'fake-id');
+      root.setAttribute(Component.UID_DATA_ATTR, 'fake-id');
       inst.init();
       expect(spy).not.toHaveBeenCalled();
     });
@@ -1024,7 +1024,7 @@ describe('`Component`', () => {
       const spy = spyOn(inst.$el, 'removeAttribute');
 
       await inst.destroy();
-      expect(spy).toHaveBeenCalledWith('data-cid');
+      expect(spy).toHaveBeenCalledWith(Component.UID_DATA_ATTR);
     });
 
     it('should call `closeRefs()` and deactivate the instance', async () => {
