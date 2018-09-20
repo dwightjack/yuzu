@@ -18,10 +18,10 @@ export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
  *
  * It accepts 4 arguments:
  *
- * * a component constructor (either created by extending `Component` or by [`Component.create`](./component.md#create))
- * * a mount DOM node (either a CSS selector string or a DOM element)
- * * component options _(optional)_
- * * An optional array of children mount functions OR a function returning an array of children mount functions (usually yuzu's [`Children`](./children.md) function)
+ * - a component constructor (either created by extending `Component` or by [`Component.create`](./component.md#create))
+ * - a mount DOM node (either a CSS selector string or a DOM element)
+ * - component options _(optional)_
+ * - An optional array of children mount functions OR a function returning an array of children mount functions (usually yuzu's [`Children`](./children.md) function)
  *
  * Child components will be automatically set as references in the parent component (uses: [`Component#setRef`](./component.md#setref))
  *
