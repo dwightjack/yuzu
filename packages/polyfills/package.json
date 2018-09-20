@@ -1,0 +1,38 @@
+{
+  "name": "@yuzu/polifylls",
+  "description": "older browsers support for Yuzu",
+  "version": "2.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/polifylls",
+  "author": "Marco Solazzi",
+  "unpkg": "dist/index.umd.js",
+  "main": "dist/index.js",
+  "jsnext:main": "dist/index.m.js",
+  "module": "dist/index.m.js",
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "keywords": [
+    "yuzu",
+    "polyfills"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dwightjack/yuzu.git"
+  },
+  "bugs": "https://github.com/dwightjack/yuzu/issues",
+  "scripts": {
+    "bundle": "rimraf dist && rollup -c rollup.config.js"
+  },
+  "dependencies": {
+    "core-js": ">=2.5.3",
+    "element-closest": ">=2.0.2"
+  }
+}
