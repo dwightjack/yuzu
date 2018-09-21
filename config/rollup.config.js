@@ -16,22 +16,33 @@ const banner = (pkg) => `
 
 const cwd = process.cwd();
 
-const plugins = [
-  resolve(),
-  commonjs(),
-  typescript({
-    tsconfig: path.join(__dirname, '../tsconfig.rollup.json'),
-    typescript: require('typescript'),
-    exclude: 'node_modules/**',
-    useTsconfigDeclarationDir: true,
-    tsconfigDefaults: {
+const tsconf = {
+  tsconfig: path.join(__dirname, '../tsconfig.rollup.json'),
+  typescript: require('typescript'),
+  exclude: 'node_modules/**',
+  useTsconfigDeclarationDir: true,
+  tsconfigDefaults: {
+    compilerOptions: {
+      baseUrl: cwd,
+      typeRoots: ['./types', path.resolve(cwd, '../../node_modules/@types')],
+    },
+  },
+};
+
+const plugins = [resolve(), commonjs(), typescript(tsconf)];
+
+const tsconfNext = Object.assign(
+  {
+    tsconfigOverride: {
       compilerOptions: {
-        baseUrl: cwd,
-        typeRoots: ['./types', path.resolve(cwd, '../../node_modules/@types')],
+        target: 'ES2017',
       },
     },
-  }),
-];
+  },
+  tsconf,
+);
+
+const pluginsNext = [...plugins.slice(0, -1), typescript(tsconfNext)];
 
 const file = (filepath) => path.resolve(cwd, filepath);
 let pkg = {};
@@ -68,6 +79,24 @@ module.exports = (pkg, globals) => [
         'process.env.NODE_ENV': JSON.stringify('development'),
       }),
       ...plugins,
+      filesize(),
+    ],
+  },
+  {
+    input: './src/index.ts',
+    output: [
+      output({
+        file: file(pkg.module.replace('.m.', '.next.')),
+        format: 'esm',
+        banner: banner(pkg),
+      }),
+    ],
+    external,
+    plugins: [
+      replace({
+        'process.env.NODE_ENV': JSON.stringify('development'),
+      }),
+      ...pluginsNext,
       filesize(),
     ],
   },
