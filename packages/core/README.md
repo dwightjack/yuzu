@@ -31,7 +31,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
   - [Lifecycle boundaries](#lifecycle-boundaries)
   - [Event bus](#event-bus)
   - [Child management methods](#child-management-methods)
-- [Lifecycle diagram](#lifecycle-diagram) - [Stage: _create_](#stage-_create_) - [Stage: _mount_](#stage-_mount_) - [Sub-stage: _init_](#sub-stage-_init_) - [Stage: _update_](#stage-_update_) - [Stage: _destroy_](#stage-_destroy_)
+- [Component Lifecycle diagram](#component-lifecycle-diagram) - [Stage: _create_](#stage-_create_) - [Stage: _mount_](#stage-_mount_) - [Stage: _init_](#stage-_init_) - [Async ready state](#async-ready-state) - [Stage: _update_](#stage-_update_) - [Stage: _destroy_](#stage-_destroy_)
 - [Functional composition](#functional-composition)
   - [Multiple dynamic children](#multiple-dynamic-children)
 - [API Documentation](#api-documentation)
@@ -520,7 +520,7 @@ See [dush](https://github.com/tunnckocore/dush) for details
 - `setRef` (_async_)
 - `broadcast`
 
-## Lifecycle diagram
+## Component Lifecycle diagram
 
 #### Stage: _create_
 
@@ -541,11 +541,11 @@ inst.mount('#el');
 
 Requires a DOM element or CSS string used to resolve the component's root element. Accepts an object used as the instance initial state.
 
-It will automatically transition to the _init_ sub-stage (see below) unless the second argument is `null`.
+It will automatically transition to the _init_ stage (see below) unless the second argument is `null`.
 
 - sets: event listeners and `this.$els` references
 
-##### Sub-stage: _init_
+#### Stage: _init_
 
 ```js
 inst.init({});
@@ -555,7 +555,36 @@ Automatically called by `.mount()` when the second argument is `!== null`. Accep
 
 - calls hook: `initialize`
 - sets: actions, state
-- calls hooks: `ready`, `mounted`
+- calls hooks: `mounted`, `ready`
+
+##### Async ready state
+
+`ready` hook can be delayed by setting a `readyState` method. This method will receive the current and previous state and will be triggered on every state update until it returns `true`.
+
+This method can be useful when you need to delay the call to the `ready` hook until an async AJAX call is finished:
+
+```js
+class UserList extends Component {
+  state = {
+    users: [],
+  };
+
+  initialize() {
+    this.$el.classList.add('is-loading');
+    this.fetchUsers().then((users) => {
+      this.setState({ users });
+    });
+  }
+
+  readyState({ users }) {
+    return users.length > 0;
+  }
+
+  ready() {
+    this.$el.classList.remove('is-loading');
+  }
+}
+```
 
 #### Stage: _update_
 
@@ -580,11 +609,11 @@ inst.destroy();
 ```
 
 - calls hook: `beforeDestroy`
-- destroys child component, listeners, DOM listeners
+- destroys child component, removes event listeners and DOM listeners
 
 ## Functional composition
 
-To compose nested components you can simply use parent's [`setRef`](doc/component.md#setref) method to register child components:
+To compose nested components you can simply use the [`setRef`](doc/component.md#setref) method to register child components:
 
 ```js
 class Navigation extends Component {
