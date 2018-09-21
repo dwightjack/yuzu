@@ -11,22 +11,27 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 - [Installation](#installation)
   - [as NPM package](#as-npm-package)
   - [CDN delivered `<script>`](#cdn-delivered-script)
+  - [ES2017 Syntax](#es2017-syntax)
+    - [Webpack](#webpack)
+    - [Rollup](#rollup)
 - [Browser support](#browser-support)
 - [Basic usage](#basic-usage)
   - [ES6+ usage](#es6-usage)
   - [ES5 usage](#es5-usage)
 - [Example application](#example-application)
-- [Component State and update tracking](#component-state-and-update-tracking)
+- [Component state and update tracking](#component-state-and-update-tracking)
   - [Tracking updates](#tracking-updates)
 - [Child components definition](#child-components-definition)
   - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
+    - [1 to 1 computed state](#1-to-1-computed-state)
 - [API summary](#api-summary)
   - [Lifecycle methods](#lifecycle-methods)
   - [State management](#state-management)
   - [Lifecycle hooks](#lifecycle-hooks)
+  - [Lifecycle boundaries](#lifecycle-boundaries)
   - [Event bus](#event-bus)
   - [Child management methods](#child-management-methods)
-- [Lifecycle diagram](#lifecycle-diagram) - [Stage: _create_](#stage-_create_) - [Stage: _mount_](#stage-_mount_) - [Sub-stage: _init_](#sub-stage-_init_) - [Stage: _destroy_](#stage-_destroy_)
+- [Lifecycle diagram](#lifecycle-diagram) - [Stage: _create_](#stage-_create_) - [Stage: _mount_](#stage-_mount_) - [Sub-stage: _init_](#sub-stage-_init_) - [Stage: _update_](#stage-_update_) - [Stage: _destroy_](#stage-_destroy_)
 - [Functional composition](#functional-composition)
   - [Multiple dynamic children](#multiple-dynamic-children)
 - [API Documentation](#api-documentation)
@@ -57,9 +62,50 @@ add the following script tags before your code
 
 Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ.Component`, `YZ.mount`, etc...)
 
+### ES2017 Syntax
+
+To provide maximum compatibility with every development environment, packages are transpiled to ES5. When used with a bundler like Webpack or rollup the module resolution system will automatically pick either the Commonjs or ESM version based on your configuration.
+
+If you want to import the ES2017 version of a package you can do so by setting an alias on the bundler's configuration file:
+
+#### Webpack
+
+```diff
+// webpack.config.js
+
+module.exports = {
+  // ...
++  resolve: {
++    alias: {
++      '@yuzu/core': '@yuzu/core/dist/index.next.js'
++    }
++  }
+}
+```
+
+#### Rollup
+
+Use [rollup-plugin-alias](https://github.com/rollup/rollup-plugin-alias)
+
+```diff
+// rollup.config.js
++ import path from 'path';
++ import alias from 'rollup-plugin-alias';
+
+export default {
+  input: './src/index.js',
+  plugins: [
+    // ...
++    alias({
++      '@yuzu/core': path.resolve(__dirname, 'node_modules/@yuzu/core/dist/index.next.js')
++    })
+  ],
+};
+```
+
 ## Browser support
 
-Although Yuzu is compiled to ES5, it uses some features available in ES6+. In order to make it work in browsers that don't support ES2015+ syntax you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
+Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
 
 If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entrypoint:
 
@@ -71,7 +117,7 @@ import '@yuzu/polyfills';
 
 ### ES6+ usage
 
-Import `Component` constructor into your project and extend it
+Import `Component` into your project and extend it
 
 ```js
 import { Component } from '@yuzu/core';
@@ -95,12 +141,18 @@ const counter = new Counter('#app');
 
 **Note:** The above example uses [stage 3](https://github.com/tc39/proposals#stage-3) syntax for instance and static public fields.
 
-In order to use it you will need to use [Babel](https://babeljs.io/) with the [`transform-class-properties` plugin](https://babeljs.io/docs/en/babel-plugin-transform-class-properties/) ([@babel/plugin-proposal-class-properties](https://www.npmjs.com/package/@babel/plugin-proposal-class-properties) in Babel 7+) or [Typescript](https://www.typescriptlang.org/). If you prefer not to, the previous code can be rewritten like this:
+In order to use it you will need to use [Babel](https://babeljs.io/) with the [`transform-class-properties` plugin](https://babeljs.io/docs/en/babel-plugin-transform-class-properties/) ([@babel/plugin-proposal-class-properties](https://www.npmjs.com/package/@babel/plugin-proposal-class-properties) in Babel 7+) or [Typescript](https://www.typescriptlang.org/).
+If you prefer not to, the previous code can be rewritten like this:
 
 ```js
 import { Component } from '@yuzu/core';
 
 class Counter extends Component {
+  static defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
   created() {
     this.state = {
       count: 0,
@@ -111,10 +163,6 @@ class Counter extends Component {
     //...
   }
 }
-
-Counter.defaultOptions = () => ({
-  label: 'Count',
-});
 
 const counter = new Counter('#app');
 ```
@@ -207,14 +255,14 @@ class Counter extends Component {
 const counter = new Counter().mount(Counter.root);
 ```
 
-**`root` (string)** is the root element CSS selector. It must be a static property and is required
+**`root` (string)** is the root element CSS selector. It must be a static property and is required.
 
-**`defaultOptions` (function)** returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static
+**`defaultOptions` (function)** returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static.
 
 **`selectors` (object)** is used to set a reference to component's child elements. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
-If you need to access the component's root element use `this.$el`
+If you need to access the component's root element use `this.$el`.
 
-**`listeners` (object)** is a shortcut to set DOM event listeners on a given element. Each key has the following syntax:
+**`listeners` (object)** is a shortcut syntax to set DOM event listeners on a given element. Each key has the following syntax:
 
 ```
 eventName [CSS selector | @elementReference]
@@ -226,36 +274,47 @@ Using just the event name will attach the listener to the component's root eleme
 
 Event listeners are automatically removed when the component's `.destroy()` method is invoked.
 
-**`state` (object)** is the component's internal state
+**`state` (object)** is the component's internal state.
 
 **`actions` (object)** is a map listing functions to execute whenever the state property defined in the property key has changed. If the property value is a string it will search the corresponding method on the class.
 
 The function is invoked with the current and previous value as arguments.
 
-In the counter example above the `toggle` method is executed whenever the state's `expanded` value changes.
+In the counter example above whenever the state's `expanded` value changes the `toggle` method is executed.
 
-## Component State and update tracking
+## Component state and update tracking
 
 Every component has a `state` property that reflects the component's internal state.
 
 An initial state can be set as a class property or in the `created` lifecycle hook.
 **Note:** setting a property's initial state is the only way to allow subsequent updates to it.
 
-To update the state you use the `setState` method. The first argument is an object with the part of the state you wan to update:
+To update the state use the `setState` method. The first argument is an object with the part of the state you wan to update:
 
 ```js
 this.setState({ count: 1 });
 ```
 
-If you want to compute the new state values from the previous ones, pass a function instead of an object:
+If you want to compute a new state values from the previous ones, pass a function instead of an object:
 
 ```js
 this.setState((prevState) => ({ count: prevState.count + 1 }));
 ```
 
+If you need to completely replace the current component's state use `replaceState`:
+
+```js
+class Counter extends Component {
+  // ...
+  stop() {
+    this.replaceState({ count: 0, stop: true });
+  }
+}
+```
+
 ### Tracking updates
 
-Every call to `setState` will emit a `change:<property>` event on the component for every property updated.
+Every call to `setState` will emit a `change:<property>` event on the component for each updated property.
 
 ```js
 this.on('change:count', (value, preValue) => {
@@ -364,7 +423,7 @@ const counter = new Counter().mount(Counter.root);
 
 ### Child components' initial state and computed state
 
-`setRef` accepts a second argument which is an object used as the child component's initial state during initialization. If a property value is a function it will be used to compute the child state value. Changes to the parent state will be propagated to the child state as well.
+`setRef` accepts a second argument which is an object used as the child component's initial state during initialization. If a property value is a function it will be used to compute the child state value and subsequent changes to the parent state will be propagated to the child state as well.
 
 The `Counter` component above could be refactored like this
 
@@ -397,7 +456,9 @@ class Counter extends Component {
 
 The function associated to `content` will receive the parent state and the child instance reference as first and second argument.
 
-**Note:** `Component` is not able to guess which properties are involved during the computation so it will listen for every state change and propagate that change to the child component.
+#### 1 to 1 computed state
+
+`Component` is not able to guess which properties are involved during the computation so it will listen for every state change and propagate that change to the child component.
 
 While this is pretty fine (and necessary) when computing a state property from multiple parent's state properties, it could raise edge cases and performance issues.
 
@@ -416,7 +477,7 @@ To mitigate this problem you can leverage the special `from>to`syntax to create 
   }
 ```
 
-The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes to that property.
+The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes on that property.
 
 ## API summary
 
@@ -433,12 +494,17 @@ The function associated to this mapping will receive the parent's state property
 
 ### Lifecycle hooks
 
-- `created` instance created
-- `beforeMount` before mounting onto the DOM
-- `mounted` mounted onto the DOM
-- `initialize` just before component actions evaluation
-- `ready` instance fully initialized
-- `beforeDestroy` just before tearing down the instance (_async_)
+- `created` Instance created
+- `beforeMount` Before mounting onto the DOM
+- `mounted` Mounted onto the DOM
+- `initialize` Just before component actions evaluation
+- `ready` Instance fully initialized
+- `beforeDestroy` Just before tearing down the instance (_async_)
+
+### Lifecycle boundaries
+
+- `shouldUpdateState` Checks whether a state property should be update
+- `readyState` Delays `ready` hook until the component's state has a given value
 
 ### Event bus
 
@@ -462,6 +528,8 @@ See [dush](https://github.com/tunnckocore/dush) for details
 const inst = new Component();
 ```
 
+Accepts an optional object with instance options
+
 - sets: `this.options`
 - calls hook: `created`
 
@@ -471,13 +539,39 @@ const inst = new Component();
 inst.mount('#el');
 ```
 
+Requires a DOM element or CSS string used to resolve the component's root element. Accepts an object used as the instance initial state.
+
+It will automatically transition to the _init_ sub-stage (see below) unless the second argument is `null`.
+
 - sets: event listeners and `this.$els` references
 
 ##### Sub-stage: _init_
 
+```js
+inst.init({});
+```
+
+Automatically called by `.mount()` when the second argument is `!== null`. Accepts an object used as the instance initial state.
+
 - calls hook: `initialize`
 - sets: actions, state
 - calls hooks: `ready`, `mounted`
+
+#### Stage: _update_
+
+Executed on every call to `.setState` and `.replaceState` when the second argument is `!== true`. Will trigger a `change:...` event for each changed key.
+
+Calls to `.setState` will trigger a conditional method `shouldUpdateState`. The method will be executed on each passed-in key and receives the key, it's current value and the provided new value. If the methods returns `true` the value will be updated and change events will be triggered. The default implementation is:
+
+```js
+shouldUpdateState(key, currentValue, newValue) {
+  return currentValue !== newValue;
+}
+```
+
+You can overwrite this method with a custom implementation on your components.
+
+**Note** calls to `.replaceState` are not affected by this method and will always trigger an update.
 
 #### Stage: _destroy_
 
