@@ -28,7 +28,7 @@ export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
  * ### A simple, single component example:
  *
  * ```js
- * import { mount } from 'yuzu';
+ * import { mount } from '@yuzu/core';
  *
  * import GalleryComponent from './components/Gallery';
  *
@@ -47,7 +47,7 @@ export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
  * Props can be passed to children components by setting a `prop` property on the `options` object
  *
  * ```js
- * import { mount } from 'yuzu';
+ * import { mount } from '@yuzu/core';
  *
  * import List from './components/List';
  * import ListItem from './components/ListItem';

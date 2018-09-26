@@ -74,13 +74,7 @@ module.exports = (pkg, globals) => [
       output({ file: file(pkg.module), format: 'esm', banner: banner(pkg) }),
     ],
     external,
-    plugins: [
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('development'),
-      }),
-      ...plugins,
-      filesize(),
-    ],
+    plugins: [...plugins, filesize()],
   },
   {
     input: './src/index.ts',
@@ -92,13 +86,7 @@ module.exports = (pkg, globals) => [
       }),
     ],
     external,
-    plugins: [
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('development'),
-      }),
-      ...pluginsNext,
-      filesize(),
-    ],
+    plugins: [...pluginsNext, filesize()],
   },
   {
     input: './src/index.ts',
