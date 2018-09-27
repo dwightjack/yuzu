@@ -447,10 +447,26 @@ export class Component implements Idush {
   }
 
   /**
-   * Sets a DOM event listener
+   * Sets a DOM event listener.
    *
-   * @param {string} def Event and target element definition
+   * The first argument must be a string composed by an event name (ie `click`) and a CSS selector (`.element`)
+   * separated by a space.
+   *
+   * If the CSS selector starts with `@` the listener will be attached the the
+   * corresponding reference element in the instance (`this.$els.<element>`), if any.
+   *
+   * @param {string} def Event and target element definition. Format `eventName [target]`
    * @param {function} handler Event handler
+   * @example
+   *
+   * // attach a click handler to a child element
+   * instance.setListener('click .button', () => ...)
+   *
+   * // attach a click handler to this.$els.btn
+   * instance.setListener('click @btn', () => ...)
+   *
+   * // attach a click handler to this.$el
+   * instance.setListener('click', () => ...)
    */
   public setListener(def: string, handler: eventHandlerFn) {
     let event;
@@ -477,7 +493,7 @@ export class Component implements Idush {
   }
 
   /**
-   * Removes all DOM event listeners attached with `.setListener`
+   * Removes all DOM event listeners attached with `.setListener`.
    *
    */
   public removeListeners() {
@@ -489,6 +505,7 @@ export class Component implements Idush {
 
   /**
    * Attaches a reference to a child component.
+   *
    * If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
    *
    * @param {object} refCfg A child component configuration object
