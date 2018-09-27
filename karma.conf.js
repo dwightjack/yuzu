@@ -20,6 +20,8 @@ module.exports = (config) => {
       'packages/*/test/*.spec.ts',
     ],
 
+    exclude: ['packages/polyfills/**/*'],
+
     html2JsPreprocessor: {
       processPath: function(filePath) {
         return (filePath.match(/.+?\/__fixtures__\/(.+)/) || [])[1];
