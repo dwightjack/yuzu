@@ -29,7 +29,36 @@ export interface Component extends Idush {}
 
 /**
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
+ *
  * @class
+ * @example
+ * import { Component } from '@yuzu/core';
+ *
+ * class Counter extends Component {
+ *
+ *   created() {
+ *     this.state = { count: 0 };
+ *     this.selectors = {
+ *       add: '.add',
+ *       remove: '.remove'
+ *     }
+ *     this.listeners = {
+ *       'click @add': 'increment'
+ *       'click @remove': 'decrement'
+ *     }
+ *   }
+ *
+ *  increment() {
+ *    this.setState(({ count}) => ({ count: count + 1 }));
+ *  }
+ *
+ *  decrement() {
+ *    this.setState(({ count}) => ({ count: count - 1 }));
+ *  }
+ *
+ * }
+ *
+ * const counter = new Counter().mount('#counter');
  */
 export class Component implements Idush {
   public static root?: string;
@@ -327,7 +356,7 @@ export class Component implements Idush {
    * If the new value argument is a function, it will be executed with the current state as argument.
    * The returned value will be used to update the state.
    *
-   * @param {object|function} updater Defines which part of the state must be updated. If a string it define the state property name
+   * @param {object|function} updater Defines which part of the state must be updated.
    * @param {boolean} [silent=false] Update the state without emitting change events
    * @example
    * instance.on('change:a', (next, prev) => console.log(next, prev));
@@ -374,6 +403,18 @@ export class Component implements Idush {
     }
   }
 
+  /**
+   * Replaces the current state of the instance with a completely new state
+   *
+   * @param {object} newState The new state object.
+   * @param {boolean} [silent=false] Replace the state without emitting change events
+   * @example
+   * instance.replaceState({ a: 1 });
+   * // instance.state.a === 1
+   * instance.replaceState({ b: 2 });
+   * // instance.state.b === 2
+   * // instance.state.a === undefined
+   */
   public replaceState(newState: IState, silent = false) {
     const { state: prevState } = this;
     this.state = Object.assign({}, newState);
@@ -400,12 +441,9 @@ export class Component implements Idush {
    * instance.broadcast('log', 'test') // child component logs 'test'
    */
   public broadcast(event: string, ...params: any[]) {
-    const values = [...this.$refsStore.values()];
-
-    while (values.length > 0) {
-      const ref = values.pop() as Component;
-      ref.emit(`broadcast:${event}`, ...params);
-    }
+    this.$refsStore.forEach((instance) => {
+      instance.emit(`broadcast:${event}`, ...params);
+    });
   }
 
   /**
