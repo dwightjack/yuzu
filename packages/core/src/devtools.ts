@@ -15,6 +15,8 @@ import { Component } from './component';
  */
 let devtools: (c: typeof Component) => void;
 
+export type YuzuRoot = Element & { $yuzu: Component };
+
 if (process.env.NODE_ENV !== 'production') {
   /* eslint-disable no-param-reassign */
   devtools = (ComponentClass) => {
@@ -23,7 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 
     proto.mount = function mountDev(...args) {
       mount.call(this, ...args);
-      Object.defineProperty(this.$el, '$yuzu', {
+      Object.defineProperty(this.$el as YuzuRoot, '$yuzu', {
         enumerable: false,
         writable: false,
         value: this,
