@@ -22,9 +22,9 @@ Available modules:
   - [Sandbox](#sandbox)
     - [Custom options](#custom-options)
     - [Inline options](#inline-options)
-- [API summary](#api-summary)
-  - [Lifecycle methods](#lifecycle-methods)
-  - [Event bus](#event-bus)
+    - [API summary](#api-summary)
+      - [Lifecycle methods](#lifecycle-methods)
+      - [Event bus](#event-bus)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 
@@ -217,14 +217,14 @@ Starting from the example let's change the HTML to:
 
 On `sandbox.start()` the first Accordion will be initialized with `dark` theme, but the second will pick the `light` one.
 
-## API summary
+#### API summary
 
-### Lifecycle methods
+##### Lifecycle methods
 
 - `start` Starts the sandbox and initialized matched components
 - `stops` Stops the sandbox and calls `destroy()` on instantiated components
 
-### Event bus
+##### Event bus
 
 - `on`
 - `once`
