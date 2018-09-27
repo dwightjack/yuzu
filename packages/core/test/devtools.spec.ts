@@ -5,6 +5,6 @@ import * as utils from '@yuzu/utils';
 
 describe('`devtools`', () => {
   describe('', () => {
-
-    beforeEach(() => {})
+    beforeEach(() => {});
+  });
 });

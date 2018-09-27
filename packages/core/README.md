@@ -24,6 +24,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 - [Child components definition](#child-components-definition)
   - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
     - [1 to 1 computed state](#1-to-1-computed-state)
+- [Developer Tools](#developer-tools)
 - [API summary](#api-summary)
   - [Lifecycle methods](#lifecycle-methods)
   - [State management](#state-management)
@@ -478,6 +479,20 @@ To mitigate this problem you can leverage the special `from>to`syntax to create 
 ```
 
 The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes on that property.
+
+## Developer Tools
+
+Yuzu provides a simple `devtools` module that will allow you to inspect a component instance by attaching a `$yuzu` to its root DOM element. To enable this feature copy the following snippet into your entry point:
+
+```js
+import { Component, devtools } from '@yuzu/core';
+
+devtools(Component);
+```
+
+Now if you will be able to inspect any component instance on your favorite developer tools' console by selecting it and read the `.$yuzu` property.
+
+![Inspecting the state in Chrome DevTools](images/devtools.png)
 
 ## API summary
 
