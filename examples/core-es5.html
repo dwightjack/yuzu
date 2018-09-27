@@ -36,7 +36,7 @@
           }
 
           this.listeners = {
-            'keydown @input': function (e) {
+            'keyup @input': function (e) {
               this.setState({message: e.currentTarget.value})
             }
           }
@@ -52,7 +52,6 @@
       })
 
       TypeInput.root = '.type-input'
-      console.log(TypeInput.root)
 
       window.app = new YZ.Application.Sandbox({
         root: '#app',
