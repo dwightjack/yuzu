@@ -494,6 +494,8 @@ Now if you will be able to inspect any component instance on your favorite devel
 
 ![Inspecting the state in Chrome DevTools](images/devtools.png)
 
+**Note**: To maximize performances and minimize bundle size devtools are shipped just in development mode (`process.env.NODE_ENV !== 'production'` ). In production mode the code will be replaced with a void function.
+
 ## API summary
 
 ### Lifecycle methods
