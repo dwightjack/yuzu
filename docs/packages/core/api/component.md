@@ -8,6 +8,38 @@
 
 -   `options` **[object][1]** Instance options (optional, default `{}`)
 
+### Examples
+
+```javascript
+import { Component } from '@yuzu/core';
+
+class Counter extends Component {
+
+  created() {
+    this.state = { count: 0 };
+    this.selectors = {
+      add: '.add',
+      remove: '.remove'
+    }
+    this.listeners = {
+      'click @add': 'increment'
+      'click @remove': 'decrement'
+    }
+  }
+
+ increment() {
+   this.setState(({ count}) => ({ count: count + 1 }));
+ }
+
+ decrement() {
+   this.setState(({ count}) => ({ count: count - 1 }));
+ }
+
+}
+
+const counter = new Counter().mount('#counter');
+```
+
 ### mount
 
 Mounts a component's instance on a DOM element and initializes it.
@@ -115,7 +147,7 @@ The returned value will be used to update the state.
 
 #### Parameters
 
--   `updater` **([object][1] \| [function][6])** Defines which part of the state must be updated. If a string it define the state property name
+-   `updater` **([object][1] \| [function][6])** Defines which part of the state must be updated.
 -   `silent` **[boolean][5]** Update the state without emitting change events (optional, default `false`)
 
 #### Examples
@@ -129,6 +161,25 @@ instance.setState({ a: 2 }, true); //nothing happens, again...
 
 // use the current state to calculate its next value
 instance.setState(({ a }) => ({a + 1}));
+```
+
+### replaceState
+
+Replaces the current state of the instance with a completely new state
+
+#### Parameters
+
+-   `newState` **[object][1]** The new state object.
+-   `silent` **[boolean][5]** Replace the state without emitting change events (optional, default `false`)
+
+#### Examples
+
+```javascript
+instance.replaceState({ a: 1 });
+// instance.state.a === 1
+instance.replaceState({ b: 2 });
+// instance.state.b === 2
+// instance.state.a === undefined
 ```
 
 ### broadcast
@@ -152,20 +203,40 @@ instance.broadcast('log', 'test') // child component logs 'test'
 
 ### setListener
 
-Sets a DOM event listener
+Sets a DOM event listener.
+
+The first argument must be a string composed by an event name (ie `click`) and a CSS selector (`.element`)
+separated by a space.
+
+If the CSS selector starts with `@` the listener will be attached the the
+corresponding reference element in the instance (`this.$els.<element>`), if any.
 
 #### Parameters
 
--   `def` **[string][2]** Event and target element definition
+-   `def` **[string][2]** Event and target element definition. Format `eventName [target]`
 -   `handler` **[function][6]** Event handler
+
+#### Examples
+
+```javascript
+// attach a click handler to a child element
+instance.setListener('click .button', () => ...)
+
+// attach a click handler to this.$els.btn
+instance.setListener('click @btn', () => ...)
+
+// attach a click handler to this.$el
+instance.setListener('click', () => ...)
+```
 
 ### removeListeners
 
-Removes all DOM event listeners attached with `.setListener`
+Removes all DOM event listeners attached with `.setListener`.
 
 ### setRef
 
 Attaches a reference to a child component.
+
 If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
 
 #### Parameters
@@ -240,6 +311,12 @@ Checks whether the passed-in value is a Component constructor
 -   `value` **any** 
 
 Returns **[boolean][5]** 
+
+### UID_DATA_ATTR
+
+Component root element attribute marker
+
+Returns **[object][1]** 
 
 ### defaultOptions
 

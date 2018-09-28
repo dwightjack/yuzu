@@ -11,19 +11,30 @@ const writeAsync = promisify(fs.writeFile);
 const readAsync = promisify(fs.readFile);
 
 const root = path.join(__dirname, '..', 'packages');
+const docs = path.join(__dirname, '..', 'docs');
 const packages = fs.readdirSync(root);
 
 packages.forEach(async (package) => {
   const baseFolder = path.join(root, package);
-  const dest = path.join(baseFolder, 'doc');
+  const dest = path.join(docs, 'packages', package);
+  const destApi = path.join(dest, 'api');
   const tmp = path.join(baseFolder, 'tmp');
 
   rimraf.sync(dest);
   rimraf.sync(tmp);
 
   await mkdir(dest);
+  await mkdir(destApi);
   await mkdir(tmp);
 
+  //copy the README
+  const localReadme = path.join(baseFolder, 'README.md');
+  if (fs.existsSync(localReadme)) {
+    const contents = await readAsync(localReadme, 'utf8');
+    await writeAsync(path.join(dest, 'README.md'), contents, 'utf8');
+  }
+
+  // generate API
   let files = await glob('src/*.ts', {
     cwd: baseFolder,
     absolute: true,
@@ -33,10 +44,12 @@ packages.forEach(async (package) => {
     files = files.filter((f) => !f.endsWith('index.ts'));
   }
 
+  //write sidebar
+
   const renders = files.map(async (file) => {
     const basename = path.basename(file, '.ts');
     const tmppath = path.join(tmp, `${basename}.js`);
-    const filepath = path.join(dest, `${basename}.md`);
+    const filepath = path.join(destApi, `${basename}.md`);
 
     const src = await readAsync(file, 'utf8');
     const { outputText } = ts.transpileModule(src, {
