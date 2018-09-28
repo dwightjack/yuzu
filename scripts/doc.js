@@ -6,6 +6,7 @@ const ts = require('typescript');
 const mkdir = require('make-dir');
 const glob = require('fast-glob');
 const rimraf = require('rimraf');
+const cpy = require('cpy');
 
 const writeAsync = promisify(fs.writeFile);
 const readAsync = promisify(fs.readFile);
@@ -27,13 +28,12 @@ packages.forEach(async (package) => {
   await mkdir(destApi);
   await mkdir(tmp);
 
-  //copy the README
-  const localReadme = path.join(baseFolder, 'README.md');
-  if (fs.existsSync(localReadme)) {
-    const contents = await readAsync(localReadme, 'utf8');
-    await writeAsync(path.join(dest, 'README.md'), contents, 'utf8');
-    console.log(`-> File README.md copied.`);
-  }
+  //copy some files
+  await cpy(['README.md', 'images/*.*'], dest, {
+    parents: true,
+    cwd: baseFolder,
+  });
+  console.log('-> Static files copied!');
 
   // generate API
   let files = await glob('src/*.ts', {
