@@ -30,6 +30,17 @@ export interface Component extends Idush {}
 /**
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
  *
+ * Lifecycle stage: `create`
+ *
+ * Lifecycle hooks:
+ *
+ * - `created`
+ *
+ *
+ * ### Instance properties
+ *
+ * - `$el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)**: The instance root DOM element
+ *
  * @class
  * @param {object} [options={}] Instance options
  * @returns {Component}
@@ -81,16 +92,6 @@ export class Component implements Idush {
 
   public $active: boolean;
 
-  /**
-   * ```js
-   * instance.$el
-   * ```
-   *
-   * Instance root DOM element
-   *
-   * @name $el
-   * @type HTMLELement
-   */
   public $el!: Element;
   public $uid!: string;
   public $els: { [key: string]: Element | null };
@@ -108,12 +109,6 @@ export class Component implements Idush {
 
   /**
    * Component constructor
-   *
-   * Lifecycle stage: `create`
-   *
-   * Lifecycle hooks:
-   *
-   * - `created`
    */
   constructor(options: IObject = {}) {
     const defaultOptionsFn = (this.constructor as typeof Component)
@@ -170,7 +165,7 @@ export class Component implements Idush {
    * - `initialize` (if `state` !== null)
    * - `ready` (if `state` !== null)
    * - `mounted`
-
+   *
    * @param {string|Element} el Component's root element
    * @param {object|null} [state={}] initial state
    * @returns {Component}

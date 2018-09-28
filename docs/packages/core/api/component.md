@@ -4,11 +4,21 @@
 
 `Component` is an extensible class constructor which provides the building block of Yuzu component system.
 
+Lifecycle stage: `create`
+
+Lifecycle hooks:
+
+-   `created`
+
+## Instance properties
+
+-   `$el` **[Element][1]**: The instance root DOM element
+
 ## Parameters
 
--   `options` **[object][1]** Instance options (optional, default `{}`)
+-   `options` **[object][2]** Instance options (optional, default `{}`)
 
-Returns **[Component][2]** 
+Returns **[Component][3]** 
 
 ## mount
 
@@ -30,10 +40,19 @@ Lifecycle hooks:
 
 ### Parameters
 
--   `el` **([string][3] \| [Element][4])** Component's root element
--   `state` **([object][1] | null)** initial state (optional, default `{}`)
+-   `el` **([string][4] \| [Element][5])** Component's root element
+-   `state` **([object][2] | null)** initial state (optional, default `{}`)
 
-Returns **[Component][2]** 
+Returns **[Component][3]** 
+
+## mount
+
+## Title
+
+### Parameters
+
+-   `el`  
+-   `state`   (optional, default `{}`)
 
 ## init
 
@@ -52,9 +71,9 @@ Initializes the component instance
 
 ### Parameters
 
--   `state` **([object][1] | null)** initial state (optional, default `{}`)
+-   `state` **([object][2] | null)** initial state (optional, default `{}`)
 
-Returns **[Component][2]** 
+Returns **[Component][3]** 
 
 ## created
 
@@ -90,7 +109,7 @@ Returns a state property
 
 ### Parameters
 
--   `key` **[string][3]** State property to return
+-   `key` **[string][4]** State property to return
 
 ### Examples
 
@@ -114,11 +133,11 @@ You can overwrite this method with your own validation logic
 
 ### Parameters
 
--   `key` **[string][3]** State property name
+-   `key` **[string][4]** State property name
 -   `currentValue` **any** value stored in the current state
 -   `newValue` **any** New value
 
-Returns **[boolean][5]** 
+Returns **[boolean][6]** 
 
 ## setState
 
@@ -133,8 +152,8 @@ The returned value will be used to update the state.
 
 ### Parameters
 
--   `updater` **([object][1] \| [function][6])** Defines which part of the state must be updated.
--   `silent` **[boolean][5]** Update the state without emitting change events (optional, default `false`)
+-   `updater` **([object][2] \| [function][7])** Defines which part of the state must be updated.
+-   `silent` **[boolean][6]** Update the state without emitting change events (optional, default `false`)
 
 ### Examples
 
@@ -155,8 +174,8 @@ Replaces the current state of the instance with a completely new state
 
 ### Parameters
 
--   `newState` **[object][1]** The new state object.
--   `silent` **[boolean][5]** Replace the state without emitting change events (optional, default `false`)
+-   `newState` **[object][2]** The new state object.
+-   `silent` **[boolean][6]** Replace the state without emitting change events (optional, default `false`)
 
 ### Examples
 
@@ -174,8 +193,8 @@ Emits a `broadcast:<eventname>` event to every child component listed as a `$ref
 
 ### Parameters
 
--   `event` **[string][3]** Event name
--   `params` **[Array][7]&lt;any>?** Additional arguments to pass to the handler
+-   `event` **[string][4]** Event name
+-   `params` **[Array][8]&lt;any>?** Additional arguments to pass to the handler
 
 ### Examples
 
@@ -199,8 +218,8 @@ corresponding reference element in the instance (`this.$els.<element>`), if any.
 
 ### Parameters
 
--   `def` **[string][3]** Event and target element definition. Format `eventName [target]`
--   `handler` **[function][6]** Event handler
+-   `def` **[string][4]** Event and target element definition. Format `eventName [target]`
+-   `handler` **[function][7]** Event handler
 
 ### Examples
 
@@ -227,13 +246,13 @@ If a reference `id` is already attached, the previous one is destroyed and repla
 
 ### Parameters
 
--   `refCfg` **[object][1]** A child component configuration object
-    -   `refCfg.id` **[string][3]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
+-   `refCfg` **[object][2]** A child component configuration object
+    -   `refCfg.id` **[string][4]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
     -   `refCfg.component` **component** Component constructor or component instance
-    -   `refCfg.el` **([string][3] \| [HTMLElement][8])** Child component root element. Ignored if `refCfg.component` is a component instance
-    -   `refCfg.on` **[Object][1]** Child component event listeners. Format `{ 'eventname': handler }`
+    -   `refCfg.el` **([string][4] \| [HTMLElement][9])** Child component root element. Ignored if `refCfg.component` is a component instance
+    -   `refCfg.on` **[Object][2]** Child component event listeners. Format `{ 'eventname': handler }`
     -   `refCfg.null` **any** -   Any other property listed here will be passed to the constructor as option
--   `props` **[object][1]?** Child component initial state.
+-   `props` **[object][2]?** Child component initial state.
 
 ### Examples
 
@@ -268,13 +287,13 @@ parent.setRef({
 });
 ```
 
-Returns **[Promise][9]** 
+Returns **[Promise][10]** 
 
 ## closeRefs
 
 Calls `.destroy()` on every child references and detaches them from the parent component.
 
-Returns **[Promise][9]** 
+Returns **[Promise][10]** 
 
 ## destroy
 
@@ -286,7 +305,7 @@ Lifecycle hooks:
 
 -   `beforeDestroy`
 
-Returns **[Promise][9]** 
+Returns **[Promise][10]** 
 
 ## isComponent
 
@@ -300,7 +319,7 @@ Checks whether the passed-in value is a Component constructor
 
 -   `value` **any** 
 
-Returns **[boolean][5]** 
+Returns **[boolean][6]** 
 
 ## UID_DATA_ATTR
 
@@ -310,7 +329,7 @@ Component.UID_DATA_ATTR
 
 Component root element attribute marker
 
-Returns **[object][1]** 
+Returns **[object][2]** 
 
 ## defaultOptions
 
@@ -320,22 +339,24 @@ Component.defaultOptions()
 
 Returns an object with default options
 
-Returns **[object][1]** 
+Returns **[object][2]** 
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[1]: https://developer.mozilla.org/docs/Web/API/Element
 
-[2]: #component
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[3]: #component
 
-[4]: https://developer.mozilla.org/docs/Web/API/Element
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[5]: https://developer.mozilla.org/docs/Web/API/Element
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[8]: https://developer.mozilla.org/docs/Web/HTML/Element
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[9]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
