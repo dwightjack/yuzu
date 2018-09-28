@@ -69,6 +69,7 @@ ${files
       compilerOptions: {
         module: ts.ModuleKind.ES2015,
         target: ts.ScriptTarget.ESNext,
+        removeComments: false,
       },
     });
 
@@ -76,9 +77,13 @@ ${files
       await writeAsync(tmppath, outputText, 'utf8');
       const raw = await documentation.build(tmppath, {
         shallow: true,
+        order: ['static'],
       });
 
-      const output = await documentation.formats.md(raw);
+      let output = await documentation.formats.md(raw);
+
+      output = output.replace(/^##/gm, '#');
+
       await writeAsync(filepath, output);
       console.log(`-> File ${filepath} generated.`);
     } catch (e) {

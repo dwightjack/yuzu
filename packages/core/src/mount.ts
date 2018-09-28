@@ -11,6 +11,8 @@ export interface IMountProps extends IObject {
 
 export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
 
+let childRefIdx = 0;
+
 /**
  * `mount` is an helper function to setup trees of components in a functional way.
  *
@@ -123,9 +125,6 @@ export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
  * const list = tree({ currentItem: 0 })
  * ```
  */
-
-let childRefIdx = 0;
-
 export function mount(
   ComponentConstructor: typeof Component,
   el: HTMLElement | string,

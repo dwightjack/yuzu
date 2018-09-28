@@ -31,39 +31,16 @@ export interface Component extends Idush {}
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
  *
  * @class
- * @example
- * import { Component } from '@yuzu/core';
- *
- * class Counter extends Component {
- *
- *   created() {
- *     this.state = { count: 0 };
- *     this.selectors = {
- *       add: '.add',
- *       remove: '.remove'
- *     }
- *     this.listeners = {
- *       'click @add': 'increment'
- *       'click @remove': 'decrement'
- *     }
- *   }
- *
- *  increment() {
- *    this.setState(({ count}) => ({ count: count + 1 }));
- *  }
- *
- *  decrement() {
- *    this.setState(({ count}) => ({ count: count - 1 }));
- *  }
- *
- * }
- *
- * const counter = new Counter().mount('#counter');
+ * @param {object} [options={}] Instance options
+ * @returns {Component}
  */
 export class Component implements Idush {
   public static root?: string;
 
   /**
+   * ```js
+   * Component.UID_DATA_ATTR
+   * ```
    * Component root element attribute marker
    *
    * @static
@@ -72,6 +49,9 @@ export class Component implements Idush {
   public static UID_DATA_ATTR = 'data-cid';
 
   /**
+   * ```js
+   * Component.defaultOptions()
+   * ```
    * Returns an object with default options
    *
    * @static
@@ -80,6 +60,10 @@ export class Component implements Idush {
   public static defaultOptions = (): IObject => ({});
 
   /**
+   * ```js
+   * Component.isComponent(obj)
+   * ```
+   *
    * Checks whether the passed-in value is a Component constructor
    *
    * @static
@@ -97,6 +81,16 @@ export class Component implements Idush {
 
   public $active: boolean;
 
+  /**
+   * ```js
+   * instance.$el
+   * ```
+   *
+   * Instance root DOM element
+   *
+   * @name $el
+   * @type HTMLELement
+   */
   public $el!: Element;
   public $uid!: string;
   public $els: { [key: string]: Element | null };
@@ -120,9 +114,6 @@ export class Component implements Idush {
    * Lifecycle hooks:
    *
    * - `created`
-   *
-   * @param {object} [options={}] Instance options
-   * @returns {Component}
    */
   constructor(options: IObject = {}) {
     const defaultOptionsFn = (this.constructor as typeof Component)
@@ -164,6 +155,10 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * mount(el, state)
+   * ```
+   *
    * Mounts a component's instance on a DOM element and initializes it.
    * To prevent this second behavior set `state` to `null`
    *
@@ -175,7 +170,7 @@ export class Component implements Idush {
    * - `initialize` (if `state` !== null)
    * - `ready` (if `state` !== null)
    * - `mounted`
-   *
+
    * @param {string|Element} el Component's root element
    * @param {object|null} [state={}] initial state
    * @returns {Component}
@@ -219,11 +214,14 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * init([state])
+   * ```
    * Initializes the component instance
    *
-   * Lifecycle stage: `init`
+   * **Lifecycle stage**: `init`
    *
-   * Lifecycle hooks:
+   * **Lifecycle hooks:**
    *
    * - `initialize` (if `state` !== null)
    * - `ready` (if `state` !== null)
@@ -317,6 +315,10 @@ export class Component implements Idush {
   public beforeDestroy() {} // tslint:disable-line: no-empty
 
   /**
+   * ```js
+   * getState(key)
+   * ```
+   *
    * Returns a state property
    *
    * @param {string} key State property to return
@@ -331,6 +333,9 @@ export class Component implements Idush {
 
   /* eslint-disable class-methods-use-this */
   /**
+   * ```js
+   * setState(updater, [silent])
+   * ```
    * Executes a strict inequality comparison (`!==`) on the passed-in values and returns the result.
    * This method is executed on `setState` calls.
    *

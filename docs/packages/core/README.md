@@ -6,25 +6,22 @@ JavaScript view libraries such as Vue and React are cool, but sometimes you just
 
 In those scenarios Yuzu can help you to keep your frontend application organized.
 
-<!-- TOC -->
+<!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
   - [as NPM package](#as-npm-package)
   - [CDN delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-    - [Webpack](#webpack)
-    - [Rollup](#rollup)
 - [Browser support](#browser-support)
 - [Basic usage](#basic-usage)
   - [ES6+ usage](#es6-usage)
   - [ES5 usage](#es5-usage)
 - [Example application](#example-application)
-- [Component state and update tracking](#component-state-and-update-tracking)
+  - [Application Breakdown](#application-breakdown)
+- [State and update tracking](#state-and-update-tracking)
   - [Tracking updates](#tracking-updates)
-- [Child components definition](#child-components-definition)
+- [Child components](#child-components)
   - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
-    - [1 to 1 computed state](#1-to-1-computed-state)
-- [Developer Tools](#developer-tools)
 - [API summary](#api-summary)
   - [Lifecycle methods](#lifecycle-methods)
   - [State management](#state-management)
@@ -32,9 +29,10 @@ In those scenarios Yuzu can help you to keep your frontend application organized
   - [Lifecycle boundaries](#lifecycle-boundaries)
   - [Event bus](#event-bus)
   - [Child management methods](#child-management-methods)
-- [Component Lifecycle diagram](#component-lifecycle-diagram) - [Stage: _create_](#stage-_create_) - [Stage: _mount_](#stage-_mount_) - [Stage: _init_](#stage-_init_) - [Async ready state](#async-ready-state) - [Stage: _update_](#stage-_update_) - [Stage: _destroy_](#stage-_destroy_)
+- [Component Lifecycle](#component-lifecycle)
 - [Functional composition](#functional-composition)
   - [Multiple dynamic children](#multiple-dynamic-children)
+- [Developer Tools](#developer-tools)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 
@@ -165,7 +163,7 @@ class Counter extends Component {
   }
 }
 
-const counter = new Counter('#app');
+const counter = new Counter().mount('#app');
 ```
 
 ### ES5 usage
@@ -173,7 +171,7 @@ const counter = new Counter('#app');
 In development environments that don't support `extends` (such as ES5), you can use the static `YZ.extend` function to achieve the same result:
 
 ```js
-var Counter = YZ.extend(Component, {
+var Counter = YZ.extend(YZ.Component, {
   created: function() {
     this.state = {
       count: 0,
@@ -189,7 +187,7 @@ Counter.defaultOptions = function() {
   return { label: 'Count' };
 };
 
-var counter = new Counter('#app');
+var counter = new Counter().mount('#app');
 ```
 
 ## Example application
@@ -244,6 +242,12 @@ class Counter extends Component {
     count: 'update',
   };
 
+  // lifecycle
+
+  mounted() {
+    console.log(`Current count ${this.state.count}`);
+  }
+
   // methods
 
   update() {
@@ -256,14 +260,54 @@ class Counter extends Component {
 const counter = new Counter().mount(Counter.root);
 ```
 
-**`root` (string)** is the root element CSS selector. It must be a static property and is required.
+### Application Breakdown
 
-**`defaultOptions` (function)** returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static.
+##### `root` (string)
 
-**`selectors` (object)** is used to set a reference to component's child elements. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
+```js
+// Root element CSS selector
+static root = '.Counter';
+```
+
+This is the root element CSS selector. It must be a static property and is required.
+
+##### `defaultOptions` (function)
+
+```js
+static defaultOptions = () => ({
+  label: 'Count',
+});
+```
+
+Returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static.
+
+##### selectors` (object)
+
+```js
+selectors = {
+  increment: '.Counter__increment',
+  decrement: '.Counter__decrement',
+  value: '.Counter__value',
+};
+```
+
+This is used to set a reference to component's child elements. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
 If you need to access the component's root element use `this.$el`.
 
-**`listeners` (object)** is a shortcut syntax to set DOM event listeners on a given element. Each key has the following syntax:
+##### `listeners` (object)
+
+```js
+listeners = {
+  'click @increment': () => {
+    this.setState(({ count }) => ({ count: count + 1 }));
+  },
+  'click @decrement': () => {
+    this.setState(({ count }) => ({ count: count - 1 }));
+  },
+};
+```
+
+A shortcut syntax to set DOM event listeners on a given element. Each key has the following syntax:
 
 ```
 eventName [CSS selector | @elementReference]
@@ -275,15 +319,53 @@ Using just the event name will attach the listener to the component's root eleme
 
 Event listeners are automatically removed when the component's `.destroy()` method is invoked.
 
-**`state` (object)** is the component's internal state.
+##### `state` (object)
 
-**`actions` (object)** is a map listing functions to execute whenever the state property defined in the property key has changed. If the property value is a string it will search the corresponding method on the class.
+```js
+state = {
+  count: 0,
+};
+```
+
+This is the component's internal state.
+
+##### `actions` (object)
+
+```js
+actions = {
+  count: 'update',
+};
+```
+
+This is a map listing functions to execute whenever the state property defined in the property key has changed. If the property value is a string it will search the corresponding method on the class.
 
 The function is invoked with the current and previous value as arguments.
 
 In the counter example above whenever the state's `expanded` value changes the `toggle` method is executed.
 
-## Component state and update tracking
+##### lifecycle methods
+
+```js
+mounted() {
+  console.log(`Current count ${this.state.count}`);
+}
+```
+
+These methods are called by the instance during its lifecyle.
+
+##### methods
+
+```js
+update() {
+  const { count } = this.state;
+  const { label } = this.options;
+  this.$els.value.innerText = `${label}: ${count}`;
+}
+```
+
+Any other method is treated as a class method. You can use it like you'd do on a _normal_ javascript object instance.
+
+## State and update tracking
 
 Every component has a `state` property that reflects the component's internal state.
 
@@ -329,7 +411,7 @@ To track every change to the state attach a listener to the special `change:*` e
 
 If you want to prevent change events to be emitted, pass a second argument `true` to `setState`
 
-## Child components definition
+## Child components
 
 In some scenarios you might need to control the lifecycle and state of components nested inside another component.
 
@@ -480,23 +562,6 @@ To mitigate this problem you can leverage the special `from>to`syntax to create 
 
 The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes on that property.
 
-## Developer Tools
-
-Yuzu provides a simple `devtools` module that will allow you to inspect a component instance by attaching a `$yuzu` to its root DOM element. To enable this feature copy the following snippet into your entry point:
-
-```js
-import { Component, devtools } from '@yuzu/core';
-
-devtools(Component);
-```
-
-Now if you will be able to inspect any component instance on your favorite developer tools' console by selecting it and read the `.$yuzu` property.
-
-![Inspecting the state in Chrome DevTools](images/devtools.png)
-_Inspecting the state in Chrome DevTools_
-
-**Note**: To maximize performances and minimize bundle size devtools are shipped just in development mode (`process.env.NODE_ENV !== 'production'` ). In production mode the code will be replaced with a void function.
-
 ## API summary
 
 ### Lifecycle methods
@@ -538,7 +603,7 @@ See [dush](https://github.com/tunnckocore/dush) for details
 - `setRef` (_async_)
 - `broadcast`
 
-## Component Lifecycle diagram
+## Component Lifecycle
 
 #### Stage: _create_
 
@@ -735,6 +800,23 @@ const menuTree = mount(
 //mount it onto the DOM
 const menu = menuTree();
 ```
+
+## Developer Tools
+
+Yuzu provides a simple `devtools` module that will allow you to inspect a component instance by attaching a `$yuzu` to its root DOM element. To enable this feature copy the following snippet into your entry point:
+
+```js
+import { Component, devtools } from '@yuzu/core';
+
+devtools(Component);
+```
+
+Now if you will be able to inspect any component instance on your favorite developer tools' console by selecting it and read the `.$yuzu` property.
+
+![Inspecting the state in Chrome DevTools](images/devtools.png)
+_Inspecting the state in Chrome DevTools_
+
+**Note**: To maximize performances and minimize bundle size devtools are shipped just in development mode (`process.env.NODE_ENV !== 'production'` ). In production mode the code will be replaced with a void function.
 
 ## API Documentation
 

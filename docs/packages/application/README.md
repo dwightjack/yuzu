@@ -9,22 +9,18 @@ Available modules:
 - [`Sandbox`](#sandbox):
 - [`Context`](#context):
 
-<!-- TOC -->
+<!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
   - [as NPM package](#as-npm-package)
   - [CDN delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-    - [Webpack](#webpack)
-    - [Rollup](#rollup)
 - [Browser support](#browser-support)
-- [Usage](#usage)
-  - [Sandbox](#sandbox)
-    - [Custom options](#custom-options)
-    - [Inline options](#inline-options)
-    - [API summary](#api-summary)
-      - [Lifecycle methods](#lifecycle-methods)
-      - [Event bus](#event-bus)
+- [Sandbox](#sandbox)
+  - [Custom options](#custom-options)
+  - [Inline options](#inline-options)
+  - [API summary](#api-summary)
+  - [Event bus](#event-bus)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 
@@ -105,9 +101,7 @@ If you're using a package bundler without any polyfill library like [babel-polyf
 import '@yuzu/polyfills';
 ```
 
-## Usage
-
-### Sandbox
+## Sandbox
 
 Sandbox creates a hub that groups a set of components within a DOM element and manages their initialization and lifecyle.
 
@@ -166,7 +160,7 @@ On calling `sandbox.start()` the sandbox will query the DOM inside `#app`, match
 
 To un-mount the sandbox and it's child components just run `sandbox.stop()`. This will trigger each instance `destroy()` method as well.
 
-#### Custom options
+### Custom options
 
 You can also pass custom properties or CSS matchers for a component in order to alter the default options and element matching selector:
 
@@ -192,7 +186,7 @@ const sandbox = new Sandbox({
 });
 ```
 
-#### Inline options
+### Inline options
 
 Custom options will be used on every instance found in the sandbox. In order to further customize each instance you can set a `data-ui-*` attribute on the component's root element.
 
@@ -217,14 +211,14 @@ Starting from the example let's change the HTML to:
 
 On `sandbox.start()` the first Accordion will be initialized with `dark` theme, but the second will pick the `light` one.
 
-#### API summary
+### API summary
 
-##### Lifecycle methods
+#### Lifecycle methods
 
 - `start` Starts the sandbox and initialized matched components
 - `stops` Stops the sandbox and calls `destroy()` on instantiated components
 
-##### Event bus
+### Event bus
 
 - `on`
 - `once`
