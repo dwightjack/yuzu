@@ -32,6 +32,7 @@ packages.forEach(async (package) => {
   if (fs.existsSync(localReadme)) {
     const contents = await readAsync(localReadme, 'utf8');
     await writeAsync(path.join(dest, 'README.md'), contents, 'utf8');
+    console.log(`-> File README.md copied.`);
   }
 
   // generate API
@@ -44,7 +45,19 @@ packages.forEach(async (package) => {
     files = files.filter((f) => !f.endsWith('index.ts'));
   }
 
-  //write sidebar
+  //create a readme
+  const readme = `
+# @yuzu/${package}
+
+${files
+    .map((f) => {
+      const base = path.basename(f, '.ts');
+      return ` - [${base}](packages/${package}/api/${base})`;
+    })
+    .join('\n')}
+`.trim();
+
+  await writeAsync(path.join(destApi, 'README.md'), readme, 'utf8');
 
   const renders = files.map(async (file) => {
     const basename = path.basename(file, '.ts');
