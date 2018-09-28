@@ -77,7 +77,6 @@ ${files
       await writeAsync(tmppath, outputText, 'utf8');
       const raw = await documentation.build(tmppath, {
         shallow: true,
-        order: ['static'],
       });
 
       let output = await documentation.formats.md(raw);
