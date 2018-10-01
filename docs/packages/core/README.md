@@ -22,6 +22,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
   - [Tracking updates](#tracking-updates)
 - [Child components](#child-components)
   - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
+  - [Child to parent communication](#child-to-parent-communication)
 - [API summary](#api-summary)
   - [Lifecycle methods](#lifecycle-methods)
   - [State management](#state-management)
@@ -31,7 +32,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
   - [Child management methods](#child-management-methods)
 - [Component Lifecycle](#component-lifecycle)
   - [Async ready state](#async-ready-state)
-  - [Conditional state update](#conditional-state-update)
+  - [Conditional state updates](#conditional-state-updates)
 - [Functional composition](#functional-composition)
   - [Multiple dynamic children](#multiple-dynamic-children)
 - [Developer Tools](#developer-tools)
@@ -170,7 +171,7 @@ const counter = new Counter().mount('#app');
 
 ### ES5 usage
 
-In development environments that don't support `extends` (such as ES5), you can use the static `YZ.extend` function to achieve the same result:
+In development environments that don't support ES6 `class`es (like IE11), you can use the static `YZ.extend` function to achieve the same result:
 
 ```js
 var Counter = YZ.extend(YZ.Component, {
@@ -372,7 +373,8 @@ Any other method is treated as a class method. You can use it like you'd do on a
 Every component has a `state` property that reflects the component's internal state.
 
 An initial state can be set as a class property or in the `created` lifecycle hook.
-**Note:** setting a property's initial state is the only way to allow subsequent updates to it.
+
+!> **Note:** setting a property's initial state is the only way to allow subsequent updates to it.
 
 To update the state use the `setState` method. The first argument is an object with the part of the state you wan to update:
 
@@ -402,26 +404,34 @@ class Counter extends Component {
 Every call to `setState` will emit a `change:<property>` event on the component for each updated property.
 
 ```js
-this.on('change:count', (value, preValue) => {
+this.on('change:count', (value, prevValue) => {
   console.log(`current: ${value}, (was ${prevValue})`);
 });
 this.setState({ count: 1 });
 // logs: `current: 1, (was 0)`
 ```
 
-To track every change to the state attach a listener to the special `change:*` event. The event handler will receive as arguments the new state as well as the previous one.
+To track every change to the state, attach a listener to the special `change:*` event. The event handler will receive as arguments the new state as well as the previous one.
 
-If you want to prevent change events to be emitted, pass a second argument `true` to `setState`
+```js
+this.on('change:*', (state, prevState) => {
+  console.log(`current: ${state.count}, (was ${prevState.count})`);
+});
+this.setState({ count: 1 });
+// logs: `current: 1, (was 0)`
+```
+
+If you want to prevent change events to be emitted, pass a second argument `true` to `setState` (_silent_ update).
 
 ## Child components
 
 In some scenarios you might need to control the lifecycle and state of components nested inside another component.
 
-In this case you can use the `.setRef` method to link a child component's instance to its parent.
+In this case you can use the `setRef` method to link a child component's instance to its parent.
 
-As bonus point, when the parent's `destroy` method is executed, every children's `destroy` method is called as well before tearing down the instance (`destroy` is an async method)
+As bonus point, when the parent's `destroy` method is executed, every children's `destroy` method is called as well before tearing down the instance (`destroy` is an async method).
 
-A full example below
+Here is a full example:
 
 ```html
 <div class="Counter">
@@ -434,7 +444,7 @@ A full example below
 ```
 
 ```js
-import Component from '@/components/Component';
+import { Component } from '@yuzu/core';
 
 class Text extends Component {
   static root = '.Text';
@@ -508,9 +518,11 @@ const counter = new Counter().mount(Counter.root);
 
 ### Child components' initial state and computed state
 
-`setRef` accepts a second argument which is an object used as the child component's initial state during initialization. If a property value is a function it will be used to compute the child state value and subsequent changes to the parent state will be propagated to the child state as well.
+`setRef` accepts a second argument which is an object used during initialization as the child component's initial state.
 
-The `Counter` component above could be refactored like this
+If a property value is a function it will be used to compute the child state value and **subsequent changes** to the parent state will be propagated to the child state as well.
+
+The `Counter` component above could be refactored like this:
 
 ```diff
 class Counter extends Component {
@@ -564,6 +576,35 @@ To mitigate this problem you can leverage the special `from>to`syntax to create 
 
 The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes on that property.
 
+### Child to parent communication
+
+In scenarios where you need to establish a communication between children and their parent component, the preferred pattern is by means of events:
+
+```js
+// parent.js
+this.$refs.on('message', (value) => {
+  this.setState({ childMessage: value });
+});
+
+// child.js
+this.emit('message', this.state.message);
+```
+
+To simplify this operation you can set event - handler pairs on a `on` object passed to `setRef`:
+
+```js
+this.setRef({
+  id: 'child',
+  el: this.$els.child,
+  component: Child,
+  on: {
+    message: (value) => {
+      this.setState({ childMessage: value });
+    },
+  },
+});
+```
+
 ## API summary
 
 ### Lifecycle methods
@@ -607,25 +648,25 @@ See [dush](https://github.com/tunnckocore/dush) for details
 
 ## Component Lifecycle
 
-| Stage                 | Hooks                        | Called upon                    | Notes                                                               |
-| --------------------- | ---------------------------- | ------------------------------ | ------------------------------------------------------------------- |
-| create                | `created()`                  | component instantiation        | sets `this.options`                                                 |
-| mount <sup>(1)</sup>  | `beforeMount()`, `mounted()` | `mount()`                      | sets event handlers and `this.$els` references                      |
-| init <sup>(2)</sup>   | `initialize()`, `ready()`    | `ready()`                      | sets actions and state state                                        |
-| update <sup>(3)</sup> | none                         | `replaceState()`, `setState()` |
-| destroy               | `beforeDestroy()`            | `destroy()`                    | destroys child component, removes event listeners and DOM listeners |
+| Stage                 | Hooks                        | Called upon                    | Initialized features                                           |
+| --------------------- | ---------------------------- | ------------------------------ | -------------------------------------------------------------- |
+| create                | `created()`                  | component instantiation        | options `this.options`                                         |
+| mount <sup>(1)</sup>  | `beforeMount()`, `mounted()` | `mount()`                      | event handlers (`this.listeners`) and `this.$els.*` references |
+| init <sup>(2)</sup>   | `initialize()`, `ready()`    | `ready()`                      | actions and state (`this.state`)                               |
+| update <sup>(3)</sup> | none                         | `replaceState()`, `setState()` | &nbsp;                                                         |
+| destroy               | `beforeDestroy()`            | `destroy()`                    | &nbsp;                                                         |
 
 **Notes:**
 
-1.  Requires a DOM element or CSS string used to resolve the component's root element. Accepts an object used as the instance initial state.<br>It will automatically transition to the _init_ stage (see below) unless the second |argument is `null`.
-1.  Automatically called by `.mount()` when the second argument is `!== null`. Accepts an object used as the instance initial state.
-1.  Executed on every call to `.setState` and `.replaceState` when the second argument is `!== true`. Will trigger a `change:...` event for each changed key.
+1.  Requires a DOM element or CSS string used to resolve the component's root element. Accepts an object used as the instance initial state.<br>It will automatically transition to the _init_ stage (see below) unless the second argument is `null`.
+1.  Automatically called by `mount` when the second argument is `!== null`. Accepts an object used as the instance initial state.
+1.  Executed on every call to `setState` and `replaceState` when the second argument is `!== true`. Will trigger a `change:...` event for each changed key.
 
 ### Async ready state
 
 `ready` hook can be delayed by setting a `readyState` method. This method will receive the current and previous state and will be triggered on every state update until it returns `true`.
 
-This method can be useful when you need to delay the call to the `ready` hook until an async AJAX call is finished:
+This method can be useful when you need to delay the call to the `ready` hook until an async AJAX call has finished:
 
 ```js
 class UserList extends Component {
@@ -640,6 +681,7 @@ class UserList extends Component {
     });
   }
 
+  // delay ready until the `users` array is populated
   readyState({ users }) {
     return users.length > 0;
   }
@@ -650,9 +692,11 @@ class UserList extends Component {
 }
 ```
 
-### Conditional state update
+### Conditional state updates
 
-Calls to `.setState` will trigger a conditional method `shouldUpdateState`. The method will be executed on each passed-in key and receives the key, it's current value and the provided new value. If the methods returns `true` the value will be updated and change events will be triggered. The default implementation is:
+Calls to `setState` will trigger a conditional method `shouldUpdateState`. The method will be executed on each passed-in key and receives the key, it's current value and the provided new value. If the methods returns `true` the value will be updated and change events will be triggered.
+
+The default implementation is:
 
 ```js
 shouldUpdateState(key, currentValue, newValue) {
@@ -662,11 +706,11 @@ shouldUpdateState(key, currentValue, newValue) {
 
 You can overwrite this method with a custom implementation on your components.
 
-**Note** calls to `.replaceState` are not affected by this method and will always trigger an update.
+!> **Note** calls to `replaceState` are not affected by this method and will always trigger an update.
 
 ## Functional composition
 
-To compose nested components you can simply use the [`setRef`](doc/component.md#setref) method to register child components:
+To compose nested components you can use the [`setRef`](/packages/core/api/component#setref) method to register child components:
 
 ```js
 class Navigation extends Component {
@@ -674,7 +718,7 @@ class Navigation extends Component {
 }
 
 class Gallery extends Component {
-  beforeInit() {
+  initialize() {
     this.setRef({
       id: 'navigation',
       component: Navigation,
@@ -684,10 +728,10 @@ class Gallery extends Component {
   }
 }
 
-const gallery = new Gallery('#gallery');
+const gallery = new Gallery().mount('#gallery', { currentImage: 1 });
 ```
 
-If you prefer a more _functional_ approach you can use the [`mount`](doc/mount.md) helper:
+If you prefer a more _functional_ approach you can use the [`mount`](/packages/core/api/mount) helper:
 
 ```js
 import { Component, mount } from '@yuzu/core';
@@ -704,7 +748,10 @@ class Gallery extends Component {
 const galleryTree = mount(
   Gallery,
   '#gallery',
-  null, // <-- options
+  {
+    state: { currentImage: 1 } // <-- initial state
+    theme: 'red' // <-- instance options
+  },
   [mount(Navigation, '.gallery__nav')],
   // ^--- array of children components
 );
@@ -731,7 +778,7 @@ class Link extends Component {
 const menuTree = mount(
   Menu,
   '#menu',
-  null,
+  {},
   (ctx) => {
     // ctx is the instance of Menu
     const links = Array.from(ctx.$el.querySelectorAll('.menu__link'))
@@ -763,7 +810,7 @@ class Link extends Component {
 const menuTree = mount(
   Menu,
   '#menu',
-  null,
+  {},
   Children('.menu__link', (el, i) => mount(Link, el)),
 );
 
@@ -781,19 +828,20 @@ import { Component, devtools } from '@yuzu/core';
 devtools(Component);
 ```
 
-Now if you will be able to inspect any component instance on your favorite developer tools' console by selecting it and read the `.$yuzu` property.
+You will be then able to inspect any component instance on your favorite developer tools' console by selecting it and read the `.$yuzu` property.
 
 ![Inspecting the state in Chrome DevTools](images/devtools.png)
 _Inspecting the state in Chrome DevTools_
 
-**Note**: To maximize performances and minimize bundle size devtools are shipped just in development mode (`process.env.NODE_ENV !== 'production'` ). In production mode the code will be replaced with a void function.
+!> To maximize performances and minimize bundle size devtools are shipped just in development mode (`process.env.NODE_ENV !== 'production'` ). In production mode the code will be replaced with a void function.
 
 ## API Documentation
 
-- [Component](doc/component.md)
-- [Children](doc/children.md)
-- [mount](doc/mount.md)
-- [extend](doc/extend.md)
+- [Component](/packages/core/api/component)
+- [Children](/packages/core/api/children)
+- [mount](/packages/core/api/mount)
+- [extend](/packages/core/api/extend)
+- [mount](/packages/core/api/devtools)
 
 ## Contributing
 

@@ -11,4 +11,5 @@
 - [@yuzu/core](packages/core/api/)
   <!-- @yuzu/core -->
 - [@yuzu/application](packages/application/api/)
-  <!-- @yuzu/application -->
+  - [context](packages/application/api/context)
+ - [sandbox](packages/application/api/sandbox)

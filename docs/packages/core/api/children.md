@@ -6,10 +6,11 @@ Element array Iterator.
 
 Accepts a CSS selector and an iterator function.
 
-Returns a function that accepts a parent component as first argument and iterates the iterator over an array of DOM elements.
+Returns a function that accepts a parent component as first argument and iterates the iterator function over an array of DOM elements.
+
 DOM elements are selected from the CSS selector in the context of the passed-in parent's [`$el`][1] property.
 
-## Parameters
+### Parameters
 
 -   `selector` **[string][2]** Elements CSS selector
 -   `fn` **[function][3]** Iterator function
@@ -17,12 +18,14 @@ DOM elements are selected from the CSS selector in the context of the passed-in 
 ## Examples
 
 ```javascript
-const parent = new ParentComponent('#list');
+import { Children } from '@yuzu/core';
+
+const parent = new ParentComponent().mount('#list');
 const iterator = (el, i) => new ChildComponent(el, { index: i });
 const childComponentArray = Children('.items', iterator)(parent);
 ```
 
-[1]: ./component.md#$el
+[1]: /packages/core/api/component#instance-properties
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

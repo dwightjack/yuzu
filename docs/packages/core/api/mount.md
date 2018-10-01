@@ -4,124 +4,35 @@
 
 `mount` is an helper function to setup trees of components in a functional way.
 
-Returns a mount function which in turn accepts a state object and a parent component.
+Returns a mount function which in turn accepts a parent component. If present, the returning instance will be attached as reference to the parent component.
 
-It accepts 4 arguments:
+Child components listed in the `children` parameter will be automatically set as references in the component (uses: [`Component#setRef`][1])
 
--   a component constructor (either created by extending `Component` or by [`Component.create`][1])
--   a mount DOM node (either a CSS selector string or a DOM element)
--   component options _(optional)_
--   An optional array of children mount functions OR a function returning an array of children mount functions (usually yuzu's [`Children`][2] function)
+See the guide on **[functional composition][2]** for implementation examples.
 
-Child components will be automatically set as references in the parent component (uses: [`Component#setRef`][3])
+### Parameters
 
-## A simple, single component example:
+-   `ComponentConstructor` **Component** A component constructor (either created by extending `Component` or by [`extend`][3])
+-   `el` **([HTMLElement][4] \| [string][5])** A mount DOM node (either a CSS selector string or a DOM element)
+-   `props` **[object][6]?** Mount props (optional, default `{}`)
+    -   `props.id` **[string][5]?** Optional component id (used to create a reference onto the parent component)
+    -   `props.state` **[object][6]?** Component initial state
+-   `children` **([Array][7]&lt;[function][8]> | [function][8])?** Child components. Either an array of `mount` functions or a function returning an array of mount functions
 
-```js
-import { mount } from '@yuzu/core';
+Returns **[function][8]** 
 
-import GalleryComponent from './components/Gallery';
+[1]: /packages/core/api/component#setref
 
-const tree = mount(
- GalleryComponent,
- '#gallery', //mount point,
- { theme: 'red' } //options
-);
+[2]: /packages/core/#functional-composition
 
-//attach the tree with an initial state passed to the root component
-const gallery = tree({ startIndex: 1 })
-```
+[3]: /packages/core/api/extend
 
-## A components' tree example
+[4]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-Props can be passed to children components by setting a `prop` property on the `options` object
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-```js
-import { mount } from '@yuzu/core';
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-import List from './components/List';
-import ListItem from './components/ListItem';
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-const tree = mount(
- List,
- '#list', //mount point,
- null, //empty options
- [
-     mount(ListItem, '.list-item1', { id: 'item1', props: { currentItem: 'current'} }),
-     mount(ListItem, '.list-item2', { id: 'item2', props: { currentItem: 'current'} })
- ]
-);
-
-//attach the tree with an initial state passed to the root component
-const list = tree({ currentItem: 0 })
-
-//access child components
-list.$refs.item1.$el.className === '.list-item1';
-list.$refs.item2.$el.className === '.list-item2';
-```
-
-## A dynamic components' tree example
-
-Props can be passed to children components by setting a `prop` property on the `options` object
-
-```js
-import { mount, Children } from 'yuzu';
-
-import List from './components/List';
-import ListItem from './components/ListItem';
-
-const tree = mount(
- List,
- '#list', //mount point,
- null, //empty options
- Children('.list-item', (el, id) => {
-     return mount(ListItem, el, { id: `item${i}`, props: { currentItem: 'current'} });
- })
-);
-
-//attach the tree with an initial state passed to the root component
-const list = tree({ currentItem: 0 })
-```
-
-## Mixed dynamic and static child tree
-
-```js
-import { mount, Children } from 'yuzu';
-
-import List from './components/List';
-import ListItem from './components/ListItem';
-import Navigation from './components/Navigation';
-
-// setup a dynamic child list function
-const listItemsTree = Children('.list-item', (el, id) => {
-     return mount(ListItem, el, { id: `list-item-${i}`, props: { currentItem: 'current'} });
-});
-
-const tree = mount(
- List,
- '#list', //mount point,
- null, //empty options
- (parent) => { // <-- parent is the current instance of `List`
-     return [
-         ...listItemsTree(parent),
-         mount(Navigation, '.nav')
-     ]
- }
-);
-
-//attach the tree with an initial state passed to the root component
-const list = tree({ currentItem: 0 })
-```
-
-## Parameters
-
--   `ComponentConstructor`  
--   `el`  
--   `props`   (optional, default `{}`)
--   `children`  
-
-[1]: ./component.md#create
-
-[2]: ./children.md
-
-[3]: ./component.md#setref
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function

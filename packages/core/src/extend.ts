@@ -7,6 +7,22 @@ export interface IExtendedComponent<P extends Component, M>
   new (options?: IObject): P & M;
 }
 
+/**
+ * Utility method to create new Component classes in environments that don't support ES6 `class`es.
+ *
+ * @param {Component} parent Component class to extend
+ * @param {object} props New component default properties and methods
+ * @example
+ * // UMD environment
+ * const Text = YZ.extend(YZ.Component, {
+ *  initialize: function () {
+ *    this.state = { body:  '' };
+ *  },
+ *  mounted: function () {
+ *    this.$el.innerHTML = this.state.body;
+ *  }
+ * });
+ */
 export const extend = <P extends Component, T extends IObject>(
   parent: IComponentConstructor,
   props: T = {} as T,

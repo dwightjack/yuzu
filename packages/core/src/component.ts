@@ -42,11 +42,11 @@ export interface Component extends Idush {}
  *
  * #### Instance properties
  *
- * - `$active` **Boolean**: `true` if the instance is mounted and initialized
+ * - `$active` **boolean**: `true` if the instance is mounted and initialized
  * - `options` **{ [string]: any }**: instance options (see [defaultOptions](#defaultOptions))
  * - `state` **{ [string]: any }**: instance state (see [setState](#setState))
  * - `$el` **[Element][1]**: The instance root DOM element (see [mount](#mount))
- * - `$els` **{ [string]: [Element][1] }**: Object mapping references to component's child DOM elements (see [selectors](#selectors))
+ * - `$els` **{ [string]: [Element][1] }**: Object mapping references to component's child DOM elements (see `selectors` below)
  * - `$refs` **{ [string]: Component }**: Object mapping references to child components (see [setRef](#setRef))
  * - `selectors` **{ [string]: string }**: Object mapping a child element's reference name and a CSS selector
  * - `listeners` **{ [string]: function|string }**: Object mapping DOM listeners and handlers (see [setListener](#setListener))
@@ -66,7 +66,7 @@ export class Component implements Idush {
    * ```js
    * Component.UID_DATA_ATTR
    * ```
-   * Component root element attribute marker
+   * Component root element attribute marker.
    *
    * @static
    * @returns {object}
@@ -77,7 +77,7 @@ export class Component implements Idush {
    * ```js
    * Component.defaultOptions()
    * ```
-   * Returns an object with default options
+   * Returns an object with default options.
    *
    * @static
    * @returns {object}
@@ -89,7 +89,7 @@ export class Component implements Idush {
    * Component.isComponent(obj)
    * ```
    *
-   * Checks whether the passed-in value is a Component constructor
+   * Checks whether the passed-in value is a Component constructor.
    *
    * @static
    * @param {*} value
@@ -125,6 +125,7 @@ export class Component implements Idush {
    * ```js
    * this.readyState(state, prevState)
    * ```
+   *
    * Optional method used to delay the execution of [`ready`](#ready) after the state satisfies to a given condition.
    *
    * Will be executed at every state change until it returns `true`.
@@ -183,20 +184,20 @@ export class Component implements Idush {
    * mount(el, [state])
    * ```
    *
-   * Mounts a component's instance on a DOM element and initializes it.
-   * To prevent this second behavior set `state` to `null`
+   * Mounts a component instance on a DOM element and initializes it.
    *
-   * Lifecycle stage: `mount`
+   * ?> To prevent initialization and just mount the component set `state` to `null`.
    *
-   * Lifecycle hooks:
+   * > **Lifecycle**
+   * >
+   * > | stage    | hooks     |
+   * > |----------| --------- |
+   * > | `mount` | `beforeMount` <sup>(1)</sup>, `mounted` |
    *
-   * - `beforeMount` just after attaching the root element (this.$el) but before any listener and selector registration
-   * - `initialize` (if `state` !== null)
-   * - `ready` (if `state` !== null)
-   * - `mounted`
+   * 1. Just after attaching the root element (`this.$el`) but before any listener and selector registration.
    *
    * @param {string|Element} el Component's root element
-   * @param {object|null} [state={}] initial state
+   * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
   public mount(el: string | Element, state: IState | null = {}) {
@@ -241,16 +242,15 @@ export class Component implements Idush {
    * ```js
    * init([state])
    * ```
-   * Initializes the component instance
+   * Initializes the component instance.
    *
-   * **Lifecycle stage**: `init`
+   * > **Lifecycle**
+   * >
+   * > | stage    | hooks     |
+   * > |----------| --------- |
+   * > | `init` | `initialize`, `ready` |
    *
-   * **Lifecycle hooks:**
-   *
-   * - `initialize` (if `state` !== null)
-   * - `ready` (if `state` !== null)
-   *
-   * @param {object|null} [state={}] initial state
+   * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
   public init(state: IState = {}) {
@@ -309,32 +309,66 @@ export class Component implements Idush {
   }
 
   /**
-   * Lifecycle hook called on instance creation
+   * Lifecycle hook called on instance creation.
+   *
+   * At this stage just the instance options (`this.options`) are initialized.
+   *
+   *  Overwrite this method with custom logic in your components.
+   *
+   * ?> Use this hook to tap as early as possible into the component's properties. For example to set a dynamic initial state.
    */
   public created() {} // tslint:disable-line: no-empty
 
   /**
-   * Lifecycle hook called just before mounting the instance onto the root element
+   * Lifecycle hook called just before mounting the instance onto the root element.
+   *
+   * At this stage the component is already attached to its root DOM element.
+   *
+   * Overwrite this method with custom logic in your components.
    */
   public beforeMount() {} // tslint:disable-line: no-empty
 
   /**
-   * Lifecycle hook called when the instance gets mounted onto a DOM element
+   * Lifecycle hook called when the instance gets mounted onto a DOM element.
+   *
+   * At this stage both children elements (`this.$els.*`) and event listeners configured in `this.listeners` have been setup.
+   *
+   * Overwrite this method with custom logic in your components.
+   *
+   * ?> Use this method when you need to work with the DOM or manage any side-effect that requires the component to be into the DOM.
    */
   public mounted() {} // tslint:disable-line: no-empty
 
   /**
    * Lifecycle hook called before instance initialization.
+   *
+   * At this stage the state and state listeners are not yet been initialized.
+   *
+   * Overwrite this method with custom logic in your components.
+   *
+   * ?> Use this method to set child components by [setRef](#setRef) and run any preparatory work on the instance.
    */
   public initialize() {} // tslint:disable-line: no-empty
 
   /**
-   * Lifecycle hook called after instance initialization. State and event binding are already in place
+   * Lifecycle hook called after instance initialization.
+   *
+   * At this stage State and event binding are already in place.
+   *
+   * Overwrite this method with custom logic in your components.
+   *
+   * ?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`](packages/core/#async-ready-state) method.
    */
   public ready() {} // tslint:disable-line: no-empty
 
   /**
-   * Lifecycle hook called just before closing child refs
+   * Lifecycle hook called just before closing child refs.
+   *
+   * This hook is called just before destroying the instance. Every property, listener and state feature is still active.
+   *
+   * Overwrite this method with custom logic in your components.
+   *
+   * !> This is an async method. Return a promise in order to suspend the destroy process.
    */
   public beforeDestroy() {} // tslint:disable-line: no-empty
 
@@ -343,16 +377,22 @@ export class Component implements Idush {
    * getState(key)
    * ```
    *
-   * Returns a state property
+   * Returns a property of the state or a default value if the property is not set.
    *
-   * @param {string} key State property to return
+   * ?> In ES6 environments you can use a [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) instead: ` const { name = 'John'} = this.state`
+   *
+   *
+   * @param {string} key Property to return
+   * @param {*} def Default value
    * @returns {*}
    * @example
    * const instance = new Component().mount('#app', { a: 1 });
    * // instance.getState('a') === 1
+   *
+   * // instance.getState('b', false) === false
    */
-  public getState(key: string) {
-    return this.state[key];
+  public getState(key: string, def?: any) {
+    return this.state.hasOwnProperty(key) ? this.state[key] : def;
   }
 
   /* eslint-disable class-methods-use-this */
@@ -361,12 +401,13 @@ export class Component implements Idush {
    * shouldUpdateState(string, currentValue, newValue)
    * ```
    * Executes a strict inequality comparison (`!==`) on the passed-in values and returns the result.
-   * This method is executed on `setState` calls.
+   *
+   * !> This method is executed on every [`setState`](#setstate) call.
    *
    * You can overwrite this method with your own validation logic.
    *
    * @param {string} key State property name
-   * @param {*} currentValue value stored in the current state
+   * @param {*} currentValue Value stored in the current state
    * @param {*} newValue New value
    * @returns {boolean}
    */
@@ -380,16 +421,17 @@ export class Component implements Idush {
    * setState(updater, [silent])
    * ```
    *
-   * Sets internal state property(ies). Creates a shallow copy of the current state.
-   * If the computed new state is different from the old one it emits a `change:<property>` event for every changed property
-   * as well as a `change:*` event
+   * Updates the internal instance state by creating a shallow copy of the current state and updating the passed-in keys.
    *
-   * To prevent this behavior set the second argument to `true` (silent update)
+   * If the computed new state is different from the old one it emits a `change:<property>` event for every changed property
+   * as well as a global `change:*` event.
    *
    * If the new value argument is a function, it will be executed with the current state as argument.
    * The returned value will be used to update the state.
    *
-   * @param {object|function} updater Defines which part of the state must be updated.
+   * ?> To prevent an instance from emitting `change:` events set the second argument to `true` (silent update).
+   *
+   * @param {object|function} updater Defines which part of the state must be updated
    * @param {boolean} [silent=false] Update the state without emitting change events
    * @example
    * instance.on('change:a', (next, prev) => console.log(next, prev));
@@ -441,9 +483,11 @@ export class Component implements Idush {
    * replaceState(newState, [silent])
    * ```
    *
-   * Replaces the current state of the instance with a completely new state
+   * Replaces the current state of the instance with a completely new state.
    *
-   * @param {object} newState The new state object.
+   * !> Note that this methods is un-affected by [`shouldUpdateState`](#shouldupdatestate).
+   *
+   * @param {object} newState The new state object
    * @param {boolean} [silent=false] Replace the state without emitting change events
    * @example
    * instance.replaceState({ a: 1 });
@@ -470,7 +514,7 @@ export class Component implements Idush {
    * broadcast(event, [...params])
    * ```
    *
-   * Emits a `broadcast:<eventname>` event to every child component listed as a `$ref`
+   * Emits a `broadcast:<eventname>` event on every child component listed in `$refs`.
    *
    * @param {string} event Event name
    * @param {*[]} [params] Additional arguments to pass to the handler
@@ -497,8 +541,8 @@ export class Component implements Idush {
    * The first argument must be a string composed by an event name (ie `click`) and a CSS selector (`.element`)
    * separated by a space.
    *
-   * If the CSS selector starts with `@` the listener will be attached the the
-   * corresponding reference element in the instance (`this.$els.<element>`), if any.
+   * If the CSS selector starts with `@` the listener will be attached to the
+   * corresponding reference child element (`this.$els.<element>`), if any.
    *
    * @param {string} def Event and target element definition. Format `eventName [target]`
    * @param {function} handler Event handler
@@ -559,7 +603,9 @@ export class Component implements Idush {
    *
    * Attaches a reference to a child component.
    *
-   * If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
+   * If a reference `id` is already attached, the previous one is destroyed and replaced with the new one.
+   *
+   * ?> This is an async method returning a promise.
    *
    * @param {object} config A child component configuration object
    * @param {string} config.id Reference id. Will be used to set a reference to the child component onto `this.$refs`
@@ -567,7 +613,7 @@ export class Component implements Idush {
    * @param {string|HTMLElement} config.el Child component root element. Ignored if `config.component` is a component instance
    * @param {Object} config.on Child component event listeners. Format `{ 'eventname': handler }`
    * @param {*} config.* Any other property listed here will be passed to the constructor as option
-   * @param {object} [props] Child component initial state.
+   * @param {object} [props] Child component initial state
    * @returns {Promise}
    * @example
    * const parent = new Component('#root');
@@ -702,6 +748,8 @@ export class Component implements Idush {
   /**
    * Calls `.destroy()` on every child references and detaches them from the parent component.
    *
+   * !> This is an async method returning a promise
+   *
    * @returns {Promise}
    */
   public async closeRefs() {
@@ -725,13 +773,16 @@ export class Component implements Idush {
    * destroy()
    * ```
    *
-   * Detaches DOM events, instance's events and destroys all references as well
+   * Detaches DOM events, instance's events and destroys all references as well.
    *
-   * Lifecycle stage: `destoy`
+   * > **Lifecycle**
+   * >
+   * > | stage    | hooks     |
+   * > |----------| --------- |
+   * > | `destroy` | `beforeDestroy` |
    *
-   * Lifecycle hooks:
    *
-   * - `beforeDestroy`
+   * !> This is an async method returning a promise
    *
    * @returns {Promise}
    */

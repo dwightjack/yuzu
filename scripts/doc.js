@@ -45,19 +45,31 @@ packages.forEach(async (package) => {
     files = files.filter((f) => !f.endsWith('index.ts'));
   }
 
-  //create a readme
-  const readme = `
-# @yuzu/${package}
-
-${files
+  const moduleLinks = files
     .map((f) => {
       const base = path.basename(f, '.ts');
       return ` - [${base}](packages/${package}/api/${base})`;
     })
-    .join('\n')}
+    .join('\n');
+
+  //create a readme
+  const readme = `
+# @yuzu/${package}
+
+### Exposed modules
+
+${moduleLinks}
 `.trim();
 
   await writeAsync(path.join(destApi, 'README.md'), readme, 'utf8');
+
+  // create a custom sidebar
+  const sidebar = await readAsync(path.join(docs, '_sidebar.md'), 'utf8');
+  await writeAsync(
+    path.join(destApi, '_sidebar.md'),
+    sidebar.replace(`<!-- @yuzu/${package} -->`, moduleLinks.trim()),
+    'utf8',
+  );
 
   const renders = files.map(async (file) => {
     const basename = path.basename(file, '.ts');
@@ -92,6 +104,7 @@ ${files
       let output = await documentation.formats.md(raw);
 
       output = output.replace(/^##/gm, '#');
+      output = output.replace(/^## Parameters/m, '### Parameters');
 
       await writeAsync(filepath, output);
       console.log(`-> File ${filepath} generated.`);

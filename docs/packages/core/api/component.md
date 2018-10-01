@@ -16,23 +16,23 @@ const instance = new Component({ ... })
 
 ### Instance properties
 
--   `$active` **Boolean**: `true` if the instance is mounted and initialized
+-   `$active` **boolean**: `true` if the instance is mounted and initialized
 -   `options` **{ [string]&#x3A; any }**: instance options (see [defaultOptions][2])
 -   `state` **{ [string]&#x3A; any }**: instance state (see [setState][3])
 -   `$el` **[Element][1]**: The instance root DOM element (see [mount][4])
--   `$els` **{ [string]&#x3A; [Element][1] }**: Object mapping references to component's child DOM elements (see [selectors][5])
--   `$refs` **{ [string]&#x3A; Component }**: Object mapping references to child components (see [setRef][6])
+-   `$els` **{ [string]&#x3A; [Element][1] }**: Object mapping references to component's child DOM elements (see `selectors` below)
+-   `$refs` **{ [string]&#x3A; Component }**: Object mapping references to child components (see [setRef][5])
 -   `selectors` **{ [string]&#x3A; string }**: Object mapping a child element's reference name and a CSS selector
--   `listeners` **{ [string]&#x3A; function|string }**: Object mapping DOM listeners and handlers (see [setListener][7])
+-   `listeners` **{ [string]&#x3A; function|string }**: Object mapping DOM listeners and handlers (see [setListener][6])
 -   `actions` **{ [string]&#x3A; function|string }**: Object mapping state keys and functions to executed on state update
 
 [1]: https://developer.mozilla.org/docs/Web/API/Element
 
-## Parameters
+### Parameters
 
--   `options` **[object][8]** Instance options (optional, default `{}`)
+-   `options` **[object][7]** Instance options (optional, default `{}`)
 
-Returns **[Component][9]** 
+Returns **[Component][8]** 
 
 ## mount
 
@@ -40,24 +40,24 @@ Returns **[Component][9]**
 mount(el, [state])
 ```
 
-Mounts a component's instance on a DOM element and initializes it.
-To prevent this second behavior set `state` to `null`
+Mounts a component instance on a DOM element and initializes it.
 
-Lifecycle stage: `mount`
+?> To prevent initialization and just mount the component set `state` to `null`.
 
-Lifecycle hooks:
+> **Lifecycle**
+>
+> | stage   | hooks                                   |
+> | ------- | --------------------------------------- |
+> | `mount` | `beforeMount` <sup>(1)</sup>, `mounted` |
 
--   `beforeMount` just after attaching the root element (this.$el) but before any listener and selector registration
--   `initialize` (if `state` !== null)
--   `ready` (if `state` !== null)
--   `mounted`
+1.  Just after attaching the root element (`this.$el`) but before any listener and selector registration.
 
 ### Parameters
 
--   `el` **([string][10] \| [Element][11])** Component's root element
--   `state` **([object][8] | null)** initial state (optional, default `{}`)
+-   `el` **([string][9] \| [Element][10])** Component's root element
+-   `state` **([object][7] | null)** Initial state (optional, default `{}`)
 
-Returns **[Component][9]** 
+Returns **[Component][8]** 
 
 ## init
 
@@ -65,44 +65,77 @@ Returns **[Component][9]**
 init([state])
 ```
 
-Initializes the component instance
+Initializes the component instance.
 
-**Lifecycle stage**: `init`
-
-**Lifecycle hooks:**
-
--   `initialize` (if `state` !== null)
--   `ready` (if `state` !== null)
+> **Lifecycle**
+>
+> | stage  | hooks                 |
+> | ------ | --------------------- |
+> | `init` | `initialize`, `ready` |
 
 ### Parameters
 
--   `state` **([object][8] | null)** initial state (optional, default `{}`)
+-   `state` **([object][7] | null)** Initial state (optional, default `{}`)
 
-Returns **[Component][9]** 
+Returns **[Component][8]** 
 
 ## created
 
-Lifecycle hook called on instance creation
+Lifecycle hook called on instance creation.
+
+At this stage just the instance options (`this.options`) are initialized.
+
+ Overwrite this method with custom logic in your components.
+
+?> Use this hook to tap as early as possible into the component's properties. For example to set a dynamic initial state.
 
 ## beforeMount
 
-Lifecycle hook called just before mounting the instance onto the root element
+Lifecycle hook called just before mounting the instance onto the root element.
+
+At this stage the component is already attached to its root DOM element.
+
+Overwrite this method with custom logic in your components.
 
 ## mounted
 
-Lifecycle hook called when the instance gets mounted onto a DOM element
+Lifecycle hook called when the instance gets mounted onto a DOM element.
+
+At this stage both children elements (`this.$els.*`) and event listeners configured in `this.listeners` have been setup.
+
+Overwrite this method with custom logic in your components.
+
+?> Use this method when you need to work with the DOM or manage any side-effect that requires the component to be into the DOM.
 
 ## initialize
 
 Lifecycle hook called before instance initialization.
 
+At this stage the state and state listeners are not yet been initialized.
+
+Overwrite this method with custom logic in your components.
+
+?> Use this method to set child components by [setRef][5] and run any preparatory work on the instance.
+
 ## ready
 
-Lifecycle hook called after instance initialization. State and event binding are already in place
+Lifecycle hook called after instance initialization.
+
+At this stage State and event binding are already in place.
+
+Overwrite this method with custom logic in your components.
+
+?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`][11] method.
 
 ## beforeDestroy
 
-Lifecycle hook called just before closing child refs
+Lifecycle hook called just before closing child refs.
+
+This hook is called just before destroying the instance. Every property, listener and state feature is still active.
+
+Overwrite this method with custom logic in your components.
+
+!> This is an async method. Return a promise in order to suspend the destroy process.
 
 ## getState
 
@@ -110,17 +143,22 @@ Lifecycle hook called just before closing child refs
 getState(key)
 ```
 
-Returns a state property
+Returns a property of the state or a default value if the property is not set.
+
+?> In ES6 environments you can use a [destructuring assignment][12] instead: `const { name = 'John'} = this.state`
 
 ### Parameters
 
--   `key` **[string][10]** State property to return
+-   `key` **[string][9]** Property to return
+-   `def` **any** Default value
 
 ### Examples
 
 ```javascript
 const instance = new Component().mount('#app', { a: 1 });
 // instance.getState('a') === 1
+
+// instance.getState('b', false) === false
 ```
 
 Returns **any** 
@@ -132,17 +170,18 @@ shouldUpdateState(string, currentValue, newValue)
 ```
 
 Executes a strict inequality comparison (`!==`) on the passed-in values and returns the result.
-This method is executed on `setState` calls.
+
+!> This method is executed on every [`setState`][13] call.
 
 You can overwrite this method with your own validation logic.
 
 ### Parameters
 
--   `key` **[string][10]** State property name
--   `currentValue` **any** value stored in the current state
+-   `key` **[string][9]** State property name
+-   `currentValue` **any** Value stored in the current state
 -   `newValue` **any** New value
 
-Returns **[boolean][12]** 
+Returns **[boolean][14]** 
 
 ## setState
 
@@ -150,19 +189,20 @@ Returns **[boolean][12]**
 setState(updater, [silent])
 ```
 
-Sets internal state property(ies). Creates a shallow copy of the current state.
-If the computed new state is different from the old one it emits a `change:<property>` event for every changed property
-as well as a `change:*` event
+Updates the internal instance state by creating a shallow copy of the current state and updating the passed-in keys.
 
-To prevent this behavior set the second argument to `true` (silent update)
+If the computed new state is different from the old one it emits a `change:<property>` event for every changed property
+as well as a global `change:*` event.
 
 If the new value argument is a function, it will be executed with the current state as argument.
 The returned value will be used to update the state.
 
+?> To prevent an instance from emitting `change:` events set the second argument to `true` (silent update).
+
 ### Parameters
 
--   `updater` **([object][8] \| [function][13])** Defines which part of the state must be updated.
--   `silent` **[boolean][12]** Update the state without emitting change events (optional, default `false`)
+-   `updater` **([object][7] \| [function][15])** Defines which part of the state must be updated
+-   `silent` **[boolean][14]** Update the state without emitting change events (optional, default `false`)
 
 ### Examples
 
@@ -183,12 +223,14 @@ instance.setState(({ a }) => ({a + 1}));
 replaceState(newState, [silent])
 ```
 
-Replaces the current state of the instance with a completely new state
+Replaces the current state of the instance with a completely new state.
+
+!> Note that this methods is un-affected by [`shouldUpdateState`][16].
 
 ### Parameters
 
--   `newState` **[object][8]** The new state object.
--   `silent` **[boolean][12]** Replace the state without emitting change events (optional, default `false`)
+-   `newState` **[object][7]** The new state object
+-   `silent` **[boolean][14]** Replace the state without emitting change events (optional, default `false`)
 
 ### Examples
 
@@ -206,12 +248,12 @@ instance.replaceState({ b: 2 });
 broadcast(event, [...params])
 ```
 
-Emits a `broadcast:<eventname>` event to every child component listed as a `$ref`
+Emits a `broadcast:<eventname>` event on every child component listed in `$refs`.
 
 ### Parameters
 
--   `event` **[string][10]** Event name
--   `params` **[Array][14]&lt;any>?** Additional arguments to pass to the handler
+-   `event` **[string][9]** Event name
+-   `params` **[Array][17]&lt;any>?** Additional arguments to pass to the handler
 
 ### Examples
 
@@ -234,13 +276,13 @@ Sets a DOM event listener.
 The first argument must be a string composed by an event name (ie `click`) and a CSS selector (`.element`)
 separated by a space.
 
-If the CSS selector starts with `@` the listener will be attached the the
-corresponding reference element in the instance (`this.$els.<element>`), if any.
+If the CSS selector starts with `@` the listener will be attached to the
+corresponding reference child element (`this.$els.<element>`), if any.
 
 ### Parameters
 
--   `def` **[string][10]** Event and target element definition. Format `eventName [target]`
--   `handler` **[function][13]** Event handler
+-   `def` **[string][9]** Event and target element definition. Format `eventName [target]`
+-   `handler` **[function][15]** Event handler
 
 ### Examples
 
@@ -271,17 +313,19 @@ setRef(config, [props])
 
 Attaches a reference to a child component.
 
-If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
+If a reference `id` is already attached, the previous one is destroyed and replaced with the new one.
+
+?> This is an async method returning a promise.
 
 ### Parameters
 
 -   `refCfg`  
--   `props` **[object][8]?** Child component initial state.
--   `config` **[object][8]** A child component configuration object
-    -   `config.id` **[string][10]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
+-   `props` **[object][7]?** Child component initial state
+-   `config` **[object][7]** A child component configuration object
+    -   `config.id` **[string][9]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
     -   `config.component` **component** Component constructor or component instance
-    -   `config.el` **([string][10] \| [HTMLElement][15])** Child component root element. Ignored if `config.component` is a component instance
-    -   `config.on` **[Object][8]** Child component event listeners. Format `{ 'eventname': handler }`
+    -   `config.el` **([string][9] \| [HTMLElement][18])** Child component root element. Ignored if `config.component` is a component instance
+    -   `config.on` **[Object][7]** Child component event listeners. Format `{ 'eventname': handler }`
     -   `config.null` **any** -   Any other property listed here will be passed to the constructor as option
 
 ### Examples
@@ -317,13 +361,15 @@ parent.setRef({
 });
 ```
 
-Returns **[Promise][16]** 
+Returns **[Promise][19]** 
 
 ## closeRefs
 
 Calls `.destroy()` on every child references and detaches them from the parent component.
 
-Returns **[Promise][16]** 
+!> This is an async method returning a promise
+
+Returns **[Promise][19]** 
 
 ## destroy
 
@@ -331,15 +377,17 @@ Returns **[Promise][16]**
 destroy()
 ```
 
-Detaches DOM events, instance's events and destroys all references as well
+Detaches DOM events, instance's events and destroys all references as well.
 
-Lifecycle stage: `destoy`
+> **Lifecycle**
+>
+> | stage     | hooks           |
+> | --------- | --------------- |
+> | `destroy` | `beforeDestroy` |
 
-Lifecycle hooks:
+!> This is an async method returning a promise
 
--   `beforeDestroy`
-
-Returns **[Promise][16]** 
+Returns **[Promise][19]** 
 
 ## &lt;static> isComponent
 
@@ -347,13 +395,13 @@ Returns **[Promise][16]**
 Component.isComponent(obj)
 ```
 
-Checks whether the passed-in value is a Component constructor
+Checks whether the passed-in value is a Component constructor.
 
 ### Parameters
 
 -   `value` **any** 
 
-Returns **[boolean][12]** 
+Returns **[boolean][14]** 
 
 ## &lt;static> UID_DATA_ATTR
 
@@ -361,9 +409,9 @@ Returns **[boolean][12]**
 Component.UID_DATA_ATTR
 ```
 
-Component root element attribute marker
+Component root element attribute marker.
 
-Returns **[object][8]** 
+Returns **[object][7]** 
 
 ## &lt;static> defaultOptions
 
@@ -371,9 +419,9 @@ Returns **[object][8]**
 Component.defaultOptions()
 ```
 
-Returns an object with default options
+Returns an object with default options.
 
-Returns **[object][8]** 
+Returns **[object][7]** 
 
 [2]: #defaultOptions
 
@@ -381,26 +429,32 @@ Returns **[object][8]**
 
 [4]: #mount
 
-[5]: #selectors
+[5]: #setRef
 
-[6]: #setRef
+[6]: #setListener
 
-[7]: #setListener
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: #component
 
-[9]: #component
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[10]: https://developer.mozilla.org/docs/Web/API/Element
 
-[11]: https://developer.mozilla.org/docs/Web/API/Element
+[11]: packages/core/#async-ready-state
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[12]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[13]: #setstate
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[15]: https://developer.mozilla.org/docs/Web/HTML/Element
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[16]: #shouldupdatestate
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[18]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
