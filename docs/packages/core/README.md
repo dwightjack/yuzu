@@ -30,6 +30,8 @@ In those scenarios Yuzu can help you to keep your frontend application organized
   - [Event bus](#event-bus)
   - [Child management methods](#child-management-methods)
 - [Component Lifecycle](#component-lifecycle)
+  - [Async ready state](#async-ready-state)
+  - [Conditional state update](#conditional-state-update)
 - [Functional composition](#functional-composition)
   - [Multiple dynamic children](#multiple-dynamic-children)
 - [Developer Tools](#developer-tools)
@@ -605,42 +607,21 @@ See [dush](https://github.com/tunnckocore/dush) for details
 
 ## Component Lifecycle
 
-#### Stage: _create_
+| Stage                 | Hooks                        | Called upon                    | Notes                                                               |
+| --------------------- | ---------------------------- | ------------------------------ | ------------------------------------------------------------------- |
+| create                | `created()`                  | component instantiation        | sets `this.options`                                                 |
+| mount <sup>(1)</sup>  | `beforeMount()`, `mounted()` | `mount()`                      | sets event handlers and `this.$els` references                      |
+| init <sup>(2)</sup>   | `initialize()`, `ready()`    | `ready()`                      | sets actions and state state                                        |
+| update <sup>(3)</sup> | none                         | `replaceState()`, `setState()` |
+| destroy               | `beforeDestroy()`            | `destroy()`                    | destroys child component, removes event listeners and DOM listeners |
 
-```js
-const inst = new Component();
-```
+**Notes:**
 
-Accepts an optional object with instance options
+1.  Requires a DOM element or CSS string used to resolve the component's root element. Accepts an object used as the instance initial state.<br>It will automatically transition to the _init_ stage (see below) unless the second |argument is `null`.
+1.  Automatically called by `.mount()` when the second argument is `!== null`. Accepts an object used as the instance initial state.
+1.  Executed on every call to `.setState` and `.replaceState` when the second argument is `!== true`. Will trigger a `change:...` event for each changed key.
 
-- sets: `this.options`
-- calls hook: `created`
-
-#### Stage: _mount_
-
-```js
-inst.mount('#el');
-```
-
-Requires a DOM element or CSS string used to resolve the component's root element. Accepts an object used as the instance initial state.
-
-It will automatically transition to the _init_ stage (see below) unless the second argument is `null`.
-
-- sets: event listeners and `this.$els` references
-
-#### Stage: _init_
-
-```js
-inst.init({});
-```
-
-Automatically called by `.mount()` when the second argument is `!== null`. Accepts an object used as the instance initial state.
-
-- calls hook: `initialize`
-- sets: actions, state
-- calls hooks: `mounted`, `ready`
-
-##### Async ready state
+### Async ready state
 
 `ready` hook can be delayed by setting a `readyState` method. This method will receive the current and previous state and will be triggered on every state update until it returns `true`.
 
@@ -669,9 +650,7 @@ class UserList extends Component {
 }
 ```
 
-#### Stage: _update_
-
-Executed on every call to `.setState` and `.replaceState` when the second argument is `!== true`. Will trigger a `change:...` event for each changed key.
+### Conditional state update
 
 Calls to `.setState` will trigger a conditional method `shouldUpdateState`. The method will be executed on each passed-in key and receives the key, it's current value and the provided new value. If the methods returns `true` the value will be updated and change events will be triggered. The default implementation is:
 
@@ -684,15 +663,6 @@ shouldUpdateState(key, currentValue, newValue) {
 You can overwrite this method with a custom implementation on your components.
 
 **Note** calls to `.replaceState` are not affected by this method and will always trigger an update.
-
-#### Stage: _destroy_
-
-```js
-inst.destroy();
-```
-
-- calls hook: `beforeDestroy`
-- destroys child component, removes event listeners and DOM listeners
 
 ## Functional composition
 

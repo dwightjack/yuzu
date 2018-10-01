@@ -30,19 +30,33 @@ export interface Component extends Idush {}
 /**
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
  *
- * Lifecycle stage: `create`
+ * ```js
+ * const instance = new Component({ ... })
+ * ```
  *
- * Lifecycle hooks:
+ * > **Lifecycle**
+ * >
+ * > | stage    | hooks     |
+ * > |----------| --------- |
+ * > | `create` | `created` |
  *
- * - `created`
+ * #### Instance properties
  *
+ * - `$active` **Boolean**: `true` if the instance is mounted and initialized
+ * - `options` **{ [string]: any }**: instance options (see [defaultOptions](#defaultOptions))
+ * - `state` **{ [string]: any }**: instance state (see [setState](#setState))
+ * - `$el` **[Element][1]**: The instance root DOM element (see [mount](#mount))
+ * - `$els` **{ [string]: [Element][1] }**: Object mapping references to component's child DOM elements (see [selectors](#selectors))
+ * - `$refs` **{ [string]: Component }**: Object mapping references to child components (see [setRef](#setRef))
+ * - `selectors` **{ [string]: string }**: Object mapping a child element's reference name and a CSS selector
+ * - `listeners` **{ [string]: function|string }**: Object mapping DOM listeners and handlers (see [setListener](#setListener))
+ * - `actions` **{ [string]: function|string }**: Object mapping state keys and functions to executed on state update
  *
- * ### Instance properties
- *
- * - `$el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)**: The instance root DOM element
+ * [1]: https://developer.mozilla.org/docs/Web/API/Element
  *
  * @class
  * @param {object} [options={}] Instance options
+ * @example
  * @returns {Component}
  */
 export class Component implements Idush {
@@ -108,6 +122,21 @@ export class Component implements Idush {
   public readyState?: ReadyStateFn;
 
   /**
+   * ```js
+   * this.readyState(state, prevState)
+   * ```
+   * Optional method used to delay the execution of [`ready`](#ready) after the state satisfies to a given condition.
+   *
+   * Will be executed at every state change until it returns `true`.
+   *
+   * @name readyState
+   * @public
+   * @type {function}
+   * @param {object} state The current state
+   * @param {object} prevState The previous state
+   * @returns {boolean}
+   */
+  /**
    * Component constructor
    */
   constructor(options: IObject = {}) {
@@ -151,7 +180,7 @@ export class Component implements Idush {
 
   /**
    * ```js
-   * mount(el, state)
+   * mount(el, [state])
    * ```
    *
    * Mounts a component's instance on a DOM element and initializes it.
@@ -329,12 +358,12 @@ export class Component implements Idush {
   /* eslint-disable class-methods-use-this */
   /**
    * ```js
-   * setState(updater, [silent])
+   * shouldUpdateState(string, currentValue, newValue)
    * ```
    * Executes a strict inequality comparison (`!==`) on the passed-in values and returns the result.
    * This method is executed on `setState` calls.
    *
-   * You can overwrite this method with your own validation logic
+   * You can overwrite this method with your own validation logic.
    *
    * @param {string} key State property name
    * @param {*} currentValue value stored in the current state
@@ -347,6 +376,10 @@ export class Component implements Idush {
   /* eslint-enable class-methods-use-this */
 
   /**
+   * ```js
+   * setState(updater, [silent])
+   * ```
+   *
    * Sets internal state property(ies). Creates a shallow copy of the current state.
    * If the computed new state is different from the old one it emits a `change:<property>` event for every changed property
    * as well as a `change:*` event
@@ -404,6 +437,10 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * replaceState(newState, [silent])
+   * ```
+   *
    * Replaces the current state of the instance with a completely new state
    *
    * @param {object} newState The new state object.
@@ -429,6 +466,10 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * broadcast(event, [...params])
+   * ```
+   *
    * Emits a `broadcast:<eventname>` event to every child component listed as a `$ref`
    *
    * @param {string} event Event name
@@ -447,6 +488,10 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * setListener(string, handler)
+   * ```
+   *
    * Sets a DOM event listener.
    *
    * The first argument must be a string composed by an event name (ie `click`) and a CSS selector (`.element`)
@@ -493,6 +538,10 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * removeListeners()
+   * ```
+   *
    * Removes all DOM event listeners attached with `.setListener`.
    *
    */
@@ -504,16 +553,20 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * setRef(config, [props])
+   * ```
+   *
    * Attaches a reference to a child component.
    *
    * If a reference `id` is already attached, the previous one is destroyed and replaced with the new one
    *
-   * @param {object} refCfg A child component configuration object
-   * @param {string} refCfg.id Reference id. Will be used to set a reference to the child component onto `this.$refs`
-   * @param {component} refCfg.component Component constructor or component instance
-   * @param {string|HTMLElement} refCfg.el Child component root element. Ignored if `refCfg.component` is a component instance
-   * @param {Object} refCfg.on Child component event listeners. Format `{ 'eventname': handler }`
-   * @param {*} refCfg.* Any other property listed here will be passed to the constructor as option
+   * @param {object} config A child component configuration object
+   * @param {string} config.id Reference id. Will be used to set a reference to the child component onto `this.$refs`
+   * @param {component} config.component Component constructor or component instance
+   * @param {string|HTMLElement} config.el Child component root element. Ignored if `config.component` is a component instance
+   * @param {Object} config.on Child component event listeners. Format `{ 'eventname': handler }`
+   * @param {*} config.* Any other property listed here will be passed to the constructor as option
    * @param {object} [props] Child component initial state.
    * @returns {Promise}
    * @example
@@ -668,6 +721,10 @@ export class Component implements Idush {
   }
 
   /**
+   * ```js
+   * destroy()
+   * ```
+   *
    * Detaches DOM events, instance's events and destroys all references as well
    *
    * Lifecycle stage: `destoy`

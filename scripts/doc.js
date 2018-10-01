@@ -79,6 +79,16 @@ ${files
         shallow: true,
       });
 
+      if (raw[0] && raw[0].members) {
+        raw[0].members.static.forEach((m) => {
+          m.name = `<static> ${m.name}`;
+        });
+      }
+
+      await writeAsync(
+        filepath.replace('.md', '.json'),
+        JSON.stringify(raw[0], null, 2),
+      );
       let output = await documentation.formats.md(raw);
 
       output = output.replace(/^##/gm, '#');
