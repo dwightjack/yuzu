@@ -275,6 +275,7 @@ export class Sandbox implements Idush {
     this.$context = undefined; // release the context
     this.off('beforeStart');
     this.off('start');
+    this.off('error');
     this.off('beforeStop');
     this.off('stop');
   }
