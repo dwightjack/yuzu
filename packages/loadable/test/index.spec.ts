@@ -41,6 +41,7 @@ describe('`Loadable`', () => {
         component: Child,
         template: jasmine.any(Function),
         loader: null,
+        asyncTag: 'div',
         options: {},
         props: {},
       });
@@ -188,6 +189,39 @@ describe('`Loadable`', () => {
       inst.mounted();
       expect(inst.$el.children.length).toBe(1);
       expect(inst.$el.firstElementChild).toEqual(jasmine.any(HTMLElement));
+      expect(inst.$el.firstElementChild.tagName).toBe('DIV');
+    });
+
+    it('creates a reference to the new child element', () => {
+      inst.mounted();
+      expect(inst.$els.async).toEqual(jasmine.any(HTMLElement));
+      expect(inst.$els.async).toBe(inst.$el.firstElementChild);
+    });
+
+    it('allows custom tags a reference to the new child element', () => {
+      inst.options.asyncTag = 'span';
+      inst.mounted();
+      expect(inst.$els.async.tagName).toBe('SPAN');
+    });
+
+    it('allows a custom function that returns the child element', () => {
+      const async = document.createElement('div');
+      const spy = jasmine.createSpy().and.returnValue(async);
+      inst.options.asyncTag = spy;
+      inst.mounted();
+      expect(inst.$els.async).toBe(async);
+      expect(spy).toHaveBeenCalledWith(inst.$el);
+    });
+
+    it('throws if "asyncTag" is not defined', async () => {
+      inst.options.asyncTag = null as any;
+      let err;
+      try {
+        await inst.mounted();
+      } catch (e) {
+        err = e;
+      }
+      expect(err).toEqual(jasmine.any(TypeError));
     });
 
     it('calls .setLoader()', () => {
