@@ -40,23 +40,17 @@ export interface Component extends Idush {}
  * > |----------| --------- |
  * > | `create` | `created` |
  *
- * #### Instance properties
- *
- * - `$active` **boolean**: `true` if the instance is mounted and initialized
- * - `options` **{ [string]: any }**: instance options (see [defaultOptions](#defaultOptions))
- * - `state` **{ [string]: any }**: instance state (see [setState](#setState))
- * - `$el` **[Element][1]**: The instance root DOM element (see [mount](#mount))
- * - `$els` **{ [string]: [Element][1] }**: Object mapping references to component's child DOM elements (see `selectors` below)
- * - `$refs` **{ [string]: Component }**: Object mapping references to child components (see [setRef](#setRef))
- * - `selectors` **{ [string]: string }**: Object mapping a child element's reference name and a CSS selector
- * - `listeners` **{ [string]: function|string }**: Object mapping DOM listeners and handlers (see [setListener](#setListener))
- * - `actions` **{ [string]: function|string }**: Object mapping state keys and functions to executed on state update
- *
- * [1]: https://developer.mozilla.org/docs/Web/API/Element
- *
  * @class
  * @param {object} [options={}] Instance options
- * @example
+ * @property {boolean} $active `true` if the instance is mounted and initialized
+ * @property {object} options Instance options (see [defaultOptions](#defaultOptions))
+ * @property {object} state Instance state (see [setState](#setState))
+ * @property {Element} $el The instance root DOM element (see [mount](#mount))
+ * @property {Object.<string, Element>} $els  Object mapping references to component's child DOM elements (see `selectors` below)
+ * @property {{ string: Component }} $refs Object mapping references to child components (see [setRef](#setRef))
+ * @property {object} selectors Object mapping a child element's reference name and a CSS selector
+ * @property {Object.<string, function|string>} listeners Object mapping DOM listeners and handlers (see [setListener](#setListener))
+ * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
  */
 export class Component implements Idush {

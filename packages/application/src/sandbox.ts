@@ -32,7 +32,7 @@ let idx = -1;
  *
  * ```js
  * class Counter extends Component {
- *   static root = '.Counter'
+ *   static root = '.Counter';
  *
  *   // other stuff here ...
  * }
@@ -42,8 +42,8 @@ let idx = -1;
  *
  * ```js
  * const sandbox = new Sandbox({
- *   components: [Counter]
- *   root: '#main' // (defaults to `document.body`)
+ *   components: [Counter],
+ *   root: '#main' // (defaults to `document.body`),
  *   id: 'main' // optional
  * })
  *
@@ -64,49 +64,42 @@ export interface Sandbox extends Idush {}
 /**
  * Components' container
  * @class
+ * @param {object} config
+ * @param {Component[]|[Component, object][]} [config.components] Array of: components constructor or array with [ComponentConstructor, option]
+ * @param {HTMLElement|string} [config.root=document.body] Root element of the sandbox. Either a dom element
+ * @param {string} [config.id] ID of the sandbox
+ * @property {string} $id Sandbox internal id
+ * @property {HTMLElement} $root Sandbox root DOM element
+ * @property {Context} $context Internal [context](/packages/application/api/context/). Used to share data across child instances
+ * @property {object[]} $registry Registered components storage
+ * @property {Map} $instances Running instances storage
+ * @returns {Sandbox}
+ * @example
+ * const sandbox = new Sandbox({
+ *  id: 'application',
+ *  el: '#app',
+ *  components: [Counter, [Navigation, { theme: 'dark' }]]
+ * });
+ *
+ * sandbox.start()
  */
 export class Sandbox implements Idush {
   public static UID_DATA_ATTR = 'data-sandbox';
 
-  /**
-   * Sandbox internal id
-   * @type {string}
-   */
   public $id: string;
 
-  /**
-   * Sandbox root element
-   * @type {HTMLElement}
-   */
   public $root!: Element;
 
-  /**
-   * Internal context. Used to share data across child instances
-   * @type {object}
-   */
   public $context?: IContext;
 
-  /**
-   * Registered components storage
-   * @type {object[]}
-   */
   public $registry: ISandboxRegistryEntry[] = [];
 
-  /**
-   * Running instances storage
-   * @type {Map}
-   */
   public $instances = new Map<typeof Component, Component[]>();
 
   /**
-   * Creates a sandbox instance
+   * Creates a sandbox instance.
    *
    * @constructor
-   * @param {object} config
-   * @param {Component[]|[Component, object][]} [config.components] Array of: components constructor or array with [ComponentConstructor, option]
-   * @param {HTMLElement|string} [config.root=document.body] Root element of the sandbox. Either a dom element
-   * @param {string} [id] ID of the sandbox
-   * @returns {Sandbox}
    */
   constructor(options: ISandboxOptions = {}) {
     const { components = [], root = document.body, id } = options;
@@ -132,7 +125,7 @@ export class Sandbox implements Idush {
         this.register({ component: config, selector: config.root });
       } else {
         const [component, params = {}] = config;
-        this.register({ component, ...params });
+        this.register({ component, selector: component.root, ...params });
       }
     });
 
@@ -147,6 +140,12 @@ export class Sandbox implements Idush {
    * @param {Component} params.component Component constructor
    * @param {string} params.selector Child component root CSS selector
    * @param {*} params.* Every other property will be used as component option
+   * @example
+   * sandbox.register({
+   *   component: Counter,
+   *   selector: '.Counter',
+   *   theme: 'dark' // <-- instance options
+   * });
    */
   public register(
     params: {
@@ -173,6 +172,11 @@ export class Sandbox implements Idush {
    * @fires Sandbox#beforeStart
    * @fires Sandbox#start Events dispatched after all components are initialized
    * @returns {Sandbox}
+   * @example
+   * sandbox.start();
+   *
+   * // with context data
+   * sandbox.start({ globalTheme: 'dark' });
    */
   public start(context = {}): Sandbox {
     this.$context = createContext(context);
@@ -215,6 +219,15 @@ export class Sandbox implements Idush {
     return this;
   }
 
+  /**
+   * Creates a component instance.
+   * Reads inline components from the passed-in root DOM element.
+   *
+   * @private
+   * @param {object} options instance options
+   * @param {Element} el Root element
+   * @returns {Component}
+   */
   public createInstance(
     ComponentConstructor: typeof Component,
     options: IObject,
@@ -239,6 +252,8 @@ export class Sandbox implements Idush {
    * @fires Sandbox#beforeStop
    * @fires Sandbox#stop
    * @returns {Promise<void>}
+   * @example
+   * sandbox.stop();
    */
   public async stop() {
     this.emit('beforeStop');

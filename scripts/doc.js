@@ -17,6 +17,7 @@ const packages = fs.readdirSync(root);
 
 packages.forEach(async (package) => {
   const baseFolder = path.join(root, package);
+  const docsFolder = path.join(baseFolder, 'docs');
   const dest = path.join(docs, 'packages', package);
   const destApi = path.join(dest, 'api');
   const tmp = path.join(baseFolder, 'tmp');
@@ -29,11 +30,19 @@ packages.forEach(async (package) => {
   await mkdir(tmp);
 
   //copy some files
-  await cpy(['README.md', 'images/*.*'], dest, {
-    parents: true,
-    cwd: baseFolder,
-  });
-  console.log('-> Static files copied!');
+  if (!fs.existsSync(docsFolder)) {
+    await cpy(['README.md', 'images/**/*.*'], dest, {
+      parents: true,
+      cwd: baseFolder,
+    });
+    console.log('-> Base documentation copied!');
+  } else {
+    await cpy(['**/*.*'], dest, {
+      parents: true,
+      cwd: docsFolder,
+    });
+    console.log('-> Documentation files copied!');
+  }
 
   // generate API
   let files = await glob('src/*.ts', {
@@ -97,10 +106,6 @@ ${moduleLinks}
         });
       }
 
-      await writeAsync(
-        filepath.replace('.md', '.json'),
-        JSON.stringify(raw[0], null, 2),
-      );
       let output = await documentation.formats.md(raw);
 
       output = output.replace(/^##/gm, '#');

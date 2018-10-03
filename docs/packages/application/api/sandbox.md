@@ -8,19 +8,31 @@ Components' container
 
 -   `options`   (optional, default `{}`)
 -   `config` **[object][1]** 
--   `id` **[string][2]?** ID of the sandbox
+    -   `config.components` **([Array][2]&lt;Component> | [Array][2]&lt;\[Component, [object][1]]>)?** Array of: components constructor or array with [ComponentConstructor, option]
+    -   `config.root` **([HTMLElement][3] \| [string][4])** Root element of the sandbox. Either a dom element (optional, default `document.body`)
+    -   `config.id` **[string][4]?** ID of the sandbox
 
-## $registry
+## Properties
 
-Registered components storage
+-   `$id` **[string][4]** Sandbox internal id
+-   `$root` **[HTMLElement][3]** Sandbox root DOM element
+-   `$context` **Context** Internal [context][5]. Used to share data across child instances
+-   `$registry` **[Array][2]&lt;[object][1]>** Registered components storage
+-   `$instances` **[Map][6]** Running instances storage
 
-Type: [Array][3]&lt;[object][1]>
+## Examples
 
-## $instances
+```javascript
+const sandbox = new Sandbox({
+ id: 'application',
+ el: '#app',
+ components: [Counter, [Navigation, { theme: 'dark' }]]
+});
 
-Running instances storage
+sandbox.start()
+```
 
-Type: [Map][4]
+Returns **[Sandbox][7]** 
 
 ## register
 
@@ -31,8 +43,18 @@ Initializing every matching component
 
 -   `params` **[object][1]**  (optional, default `{}`)
     -   `params.component` **Component** Component constructor
-    -   `params.selector` **[string][2]** Child component root CSS selector
+    -   `params.selector` **[string][4]** Child component root CSS selector
     -   `params.null` **any** -   Every other property will be used as component option
+
+### Examples
+
+```javascript
+sandbox.register({
+  component: Counter,
+  selector: '.Counter',
+  theme: 'dark' // <-- instance options
+});
+```
 
 ## start
 
@@ -44,22 +66,41 @@ The store will be available inside a component at `this.$context`
 
 -   `context` **[object][1]?** Optional context object to be injected into the child components. (optional, default `{}`)
 
-Returns **[Sandbox][5]** 
+### Examples
+
+```javascript
+sandbox.start();
+
+// with context data
+sandbox.start({ globalTheme: 'dark' });
+```
+
+Returns **[Sandbox][7]** 
 
 ## stop
 
 Stops every running component and clears sandbox events.
 
-Returns **[Promise][6]&lt;void>** 
+### Examples
+
+```javascript
+sandbox.stop();
+```
+
+Returns **[Promise][8]&lt;void>** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[3]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[5]: #sandbox
+[5]: /packages/application/api/context/
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map
+
+[7]: #sandbox
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

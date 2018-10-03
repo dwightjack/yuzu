@@ -53,7 +53,7 @@ describe('`Sandbox`', () => {
       expect(root.getAttribute('data-sandbox')).toBe('demo');
     });
 
-    it('creates an internal arary to keep track of registered components', () => {
+    it('creates an internal array to keep track of registered components', () => {
       const root = document.createElement('div');
       const inst = new Sandbox({ root });
       expect(inst.$registry).toEqual(jasmine.any(Array));
@@ -89,6 +89,21 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         selector: 'custom',
+        prop: true,
+      });
+    });
+
+    it('falls back to the component selector if not defined in the options', () => {
+      const root = document.createElement('div');
+      class Child extends Component {
+        public static root = 'demo';
+      }
+      const components = [[Child, { prop: true }] as sandboxComponentOptions];
+      const spy = spyOn(Sandbox.prototype, 'register');
+      const inst = new Sandbox({ components, root });
+      expect(spy).toHaveBeenCalledWith({
+        component: Child,
+        selector: 'demo',
         prop: true,
       });
     });
