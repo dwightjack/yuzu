@@ -36,10 +36,6 @@ describe('`Utils`', () => {
     it('should allow a custom prefix', () => {
       expect(utils.nextUid('myprefix')).toMatch(/^myprefix[0-9]+$/);
     });
-
-    it('should restart the sequence with a new prefix', () => {
-      expect(utils.nextUid('newprefix')).toBe('newprefix0');
-    });
   });
 
   describe('`isObjectLike`', () => {
