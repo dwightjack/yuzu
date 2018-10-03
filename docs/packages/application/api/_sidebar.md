@@ -15,4 +15,6 @@
   - [context](packages/application/api/context)
  - [sandbox](packages/application/api/sandbox)
 - [@yuzu/loadable](packages/loadable/api/index)
+  <!-- @yuzu/loadable -->
 - [@yuzu/utils](packages/utils/api/index)
+  <!-- @yuzu/utils -->

@@ -50,16 +50,17 @@ packages.forEach(async (package) => {
     absolute: true,
   });
 
+  let moduleLinks = '';
+
   if (files.length > 1) {
     files = files.filter((f) => !f.endsWith('index.ts'));
+    moduleLinks = files
+      .map((f) => {
+        const base = path.basename(f, '.ts');
+        return ` - [${base}](packages/${package}/api/${base})`;
+      })
+      .join('\n');
   }
-
-  const moduleLinks = files
-    .map((f) => {
-      const base = path.basename(f, '.ts');
-      return ` - [${base}](packages/${package}/api/${base})`;
-    })
-    .join('\n');
 
   //create a readme
   const readme = `

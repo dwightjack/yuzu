@@ -17,7 +17,7 @@ export interface ILoadableOptions {
  * @param {object} opts
  * @param {Component} opts.component Component to make async
  * @param {*} opts.* Any other property will be merged with the Loadable default options
- * @returns {Loadable} Component constructor
+ * @returns {LoadableComponent} Component constructor
  * @example
  *
  * class Message extends Component {}
@@ -55,7 +55,7 @@ export const Loadable = (opts: ILoadableOptions) => {
    * @param {Component} [config.loader] Loader component. Shown during `config.fetchData` execution
    * @param {object} [config.options] Component options
    * @param {props} [config.props] Computed state attached to the component
-   * @returns {Loadable}
+   * @returns {LoadableComponent}
    */
   const LoadableComponent = class extends Component {
     public static root = `[data-loadable][data-component="${Child.name}"]`;
@@ -86,7 +86,7 @@ export const Loadable = (opts: ILoadableOptions) => {
      * It will then set the loader (if available) and fetch the data (`config.fetchData`) before initializing the async component.
      * @async
      * @memberof LoadableComponent
-     * @returns {Loadable}
+     * @returns {LoadableComponent}
      */
     public async mounted() {
       const { fetchData } = this.options;

@@ -34,7 +34,7 @@ const LoadableMessage = Loadable({
 const message = new LoadableMessage().mount('#loadable-message');
 ```
 
-Returns **[Loadable][2]** Component constructor
+Returns **[LoadableComponent][2]** Component constructor
 
 # LoadableComponent
 
@@ -52,7 +52,7 @@ Async component loader
     -   `config.options` **[object][1]?** Component options
     -   `config.props` **props?** Computed state attached to the component
 
-Returns **[Loadable][2]** 
+Returns **[LoadableComponent][2]** 
 
 ## mounted
 
@@ -63,7 +63,7 @@ and the async component.
 
 It will then set the loader (if available) and fetch the data (`config.fetchData`) before initializing the async component.
 
-Returns **[Loadable][2]** 
+Returns **[LoadableComponent][2]** 
 
 ## setComponent
 
@@ -150,7 +150,7 @@ Returns **([string][6] | null)** returns null if the template function returns a
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[2]: #loadable
+[2]: #loadablecomponent
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
