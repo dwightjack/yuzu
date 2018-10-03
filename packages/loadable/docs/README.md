@@ -18,7 +18,8 @@ Yuzu Loadable lets you define an async function call and use its returned data t
   - [ES2017 Syntax](#es2017-syntax)
 - [Browser support](#browser-support)
 - [Basic usage](#basic-usage)
-- [Showing a Loader](#showing-a-loader)
+- [Showing a loader](#showing-a-loader)
+- [Component template](#component-template)
 
 <!-- /TOC -->
 
@@ -154,7 +155,7 @@ The resulting HTML will look like:
 </div>
 ```
 
-## Showing a Loader
+## Showing a loader
 
 As a User Experience best practice, while loading data you should show a loader indicator to communicate to the user that something is going on.
 
@@ -182,3 +183,59 @@ const AsyncUsersOnline = Loadable({
 ```
 
 The `Loader` component will be shown while data are loading and will then be be [replaced](/packages/core/#child-component-replacement) with the component.
+
+## Component template
+
+In a real world application an async component could have a rather complex HTML structure. Since the Loadable root does not allow inner nodes, you can use the `template` option to dynamically render you components HTML.
+
+`template` should be a function that returns a string of HTML. It receives the same data returned by `fetchData` as first argument.
+
+Let's modify the code to accomodate this changes:
+
+```diff
+// UsersOnline.js
+import { Component } from '@yuzu/core';
+
+export class UsersOnline extends Component {
+  state = { count: 0 };
+
+  actions = {
+    count: 'update',
+  };
+
++ selectors = {
++   value: '.UsersOnline__value > p'
++ }
+
+  update() {
+-   this.$el.innerText = `Users online: ${this.state.count}`;
++   this.$els.value.innerText = `Users online: ${this.state.count}`;
+  }
+}
+```
+
+```diff
+import Loader from './Loader';
+
++ const renderHTML = (data) =>
++   `<div class="UsersOnline__value">
++     <p>Users online: ${data.count}</p>
++   </div>`;
+
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
+  loader:Loader
++ template: renderHTML
+});
+```
+
+The resulting HTML will look like:
+
+```html
+<div class="UsersOnline">
+  <div class="UsersOnline__value">
+    <p>Users online: 35</p>
+  </div>
+</div>
+```
