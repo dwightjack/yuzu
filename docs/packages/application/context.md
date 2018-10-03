@@ -15,7 +15,7 @@ After the injection the context's data will be available inside the component th
   - [Read](#read)
   - [Updates](#updates)
 - [Context vs Store](#context-vs-store)
-- [Recipes](#recipes)
+- [API Documentation](#api-documentation)
 
 <!-- /TOC -->
 
@@ -108,8 +108,6 @@ instance.$context.store.subscribe((state) => {
 });
 ```
 
-## Recipes
+## API Documentation
 
-- [Use unistore with context](packages/application/docs/recipes/unistore.md)
-- [Use redux with context](packages/application/docs/recipes/redux.md)
-  recipes/
+- [Context](/packages/application/api/context)

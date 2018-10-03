@@ -10,9 +10,11 @@ An example scenario might be a panel of your interface where you may place multi
 - [Custom options](#custom-options)
 - [Inline options](#inline-options)
 - [Lifecycle events hooks](#lifecycle-events-hooks)
+- [Instance Context](#instance-context)
 - [API summary](#api-summary)
   - [Lifecycle methods](#lifecycle-methods)
 - [Event bus](#event-bus)
+- [API Documentation](#api-documentation)
 
 <!-- /TOC -->
 
@@ -136,20 +138,38 @@ sandbox.start();
 // will log 'Sandbox started' on start
 ```
 
-Here below is a table with all available events
+Here below is a table with all available events.
 
-| name          | triggered by | lifecycle phase |
-| ------------- | ------------ | --------------- |
-| `beforeStart` | `start()`    | startup (1)     |
-| `startup`     | `start()`    | running (2)     |
-| `beforeStop`  | `stop()`     | shutdown        |
-| `stop`        | `stop()`     | stopped (3)     |
-| `error`       | `stop()`     | error (4)       |
+| name          | triggered by | lifecycle phase        |
+| ------------- | ------------ | ---------------------- |
+| `beforeStart` | `start()`    | startup <sup>(1)</sup> |
+| `startup`     | `start()`    | running <sup>(2)</sup> |
+| `beforeStop`  | `stop()`     | shutdown               |
+| `stop`        | `stop()`     | stopped <sup>(3)</sup> |
+| `error`       | `stop()`     | error <sup>(4)</sup>   |
 
 1.  Just before initializing registered components and after `$context` initialization
 1.  Instances has been initialized. Since `ready` state can be async there's no guarantee that components' instances are completely initialized at this stage
 1.  Instances have been cleared and completely destroyed.
 1.  When something fails while shutting down the sandbox an `error` event will be triggered with the error as argument
+
+## Instance Context
+
+The Sandbox's `start` method accepts an object that will be used as data for a shared [context](/packages/application/context) instance attached to the sandbox `$context` property.
+
+?> The sandbox context will be automatically injected into every component instance inside the sandbox. See [context](/packages/application/context) for details.
+
+```js
+// starts Accordion with the 'dark' theme
+const sandbox = new Sandbox({
+  root: '#app',
+  components: [Gallery, Accordion],
+});
+
+sandbox.start({ theme: 'dark' });
+
+sandbox.$context.getData().theme === 'dark';
+```
 
 ## API summary
 
@@ -166,3 +186,7 @@ Here below is a table with all available events
 - `emit`
 
 See [dush](https://github.com/tunnckocore/dush) for details
+
+## API Documentation
+
+- [Sandbox](/packages/application/api/sandbox)
