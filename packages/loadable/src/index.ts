@@ -11,9 +11,52 @@ export interface ILoadableOptions {
   props?: IObject | ((props: IObject) => IObject);
 }
 
+/**
+ * A function that returns a configurable async component loader.
+ *
+ * @param {object} opts
+ * @param {Component} opts.component Component to make async
+ * @param {*} opts.* Any other property will be merged with the Loadable default options
+ * @returns {Loadable} Component constructor
+ * @example
+ *
+ * class Message extends Component {}
+ * class Loader extends Component {}
+ *
+ * const delay = () => new Promise((resolve) => {
+ *   setTimeout(() => {
+ *     resolve({ message: 'Hello World' });
+ *   }, 1000);
+ * });
+ *
+ * const template = (props) => `<div class="Message">${props.message}</div>`;
+ *
+ * const LoadableMessage = Loadable({
+ *   component: Message,
+ *   loader: Loader,
+ *   fetchData: delay,
+ *   template
+ * });
+ *
+ * const message = new LoadableMessage().mount('#loadable-message');
+ */
 export const Loadable = (opts: ILoadableOptions) => {
   const { component: Child, ...params } = opts;
 
+  /**
+   * Async component loader
+   *
+   * @class
+   * @extends Component
+   * @param {object} [config]
+   * @param {Component} config.component Component to initialize when `config.fetchData` is resolved
+   * @param {function} [config.fetchData] A function to load remote data. Must return a promise
+   * @param {function} [config.template] Component template. A function returning a string
+   * @param {Component} [config.loader] Loader component. Shown during `config.fetchData` execution
+   * @param {object} [config.options] Component options
+   * @param {props} [config.props] Computed state attached to the component
+   * @returns {Loadable}
+   */
   const LoadableComponent = class extends Component {
     public static root = `[data-loadable][data-component="${Child.name}"]`;
 
@@ -34,6 +77,17 @@ export const Loadable = (opts: ILoadableOptions) => {
       props: {},
     };
 
+    /**
+     * Mounted hook
+     *
+     * Will replace the current root element contents with an empty element used as root for both the optional loader (passed as `config.loader` to the constructor)
+     * and the async component.
+     *
+     * It will then set the loader (if available) and fetch the data (`config.fetchData`) before initializing the async component.
+     * @async
+     * @memberof LoadableComponent
+     * @returns {Loadable}
+     */
     public async mounted() {
       const { fetchData } = this.options;
       const { $el } = this;
@@ -57,6 +111,28 @@ export const Loadable = (opts: ILoadableOptions) => {
       }
     }
 
+    /**
+     * Initializes the async component as child of the loadable instance.
+     *
+     * The component will be attached as component child into `$refs.async`.
+     *
+     * @memberof LoadableComponent
+     * @param {Element} [root] Component root element. Will default the `$els.async` if not defined.
+     * @return {Promise}
+     * @example
+     * class Loader extends Component {
+     *   // ...
+     * }
+     *
+     * const LoadableMessage = Loadable({
+     *   component: Message,
+     * });
+     *
+     * const loadable = new LoadableMessage();
+     * loadable.setComponent()
+     *
+     * instanceof loadable.$refs.async === Message
+     */
     public setComponent(root: Element | null) {
       const { component, options, props } = this.options;
 
@@ -71,6 +147,32 @@ export const Loadable = (opts: ILoadableOptions) => {
       );
     }
 
+    /**
+     * Initializes a loader
+     *
+     * If defined, will initialize the loader component set in `config.loader`,
+     * else will return a resolved promise.
+     *
+     * The loader will be attached as component child into `$refs.async`.
+     *
+     * @memberof LoadableComponent
+     * @returns {Promise}
+     * @example
+     *
+     * class Loader extends Component {
+     *   // ...
+     * }
+     *
+     * const LoadableMessage = Loadable({
+     *   component: Message,
+     *   loader: Loader
+     * });
+     *
+     * const loadable = new LoadableMessage();
+     * loadable.setLoader()
+     *
+     * instanceof loadable.$refs.async === Loader
+     */
     public setLoader() {
       const { loader } = this.options;
 
@@ -85,6 +187,27 @@ export const Loadable = (opts: ILoadableOptions) => {
       });
     }
 
+    /**
+     * Renders the optional template
+     *
+     * Executes the template function set in `config.template` passing an object containing a `props`
+     * key equal to the `state.props` key.
+     *
+     * @memberof LoadableComponent
+     * @returns {string|null} returns null if the template function returns a falsy value
+     * @example
+     * const template = (props) => `<div>${props.message}</div>`;
+     *
+     * const LoadableMessage = Loadable({
+     *   component: Message,
+     *   template
+     * });
+     *
+     * const loadable = new LoadableMessage();
+     * loadable.setState({ props: { message: 'Hello World' }});
+     * const html = loadable.render();
+     * html === '<div>Hello World</div>';
+     */
     public render() {
       const { template } = this.options;
       const { props } = this.state;
