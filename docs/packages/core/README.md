@@ -23,6 +23,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 - [Child components](#child-components)
   - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
   - [Child to parent communication](#child-to-parent-communication)
+  - [Child component replacement](#child-component-replacement)
 - [API summary](#api-summary)
   - [Lifecycle methods](#lifecycle-methods)
   - [State management](#state-management)
@@ -604,6 +605,12 @@ this.setRef({
   },
 });
 ```
+
+### Child component replacement
+
+If you assign a child reference to an `id` value already assigned to an already active child reference, the active reference will be destroyed and the new reference will take its place.
+
+?> The new reference will be initialized **after** the destroy lifecycle of the previous reference has complete. This lets you set, for example, an exit transition of the instance on its `beforeDestroy` async hook.
 
 ## API summary
 

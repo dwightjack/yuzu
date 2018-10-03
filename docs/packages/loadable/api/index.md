@@ -49,6 +49,7 @@ Async component loader
     -   `config.fetchData` **[function][3]?** A function to load remote data. Must return a promise
     -   `config.template` **[function][3]?** Component template. A function returning a string
     -   `config.loader` **Component?** Loader component. Shown during `config.fetchData` execution
+    -   `config.asyncTag` **([string][4] \| [function][3])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
     -   `config.options` **[object][1]?** Component options
     -   `config.props` **props?** Computed state attached to the component
 
@@ -73,7 +74,7 @@ The component will be attached as component child into `$refs.async`.
 
 ### Parameters
 
--   `root` **[Element][4]?** Component root element. Will default the `$els.async` if not defined.
+-   `root` **[Element][5]?** Component root element. Will default the `$els.async` if not defined.
 
 ### Examples
 
@@ -92,7 +93,7 @@ loadable.setComponent()
 instanceof loadable.$refs.async === Message
 ```
 
-Returns **[Promise][5]** 
+Returns **[Promise][6]** 
 
 ## setLoader
 
@@ -121,7 +122,7 @@ loadable.setLoader()
 instanceof loadable.$refs.async === Loader
 ```
 
-Returns **[Promise][5]** 
+Returns **[Promise][6]** 
 
 ## render
 
@@ -146,7 +147,7 @@ const html = loadable.render();
 html === '<div>Hello World</div>';
 ```
 
-Returns **([string][6] | null)** returns null if the template function returns a falsy value
+Returns **([string][4] | null)** returns null if the template function returns a falsy value
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
@@ -154,8 +155,8 @@ Returns **([string][6] | null)** returns null if the template function returns a
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[4]: https://developer.mozilla.org/docs/Web/API/Element
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[5]: https://developer.mozilla.org/docs/Web/API/Element
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

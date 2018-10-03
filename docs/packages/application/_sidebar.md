@@ -5,6 +5,7 @@
 - [@yuzu/application](packages/application/)
   - [Context](packages/application/context)
   - [Sandbox](packages/application/sandbox)
+- [@yuzu/loadable](packages/loadable/)
 
 ---
 
