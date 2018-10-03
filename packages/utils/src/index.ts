@@ -1,6 +1,13 @@
 import { fn, IObject } from '@yuzu/core/types';
+
 /**
- * uid prefix
+ * !> This module is intended for usage inside the _@yuzu/*_ modules ecosystem and not for end-user applications.
+ *
+ * @name yuzu/utils
+ */
+
+/**
+ * uid prefix.
  *
  * @public
  * @type {string}
@@ -13,12 +20,28 @@ export const UID_PREFIX: string = '_ui.';
 let uid: number = -1;
 
 /**
- * Void function
+ * Void function.
+ *
+ * @example
+ * @type {function}
+ * @example
+ * import { noop } from '@yuzu/utils';
+ *
+ * noop() === undefined
  */
 export const noop = (): void => {}; // tslint:disable-line no-empty
 
 /**
- * Returns a sequential uid
+ * Returns a sequential uid with optional prefix.
+ *
+ * @param {string} [prefix=UID_PREFIX] uid prefix. Defaults to the value of `UID_PREFIX`
+ * @returns {string}
+ * @example
+ * import { nextUid } from '@yuzu/utils';
+ *
+ * nextUid() === '_ui.0'
+ * nextUid() === '_ui.1'
+ * nextUid('custom.') === 'custom.2'
  */
 export const nextUid = (prefix: string = UID_PREFIX): string => prefix + ++uid;
 
@@ -29,13 +52,30 @@ const hasOwnProperty = objProto.hasOwnProperty;
 const objectCtorString = funcToString.call(Object);
 
 /**
- * Checks if a passed-in value has a `typeof` of `object`
+ * Checks if a passed-in value has a `typeof` of `object`.
+ *
+ * @param {*} value Value to check
+ * @returns {boolean}
+ * @example
+ * import { isObjectLike } from '@yuzu/utils';
+ *
+ * isObjectLike({}) === true
+ * isObjectLike(false) === false
+ * isObjectLike([]) === true
  */
 export const isObjectLike = (value: any): boolean =>
   !!value && typeof value === 'object';
 
 /**
- * Checks if a value is a plain object (aka: _POJO_)
+ * Checks if a value is a plain object (aka: _POJO_).
+ *
+ * @param {*} value Value to check
+ * @returns {boolean}
+ * @example
+ * import { isPlainObject } from '@yuzu/utils';
+ *
+ * isPlainObject({}) === true
+ * isPlainObject([]) === false
  */
 export const isPlainObject = (value: any): value is IObject => {
   if (!isObjectLike(value) || objToString.call(value) !== '[object Object]') {
@@ -54,7 +94,15 @@ export const isPlainObject = (value: any): value is IObject => {
 };
 
 /**
- * Checks if a value is a DOM element
+ * Checks if a value is a DOM element.
+ *
+ * @param {*} value Value to check
+ * @returns {boolean}
+ * @example
+ * import { isElement } from '@yuzu/utils';
+ *
+ * isPlainObject(document.body) === true
+ * isPlainObject([]) === false
  */
 export const isElement = (value: any): value is Element =>
   !!value &&
@@ -64,10 +112,19 @@ export const isElement = (value: any): value is Element =>
 
 /**
  * If `value` is a function executes it with passed-in arguments and returns its result,
- * otherwise returns `value`
+ * otherwise returns `value`.
+ *
  * @param {any} value
  * @param {...args} args Optional arguments
  * @return {*}
+ * @example
+ * import { evaluate } from '@yuzu/utils';
+ *
+ * const yesNo = (v) => v ? 'yes' : 'no';
+ *
+ * evaluate(yesNo, false) === 'no'
+ * evaluate(yesNo, true) === 'yes'
+ * evaluate(true) === true
  */
 export const evaluate = <T = any>(
   value: T,
@@ -76,6 +133,38 @@ export const evaluate = <T = any>(
   return typeof value === 'function' ? value(...args) : value;
 };
 
+/**
+ * Binds the `this` context of a function to a passed-in object.
+ *
+ * If `method` is a string it will try to resolve the function as a member of the context object.
+ *
+ * @param {object} ctx Context
+ * @param {string|function} method Function to bind
+ * @example
+ * import { evaluate } from '@yuzu/utils';
+ *
+ * const user = {
+ *   name: 'John',
+ *   surname: 'Doe',
+ *   toLower() {
+ *    this.name.toLowerCase();
+ *   }
+ * };
+ *
+ * const userMethods = {
+ *
+ * };
+ *
+ * function fullName () {
+ *   return `${this.name} ${this.surname}`;
+ * }
+ *
+ * const boundFullName = bindMethod(user, fullName);
+ * boundFullName() === 'John Doe'
+ *
+ * const boundMethod = bindMethod(user, 'toLower');
+ * boundMethod() === 'john'
+ */
 export const bindMethod = (ctx: any, method: string | fn): fn => {
   if (typeof method === 'string') {
     if (typeof ctx[method] === 'function') {
@@ -87,19 +176,20 @@ export const bindMethod = (ctx: any, method: string | fn): fn => {
 };
 
 /**
- * Accepts a string and tries to parse it as boolean, number or string
- *
- * @param {string} v - Value to parse
- * @returns {*}
- */
-/**
- * Accepts a value and tries to parse it as boolean, number or JSON
+ * Accepts a value and tries to parse it as boolean, number or JSON.
  *
  * @name parseString
  * @function
  * @private
  * @param {any} value - Value to parse
  * @returns {*}
+ * @example
+ * import { parseString } from '@yuzu/utils';
+ *
+ * parseString('true') === true
+ * parseString('1') === 1
+ * parseString('{ "name": "John" }') === { name: 'John' }
+ * parseString('    John Doe   ') === 'John Doe'
  */
 export const parseString = (value: any): any => {
   if (typeof value !== 'string') {
@@ -132,12 +222,24 @@ export const parseString = (value: any): any => {
 export const INLINE_STATE_REGEXP = /^ui([A-Z].+)$/;
 
 /**
- * Parses an element's `dataset` with optional filtering
+ * Parses an element's `dataset` with optional filtering.
  *
- * @param {RegExp} [matcher] Optional matcher to filter dataset by key
+ * @param {HTMLElement} el HTML element
+ * @param {RegExp} [matcher] Optional regexp to filter dataset by key (defaults to `/^ui([A-Z].+)$/`)
+ * @param {function} [formatter=parseString] Optional formatter function.
  * @returns {object}
+ * @example
+ *
+ * // html:
+ * // <div id="demo" data-ui-bool data-ui-dashed-value="John">
+ *
+ * import { datasetParser, qs } from '@yuzu/utils';
+ *
+ * const data = datasetParser(qs('#demo'));
+ *
+ * data.bool === true
+ * data.dashedValue === 'John'
  */
-
 export const datasetParser = (
   el: HTMLElement,
   matcher = INLINE_STATE_REGEXP,
@@ -156,13 +258,7 @@ export const datasetParser = (
 };
 
 /**
- * Returns the first element within the document that matches the specified group of selectors
- *
- * #### Example:
- *
- * ```
- * const content = qs('#main-content');
- * ```
+ * Returns the first element within the document that matches the specified group of selectors.
  *
  * @name qs
  * @function
@@ -170,6 +266,10 @@ export const datasetParser = (
  * @param {Element|Document} [ctx=document] - Root element. `document` by default
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
  * @return {Element|null}
+ * @example
+ * import { qs } from '@yuzu/utils';
+ *
+ * const content = qs('#main-content');
  */
 export const qs = (
   selector: string,
@@ -177,13 +277,7 @@ export const qs = (
 ): Element | null => ctx.querySelector(selector);
 
 /**
- * Returns a list of the elements within the document that match the specified group of selectors
- *
- * #### Example:
- *
- * ```
- * const listItems = qsa('.list .list-items');
- * ```
+ * Returns a list of the elements within the document that match the specified group of selectors.
  *
  * @name qsa
  * @function
@@ -191,6 +285,10 @@ export const qs = (
  * @param {Element|Document} [ctx=document] - Root element. `document` by default
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
  * @return {Array}
+ * @example
+ * import { qsa } from '@yuzu/utils';
+ *
+ * const listItems = qsa('.list .list-items');
  */
 export const qsa = (
   selector: string,

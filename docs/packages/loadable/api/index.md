@@ -42,7 +42,7 @@ Returns **[Loadable][2]** Component constructor
 
 Async component loader
 
-## Parameters
+### Parameters
 
 -   `config` **[object][1]?** 
     -   `config.component` **Component** Component to initialize when `config.fetchData` is resolved

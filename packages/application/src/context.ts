@@ -7,6 +7,10 @@ export interface IContext {
   inject(instance: Component): Component;
 }
 /**
+ * ```js
+ * createContext([data])
+ * ```
+ *
  * Returns a new context object
  *
  * @param {object} data Context internal data
@@ -24,6 +28,9 @@ export const createContext = (data: IObject = {}): IContext => {
    */
   return {
     /**
+     * ```js
+     * getData()
+     * ```
      * Returns the context internal data.
      *
      * @memberof Context
@@ -37,6 +44,10 @@ export const createContext = (data: IObject = {}): IContext => {
     },
 
     /**
+     * ```js
+     * update(data)
+     * ```
+     *
      * Replaces the context internal data.
      *
      * @memberof Context
@@ -52,6 +63,10 @@ export const createContext = (data: IObject = {}): IContext => {
     },
 
     /**
+     * ```js
+     * inject(component)
+     * ```
+     *
      * Attaches the context data to a `$context` property of the passed-in component instance
      *
      * @memberof Context

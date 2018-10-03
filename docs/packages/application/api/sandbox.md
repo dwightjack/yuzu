@@ -36,6 +36,10 @@ Returns **[Sandbox][7]**
 
 ## register
 
+```js
+register(params)
+```
+
 Registers a new component into the sandbox. The register will be traversed on `.start()`
 Initializing every matching component
 
@@ -58,13 +62,17 @@ sandbox.register({
 
 ## start
 
+```js
+start([data])
+```
+
 Starts the sandbox with an optional context.
 
 The store will be available inside a component at `this.$context`
 
 ### Parameters
 
--   `context` **[object][1]?** Optional context object to be injected into the child components. (optional, default `{}`)
+-   `data` **[object][1]?** Optional context data object to be injected into the child components. (optional, default `{}`)
 
 ### Examples
 
@@ -78,6 +86,10 @@ sandbox.start({ globalTheme: 'dark' });
 Returns **[Sandbox][7]** 
 
 ## stop
+
+```js
+stop()
+```
 
 Stops every running component and clears sandbox events.
 

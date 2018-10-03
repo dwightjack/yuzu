@@ -1,7 +1,7 @@
 **Guides**
 
 - [@yuzu/core](packages/core/)
-- [@yuzu/polifylls](packages/polyfills/)
+- [@yuzu/polyfills](packages/polyfills/)
 - [@yuzu/application](packages/application/)
 - [@yuzu/loadable](packages/loadable/)
 
@@ -13,5 +13,5 @@
   <!-- @yuzu/core -->
 - [@yuzu/application](packages/application/api/)
   <!-- @yuzu/application -->
-- [@yuzu/loadable](packages/loadable/api/)
-  - [index](packages/loadable/api/index)
+- [@yuzu/loadable](packages/loadable/api/index)
+- [@yuzu/utils](packages/utils/api/index)

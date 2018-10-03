@@ -3,7 +3,7 @@
   "description": "older browsers support for Yuzu",
   "version": "2.0.0",
   "license": "MIT",
-  "homepage": "https://github.com/dwightjack/yuzu/packages/polifylls",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/polyfills",
   "author": "Marco Solazzi",
   "unpkg": "dist/index.umd.js",
   "main": "dist/index.js",

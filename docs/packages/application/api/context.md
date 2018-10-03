@@ -2,6 +2,10 @@
 
 # createContext
 
+```js
+createContext([data])
+```
+
 Returns a new context object
 
 ### Parameters
@@ -22,6 +26,10 @@ Type: [Object][1]
 
 ## getData
 
+```js
+getData()
+```
+
 Returns the context internal data.
 
 ### Examples
@@ -34,6 +42,10 @@ context.getData().theme === 'dark';
 Returns **[object][1]** 
 
 ## update
+
+```js
+update(data)
+```
 
 Replaces the context internal data.
 
@@ -51,6 +63,10 @@ context.getData().theme === 'light';
 ```
 
 ## inject
+
+```js
+inject(component)
+```
 
 Attaches the context data to a `$context` property of the passed-in component instance
 

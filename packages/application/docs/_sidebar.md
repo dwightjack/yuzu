@@ -1,7 +1,7 @@
 **Guides**
 
 - [@yuzu/core](packages/core/)
-- [@yuzu/polifylls](packages/polyfills/)
+- [@yuzu/polyfills](packages/polyfills/)
 - [@yuzu/application](packages/application/)
   - [Context](packages/application/context)
   - [Sandbox](packages/application/sandbox)

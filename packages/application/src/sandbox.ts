@@ -133,6 +133,10 @@ export class Sandbox implements Idush {
   }
 
   /**
+   * ```js
+   * register(params)
+   * ```
+   *
    * Registers a new component into the sandbox. The register will be traversed on `.start()`
    * Initializing every matching component
    *
@@ -164,11 +168,15 @@ export class Sandbox implements Idush {
   }
 
   /**
+   * ```js
+   * start([data])
+   * ```
+   *
    * Starts the sandbox with an optional context.
    *
    * The store will be available inside a component at `this.$context`
    *
-   * @param {object} [context] Optional context object to be injected into the child components.
+   * @param {object} [data] Optional context data object to be injected into the child components.
    * @fires Sandbox#beforeStart
    * @fires Sandbox#start Events dispatched after all components are initialized
    * @returns {Sandbox}
@@ -178,8 +186,8 @@ export class Sandbox implements Idush {
    * // with context data
    * sandbox.start({ globalTheme: 'dark' });
    */
-  public start(context = {}): Sandbox {
-    this.$context = createContext(context);
+  public start(data = {}): Sandbox {
+    this.$context = createContext(data);
     this.emit('beforeStart');
 
     const sbSelector = `[${Sandbox.UID_DATA_ATTR}]`;
@@ -247,6 +255,10 @@ export class Sandbox implements Idush {
   }
 
   /**
+   * ```js
+   * stop()
+   * ```
+   *
    * Stops every running component and clears sandbox events.
    *
    * @fires Sandbox#beforeStop

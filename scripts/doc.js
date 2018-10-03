@@ -108,8 +108,12 @@ ${moduleLinks}
 
       let output = await documentation.formats.md(raw);
 
-      output = output.replace(/^##/gm, '#');
-      output = output.replace(/^## Parameters/m, '### Parameters');
+      if (package === 'utils') {
+        output = output.replace(/^##/m, '#');
+      } else {
+        output = output.replace(/^##/gm, '#');
+        output = output.replace(/^## Parameters/gm, '### Parameters');
+      }
 
       await writeAsync(filepath, output);
       console.log(`-> File ${filepath} generated.`);
