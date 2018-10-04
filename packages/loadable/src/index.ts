@@ -232,6 +232,12 @@ export const Loadable = (opts: ILoadableOptions) => {
 
       if (html) {
         wrapper.innerHTML = html;
+        if (wrapper.childElementCount > 1) {
+          // tslint:disable-next-line no-console
+          console.warn(
+            'Multi-root templates are not supported. Just the first root element will be rendered.',
+          );
+        }
         return wrapper.firstElementChild;
       }
 

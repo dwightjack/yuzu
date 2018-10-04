@@ -77,6 +77,13 @@ describe('`Loadable`', () => {
       expect(ret.tagName).toBe('DIV');
     });
 
+    it('warns for multi-root templates', () => {
+      template.and.returnValue('<div></div><p></p>');
+      const spy = spyOn(console, 'warn');
+      inst.render();
+      expect(spy).toHaveBeenCalled();
+    });
+
     it('returns null if the template returns a falsy value', () => {
       const ret = inst.render();
       expect(ret).toBe(null);
