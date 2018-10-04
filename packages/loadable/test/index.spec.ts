@@ -41,7 +41,7 @@ describe('`Loadable`', () => {
         component: Child,
         template: jasmine.any(Function),
         loader: null,
-        asyncTag: 'div',
+        renderRoot: 'div',
         options: {},
         props: {},
       });
@@ -206,7 +206,7 @@ describe('`Loadable`', () => {
     });
 
     it('allows custom tags a reference to the new child element', () => {
-      inst.options.asyncTag = 'span';
+      inst.options.renderRoot = 'span';
       inst.mounted();
       expect(inst.$els.async.tagName).toBe('SPAN');
     });
@@ -214,14 +214,14 @@ describe('`Loadable`', () => {
     it('allows a custom function that returns the child element', () => {
       const async = document.createElement('div');
       const spy = jasmine.createSpy().and.returnValue(async);
-      inst.options.asyncTag = spy;
+      inst.options.renderRoot = spy;
       inst.mounted();
       expect(inst.$els.async).toBe(async);
       expect(spy).toHaveBeenCalledWith(inst.$el);
     });
 
-    it('throws if "asyncTag" is not defined', async () => {
-      inst.options.asyncTag = null as any;
+    it('throws if "renderRoot" is not defined', async () => {
+      inst.options.renderRoot = null as any;
       let err;
       try {
         await inst.mounted();

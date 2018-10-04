@@ -6,7 +6,7 @@ export interface ILoadableOptions {
   component: typeof Component;
   loader?: typeof Component | null;
   template?: (...args: any[]) => string | void;
-  asyncTag?: string | (($el: Element) => Element);
+  renderRoot?: string | (($el: Element) => Element);
   fetchData: (ctx: Component) => IObject | void;
   options?: IObject;
   props?: IObject | ((props: IObject) => IObject);
@@ -54,7 +54,7 @@ export const Loadable = (opts: ILoadableOptions) => {
    * @param {function} [config.fetchData] A function to load remote data. Must return a promise
    * @param {function} [config.template] Component template. A function returning a string
    * @param {Component} [config.loader] Loader component. Shown during `config.fetchData` execution
-   * @param {string|function} [config.asyncTag='div'] Tag used for the element holding the async component. Either a string or a function returning a DOM element.
+   * @param {string|function} [config.renderRoot='div'] Tag used for the element holding the async component. Either a string or a function returning a DOM element.
    * @param {object} [config.options] Component options
    * @param {props} [config.props] Computed state attached to the component
    * @returns {LoadableComponent}
@@ -70,7 +70,7 @@ export const Loadable = (opts: ILoadableOptions) => {
           template: noop,
           loader: null,
           options: {},
-          asyncTag: 'div',
+          renderRoot: 'div',
           props: {},
         },
         params,
@@ -92,21 +92,21 @@ export const Loadable = (opts: ILoadableOptions) => {
      * @returns {LoadableComponent}
      */
     public async mounted() {
-      const { fetchData, asyncTag } = this.options as ILoadableOptions &
+      const { fetchData, renderRoot } = this.options as ILoadableOptions &
         IObject;
       const { $el } = this;
 
       // empty the component
       $el.textContent = '';
       let async: Element;
-      if (asyncTag) {
+      if (renderRoot) {
         async =
-          typeof asyncTag === 'string'
-            ? document.createElement(asyncTag)
-            : asyncTag($el);
+          typeof renderRoot === 'string'
+            ? document.createElement(renderRoot)
+            : renderRoot($el);
       } else {
         throw new TypeError(
-          '"options.asyncTag" must be either a function or a string',
+          '"options.renderRoot" must be either a function or a string',
         );
       }
 
