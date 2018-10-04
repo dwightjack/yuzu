@@ -228,7 +228,7 @@ export const Loadable = (opts: ILoadableOptions) => {
       const { template } = this.options;
       const { props } = this.state;
       const wrapper = document.createElement('div');
-      const html = template({ props });
+      const html = template({ props, options: this.options });
 
       if (html) {
         wrapper.innerHTML = html;

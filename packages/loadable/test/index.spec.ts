@@ -63,11 +63,11 @@ describe('`Loadable`', () => {
       inst = new LoadableComponent();
     });
 
-    it('calls template option with state "props"', () => {
+    it('calls template option with state "props" and options', () => {
       const props = {};
       inst.state.props = props;
       inst.render();
-      expect(template).toHaveBeenCalledWith({ props });
+      expect(template).toHaveBeenCalledWith({ props, options: inst.options });
     });
 
     it('returns the first DOM element of the generated template', () => {
