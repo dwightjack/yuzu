@@ -9,33 +9,33 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 <!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
-  - [as NPM package](#as-npm-package)
-  - [CDN delivered `<script>`](#cdn-delivered-script)
+  - [as NPM Package](#as-npm-package)
+  - [CDN Delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-- [Browser support](#browser-support)
-- [Basic usage](#basic-usage)
-  - [ES6+ usage](#es6-usage)
-  - [ES5 usage](#es5-usage)
-- [Example application](#example-application)
+- [Browser Support](#browser-support)
+- [Basic Usage](#basic-usage)
+  - [ES6+ Usage](#es6-usage)
+  - [ES5 Usage](#es5-usage)
+- [Example Application](#example-application)
   - [Application Breakdown](#application-breakdown)
-- [State and update tracking](#state-and-update-tracking)
-  - [Tracking updates](#tracking-updates)
-- [Child components](#child-components)
-  - [Child components' initial state and computed state](#child-components-initial-state-and-computed-state)
-  - [Child to parent communication](#child-to-parent-communication)
-  - [Child component replacement](#child-component-replacement)
-- [API summary](#api-summary)
-  - [Lifecycle methods](#lifecycle-methods)
-  - [State management](#state-management)
-  - [Lifecycle hooks](#lifecycle-hooks)
-  - [Lifecycle boundaries](#lifecycle-boundaries)
-  - [Event bus](#event-bus)
-  - [Child management methods](#child-management-methods)
+- [State and Update Tracking](#state-and-update-tracking)
+  - [Tracking Updates](#tracking-updates)
+- [Child Components](#child-components)
+  - [Child Components' Initial State and Computed State](#child-components-initial-state-and-computed-state)
+  - [Child to Parent Communication](#child-to-parent-communication)
+  - [Child Component Replacement](#child-component-replacement)
+- [API Summary](#api-summary)
+  - [Lifecycle Methods](#lifecycle-methods)
+  - [State Management](#state-management)
+  - [Lifecycle Hooks](#lifecycle-hooks)
+  - [Lifecycle Boundaries](#lifecycle-boundaries)
+  - [Event Bus](#event-bus)
+  - [Child Management Methods](#child-management-methods)
 - [Component Lifecycle](#component-lifecycle)
-  - [Async ready state](#async-ready-state)
-  - [Conditional state updates](#conditional-state-updates)
-- [Functional composition](#functional-composition)
-  - [Multiple dynamic children](#multiple-dynamic-children)
+  - [Async Ready State](#async-ready-state)
+  - [Conditional State Updates](#conditional-state-updates)
+- [Functional Composition](#functional-composition)
+  - [Multiple Dynamic Children](#multiple-dynamic-children)
 - [Developer Tools](#developer-tools)
 - [API Documentation](#api-documentation)
 
@@ -43,7 +43,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 
 ## Installation
 
-### as NPM package
+### as NPM Package
 
 ```
 npm install @yuzu/core --save
@@ -53,7 +53,7 @@ npm install @yuzu/core --save
 yarn add @yuzu/core
 ```
 
-### CDN delivered `<script>`
+### CDN Delivered `<script>`
 
 add the following script tags before your code
 
@@ -105,7 +105,7 @@ export default {
 };
 ```
 
-## Browser support
+## Browser Support
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
 
@@ -115,9 +115,9 @@ If you're using a package bundler without any polyfill library like [babel-polyf
 import '@yuzu/polyfills';
 ```
 
-## Basic usage
+## Basic Usage
 
-### ES6+ usage
+### ES6+ Usage
 
 Import `Component` into your project and extend it
 
@@ -169,7 +169,7 @@ class Counter extends Component {
 const counter = new Counter().mount('#app');
 ```
 
-### ES5 usage
+### ES5 Usage
 
 In development environments that don't support ES6 `class`es (like IE11), you can use the static `YZ.extend` function to achieve the same result:
 
@@ -193,7 +193,7 @@ Counter.defaultOptions = function() {
 var counter = new Counter().mount('#app');
 ```
 
-## Example application
+## Example Application
 
 Here is a _Counter_ component example:
 
@@ -265,7 +265,7 @@ const counter = new Counter().mount(Counter.root);
 
 ### Application Breakdown
 
-##### `root` (string)
+#### `root` (string)
 
 ```js
 // Root element CSS selector
@@ -274,7 +274,7 @@ static root = '.Counter';
 
 This is the root element CSS selector. It must be a static property and is required.
 
-##### `defaultOptions` (function)
+#### `defaultOptions` (function)
 
 ```js
 static defaultOptions = () => ({
@@ -284,7 +284,7 @@ static defaultOptions = () => ({
 
 Returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static.
 
-##### selectors` (object)
+#### selectors` (object)
 
 ```js
 selectors = {
@@ -298,7 +298,7 @@ This is used to set a reference to component's child elements. Keys will be used
 
 ?> If you need to access the component's root element use `this.$el`.
 
-##### `listeners` (object)
+#### `listeners` (object)
 
 ```js
 listeners = {
@@ -323,7 +323,7 @@ Using just the event name will attach the listener to the component's root eleme
 
 Event listeners are automatically removed when the component's `.destroy()` method is invoked.
 
-##### `state` (object)
+#### `state` (object)
 
 ```js
 state = {
@@ -333,7 +333,7 @@ state = {
 
 This is the component's internal state.
 
-##### `actions` (object)
+#### `actions` (object)
 
 ```js
 actions = {
@@ -347,7 +347,7 @@ The function is invoked with the current and previous value as arguments.
 
 In the counter example above whenever the state's `expanded` value changes the `toggle` method is executed.
 
-##### lifecycle methods
+#### lifecycle methods
 
 ```js
 mounted() {
@@ -357,7 +357,7 @@ mounted() {
 
 These methods are called by the instance during its lifecyle.
 
-##### methods
+#### methods
 
 ```js
 update() {
@@ -369,7 +369,7 @@ update() {
 
 Any other method is treated as a class method. You can use it like you'd do on a _normal_ javascript object instance.
 
-## State and update tracking
+## State and Update Tracking
 
 Every component has a `state` property that reflects the component's internal state.
 
@@ -400,7 +400,7 @@ class Counter extends Component {
 }
 ```
 
-### Tracking updates
+### Tracking Updates
 
 Every call to `setState` will emit a `change:<property>` event on the component for each updated property.
 
@@ -424,7 +424,7 @@ this.setState({ count: 1 });
 
 If you want to prevent change events to be emitted, pass a second argument `true` to `setState` (_silent_ update).
 
-## Child components
+## Child Components
 
 In some scenarios you might need to control the lifecycle and state of components nested inside another component.
 
@@ -517,7 +517,7 @@ class Counter extends Component {
 const counter = new Counter().mount(Counter.root);
 ```
 
-### Child components' initial state and computed state
+### Child Components' Initial State and Computed State
 
 `setRef` accepts a second argument which is an object used during initialization as the child component's initial state.
 
@@ -554,7 +554,7 @@ class Counter extends Component {
 
 The function associated to `content` will receive the parent state and the child instance reference as first and second argument.
 
-#### 1 to 1 computed state
+#### 1 to 1 Computed State
 
 `Component` is not able to guess which properties are involved during the computation so it will listen for every state change and propagate that change to the child component.
 
@@ -577,7 +577,7 @@ To mitigate this problem you can leverage the special `from>to`syntax to create 
 
 The function associated to this mapping will receive the parent's state property value instead of the whole state and the library will keep track just of the changes on that property.
 
-### Child to parent communication
+### Child to Parent Communication
 
 In scenarios where you need to establish a communication between children and their parent component, the preferred pattern is by means of events:
 
@@ -606,26 +606,26 @@ this.setRef({
 });
 ```
 
-### Child component replacement
+### Child Component Replacement
 
 If you assign a child reference to an `id` value already assigned to an already active child reference, the active reference will be destroyed and the new reference will take its place.
 
 ?> The new reference will be initialized **after** the destroy lifecycle of the previous reference has complete. This lets you set, for example, an exit transition of the instance on its `beforeDestroy` async hook.
 
-## API summary
+## API Summary
 
-### Lifecycle methods
+### Lifecycle Methods
 
 - `init` Initializes the component with state
 - `mount` Mounts a component instance onto a DOM element and initializes it
 - `destroy` Un-mounts a component and its children (_async_)
 
-### State management
+### State Management
 
 - `getState` Returns a value from the state
 - `setState` Updates the internal state
 
-### Lifecycle hooks
+### Lifecycle Hooks
 
 - `created` Instance created
 - `beforeMount` Before mounting onto the DOM
@@ -634,12 +634,12 @@ If you assign a child reference to an `id` value already assigned to an already 
 - `ready` Instance fully initialized
 - `beforeDestroy` Just before tearing down the instance (_async_)
 
-### Lifecycle boundaries
+### Lifecycle Boundaries
 
 - `shouldUpdateState` Checks whether a state property should be update
 - `readyState` Delays `ready` hook until the component's state has a given value
 
-### Event bus
+### Event Bus
 
 - `on`
 - `once`
@@ -648,7 +648,7 @@ If you assign a child reference to an `id` value already assigned to an already 
 
 See [dush](https://github.com/tunnckocore/dush) for details
 
-### Child management methods
+### Child Management Methods
 
 - `setRef` (_async_)
 - `broadcast`
@@ -669,7 +669,7 @@ See [dush](https://github.com/tunnckocore/dush) for details
 1.  Automatically called by `mount` when the second argument is `!== null`. Accepts an object used as the instance initial state.
 1.  Executed on every call to `setState` and `replaceState` when the second argument is `!== true`. Will trigger a `change:...` event for each changed key.
 
-### Async ready state
+### Async Ready State
 
 `ready` hook can be delayed by setting a `readyState` method. This method will receive the current and previous state and will be triggered on every state update until it returns `true`.
 
@@ -699,7 +699,7 @@ class UserList extends Component {
 }
 ```
 
-### Conditional state updates
+### Conditional State Updates
 
 Calls to `setState` will trigger a conditional method `shouldUpdateState`. The method will be executed on each passed-in key and receives the key, it's current value and the provided new value. If the methods returns `true` the value will be updated and change events will be triggered.
 
@@ -715,7 +715,7 @@ You can overwrite this method with a custom implementation on your components.
 
 !> **Note** calls to `replaceState` are not affected by this method and will always trigger an update.
 
-## Functional composition
+## Functional Composition
 
 To compose nested components you can use the [`setRef`](/packages/core/api/component#setref) method to register child components:
 
@@ -767,7 +767,7 @@ const galleryTree = mount(
 const gallery = galleryTree();
 ```
 
-### Multiple dynamic children
+### Multiple Dynamic Children
 
 In some scenarios you may need to manage a variable number of child components (like in a list of items). To account for that scenario, instead of an array of mount functions you can pass a function returning an array:
 
