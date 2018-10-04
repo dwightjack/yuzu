@@ -49,7 +49,7 @@ Async component loader
     -   `config.fetchData` **[function][3]?** A function to load remote data. Must return a promise
     -   `config.template` **[function][3]?** Component template. A function returning a string
     -   `config.loader` **Component?** Loader component. Shown during `config.fetchData` execution
-    -   `config.asyncTag` **([string][4] \| [function][3])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
+    -   `config.renderRoot` **([string][4] \| [function][3])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
     -   `config.options` **[object][1]?** Component options
     -   `config.props` **props?** Computed state attached to the component
 

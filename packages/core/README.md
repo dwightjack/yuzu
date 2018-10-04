@@ -7,10 +7,10 @@ Manage your HTML based components in style with progressive enhancement.
 <!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
-  - [as NPM package](#as-npm-package)
-  - [CDN delivered `<script>`](#cdn-delivered-script)
+  - [As NPM Package](#as-npm-package)
+  - [CDN Delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-- [Browser support](#browser-support)
+- [Browser Support](#browser-support)
 - [Example](#example)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -19,7 +19,7 @@ Manage your HTML based components in style with progressive enhancement.
 
 ## Installation
 
-### as NPM package
+### As NPM Package
 
 ```
 npm install @yuzu/core --save
@@ -29,7 +29,7 @@ npm install @yuzu/core --save
 yarn add @yuzu/core
 ```
 
-### CDN delivered `<script>`
+### CDN Delivered `<script>`
 
 add the following script tags before your code
 
@@ -81,7 +81,7 @@ export default {
 };
 ```
 
-## Browser support
+## Browser Support
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
 

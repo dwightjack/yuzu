@@ -13,23 +13,25 @@ Yuzu Loadable lets you define an async function call and use its returned data t
 <!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
-  - [as NPM package](#as-npm-package)
-  - [CDN delivered `<script>`](#cdn-delivered-script)
+  - [As NPM Package](#as-npm-package)
+  - [CDN Delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-- [Browser support](#browser-support)
-- [Key concepts](#key-concepts)
-- [Basic usage](#basic-usage)
-- [Option override](#option-override)
-- [Showing a loader](#showing-a-loader)
-- [Component template](#component-template)
-- [Component options](#component-options)
-- [Component state](#component-state)
+- [Browser Support](#browser-support)
+- [Key Concepts](#key-concepts)
+- [Basic Usage](#basic-usage)
+- [Option Override](#option-override)
+- [Showing a Loader](#showing-a-loader)
+- [Custom Render Root](#custom-render-root)
+- [Component Template](#component-template)
+- [Component Options](#component-options)
+- [Component State](#component-state)
+- [API Documentation](#api-documentation)
 
 <!-- /TOC -->
 
 ## Installation
 
-### as NPM package
+### As NPM Package
 
 ```
 npm install @yuzu/core @yuzu/loadable --save
@@ -39,7 +41,7 @@ npm install @yuzu/core @yuzu/loadable --save
 yarn add @yuzu/core @yuzu/loadable
 ```
 
-### CDN delivered `<script>`
+### CDN Delivered `<script>`
 
 add the following script tags before your code
 
@@ -92,7 +94,7 @@ export default {
 };
 ```
 
-## Browser support
+## Browser Support
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
 
@@ -102,7 +104,7 @@ If you're using a package bundler without any polyfill library like [babel-polyf
 import '@yuzu/polyfills';
 ```
 
-## Key concepts
+## Key Concepts
 
 `Loadable` comprises some key concepts:
 
@@ -113,7 +115,7 @@ import '@yuzu/polyfills';
 
 Let's start getting this concepts sorted.
 
-## Basic usage
+## Basic Usage
 
 Let's imagine you have a component `UsersOnline` that renders the number of user online reading that data from a remove endpoint.
 
@@ -175,7 +177,7 @@ The resulting HTML will look like:
 </div>
 ```
 
-## Option override
+## Option Override
 
 Each async component accepts the same configuration options that you can pass to `Loadable`.
 
@@ -193,7 +195,7 @@ const altUsers = new AsyncUsersOnline({
 }).mount('.UsersOnline');
 ```
 
-## Showing a loader
+## Showing a Loader
 
 As a User Experience best practice, while loading data you should show a loader indicator to communicate to the user that something is going on.
 
@@ -222,7 +224,51 @@ const AsyncUsersOnline = Loadable({
 
 The `Loader` component will be shown while data are loading and will then be [replaced](/packages/core/#child-component-replacement) by the rendered component.
 
-## Component template
+## Custom Render Root
+
+The child element used as root for both the loader and rendered component is called the **render root**. While in most cases it should be fine, you might want to customize it.
+
+This can be achieved by defining the `renderRoot` configuration property:
+
+```diff
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
++ renderRoot: 'p'
+});
+```
+
+The resulting HTML will look like:
+
+```html
+<div class="UsersOnline">
+  <p>Users online: 35</p>
+</div>
+```
+
+If you need more control over the element than just its tag name, you can pass a function returning a DOM element. The function will receive the async component's root element as parameter:
+
+```diff
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
++ renderRoot: ($el) => {
++   const root = document.createElement('p');
++   root.classList.add(`${$el.className}__root`);
++   return root;
++ }
+});
+```
+
+Resulting in the following HTML:
+
+```html
+<div class="UsersOnline">
+  <p class="UsersOnline__root">Users online: 35</p>
+</div>
+```
+
+## Component Template
 
 In a real world application a component could have a rather complex HTML structure. Since the Loadable root does not allow inner nodes, you can use the `template` option to dynamically render you component's HTML.
 
@@ -288,7 +334,7 @@ The resulting HTML will look like:
 
 !> The template must contain a **single root element**. If a template returns multiple root elements, just the first one will be injected into the DOM.
 
-## Component options
+## Component Options
 
 To provide the rendered component with options you can:
 
@@ -315,7 +361,7 @@ const instance2 = new AsyncUsersOnline({
 });
 ```
 
-## Component state
+## Component State
 
 To provide an initial state to the rendered component you can define a `props` option on the configuration object:
 
@@ -352,3 +398,7 @@ const AsyncUsersOnline = Loadable({
 + props: (data) => { count: data.count }
 });
 ```
+
+## API Documentation
+
+- [Loadable](/packages/loadable/api/index)

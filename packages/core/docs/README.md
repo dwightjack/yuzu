@@ -9,7 +9,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 <!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
-  - [as NPM Package](#as-npm-package)
+  - [As NPM Package](#as-npm-package)
   - [CDN Delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
 - [Browser Support](#browser-support)
@@ -43,7 +43,7 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 
 ## Installation
 
-### as NPM Package
+### As NPM Package
 
 ```
 npm install @yuzu/core --save
