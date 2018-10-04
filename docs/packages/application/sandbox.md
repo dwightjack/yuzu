@@ -7,13 +7,13 @@ An example scenario might be a panel of your interface where you may place multi
 <!-- TOC depthTo:3 -->
 
 - [Example](#example)
-- [Custom options](#custom-options)
-- [Inline options](#inline-options)
-- [Lifecycle events hooks](#lifecycle-events-hooks)
+- [Custom Options](#custom-options)
+- [Inline Options](#inline-options)
+- [Lifecycle Event Hooks](#lifecycle-event-hooks)
 - [Instance Context](#instance-context)
-- [API summary](#api-summary)
-  - [Lifecycle methods](#lifecycle-methods)
-- [Event bus](#event-bus)
+- [API Summary](#api-summary)
+  - [Lifecycle Methods](#lifecycle-methods)
+- [Event Bus](#event-bus)
 - [API Documentation](#api-documentation)
 
 <!-- /TOC -->
@@ -73,7 +73,7 @@ Upon calling `sandbox.start()` the sandbox will query the DOM inside `#app`, mat
 
 To un-mount the sandbox and it's child components just run `sandbox.stop()`. This will trigger each instance `destroy` method as well.
 
-## Custom options
+## Custom Options
 
 You can also pass custom properties or CSS matchers for a component in order to alter the default options and element matching selector:
 
@@ -99,7 +99,7 @@ const sandbox = new Sandbox({
 });
 ```
 
-## Inline options
+## Inline Options
 
 Custom options will be used on every component instance in the sandbox. In order to further customize each instance you can set a `data-ui-*` attribute on the component's root element.
 
@@ -124,7 +124,7 @@ Starting from the example above let's change the HTML to:
 
 On `sandbox.start()` the first Accordion will be initialized with the `dark` theme, but the second will pick the `light` one.
 
-## Lifecycle events hooks
+## Lifecycle Event Hooks
 
 To interact with a sandbox instance during its lifecycle you can attach event listeners to that instance. Available methods are those provided [dush](https://github.com/tunnckocore/dush).
 
@@ -171,14 +171,14 @@ sandbox.start({ theme: 'dark' });
 sandbox.$context.getData().theme === 'dark';
 ```
 
-## API summary
+## API Summary
 
-### Lifecycle methods
+### Lifecycle Methods
 
 - `start` Starts the sandbox and initializes matched components
 - `stop` (async) Stops the sandbox and calls `destroy` on instantiated components.
 
-## Event bus
+## Event Bus
 
 - `on`
 - `once`

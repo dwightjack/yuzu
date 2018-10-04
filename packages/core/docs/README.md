@@ -284,7 +284,7 @@ static defaultOptions = () => ({
 
 Returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`). This method must be static.
 
-#### selectors` (object)
+#### `selectors` (object)
 
 ```js
 selectors = {

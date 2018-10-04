@@ -11,7 +11,7 @@ After the injection the context's data will be available inside the component th
 <!-- TOC depthTo:3 -->
 
 - [Example](#example)
-- [Data management](#data-management)
+- [Data Management](#data-management)
   - [Read](#read)
   - [Updates](#updates)
 - [Context vs Store](#context-vs-store)
@@ -45,7 +45,7 @@ console.log(one.$context.theme); // logs 'dark'
 one.$context.theme === one.$context.theme;
 ```
 
-## Data management
+## Data Management
 
 ### Read
 

@@ -17,7 +17,6 @@ Yuzu Application exposes a set of modules aimed to simplify the instantiation of
   - [ES2017 Syntax](#es2017-syntax)
 - [Browser support](#browser-support)
 - [API Documentation](#api-documentation)
-- [Contributing](#contributing)
 
 <!-- /TOC -->
 
@@ -100,11 +99,3 @@ import '@yuzu/polyfills';
 
 - [Sandbox](packages/application/api/sandbox.md)
 - [Context](packages/application/api/context.md)
-
-## Contributing
-
-1.  Fork it or clone the repo
-1.  Install dependencies `yarn install`
-1.  Code your changes and write new tests in the `test` folder.
-1.  Ensure everything is fine by running `yarn build`
-1.  Push it or submit a pull request :D

@@ -20,7 +20,7 @@ The `@yuzu/polyfills` package provides support for Yuzu in ES5 environments like
 
 ## Installation
 
-### as NPM package
+### As NPM Package
 
 ```
 npm install @yuzu/polyfills --save
@@ -30,7 +30,7 @@ npm install @yuzu/polyfills --save
 yarn add @yuzu/polyfills
 ```
 
-### CDN delivered `<script>`
+### CDN Delivered `<script>`
 
 add the following script tags before your code
 
