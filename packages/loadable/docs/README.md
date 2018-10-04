@@ -17,9 +17,13 @@ Yuzu Loadable lets you define an async function call and use its returned data t
   - [CDN delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
 - [Browser support](#browser-support)
+- [Key concepts](#key-concepts)
 - [Basic usage](#basic-usage)
+- [Option override](#option-override)
 - [Showing a loader](#showing-a-loader)
 - [Component template](#component-template)
+- [Component options](#component-options)
+- [Component state](#component-state)
 
 <!-- /TOC -->
 
@@ -98,6 +102,17 @@ If you're using a package bundler without any polyfill library like [babel-polyf
 import '@yuzu/polyfills';
 ```
 
+## Key concepts
+
+`Loadable` comprises some key concepts:
+
+- The **`Loadable` factory** function itself
+- An **async component** returned by the factory function
+- A **rendered component** defined in a `component` options of the factory
+- An optional **loader component**
+
+Let's start getting this concepts sorted.
+
 ## Basic usage
 
 Let's imagine you have a component `UsersOnline` that renders the number of user online reading that data from a remove endpoint.
@@ -113,6 +128,10 @@ Here are the HTML and the component for `UsersOnline`:
 import { Component } from '@yuzu/core';
 
 export class UsersOnline extends Component {
+  static defaultOptions = () => ({
+    label: 'Users online:',
+  });
+
   state = { count: 0 };
 
   actions = {
@@ -120,12 +139,13 @@ export class UsersOnline extends Component {
   };
 
   update() {
-    this.$el.innerText = `Users online: ${this.state.count}`;
+    const { label } = this.options;
+    this.$el.innerText = `${label} ${this.state.count}`;
   }
 }
 ```
 
-To convert `UsersOnline` to an async component let's use `Loadable`:
+To use `UsersOnline` asynchronously we'll defined it as the `component` option of a `Loadable` configuration object. We need to define a function to load the remote data as well:
 
 ```js
 // AsyncUsersOnline.js
@@ -145,7 +165,7 @@ const AsyncUsersOnline = Loadable({
 const users = new AsyncUsersOnline().mount('.UsersOnline');
 ```
 
-`AsyncUsersOnline` will first execute `getUsers`. When the promise returned by fetch resolves it will initialize `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.UsersOnline`.
+`AsyncUsersOnline` is an async component that will first execute `getUsers`. When the promise returned by fetch resolves it will initialize the rendered component `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.UsersOnline`.
 
 The resulting HTML will look like:
 
@@ -155,11 +175,29 @@ The resulting HTML will look like:
 </div>
 ```
 
+## Option override
+
+Each async component accepts the same configuration options that you can pass to `Loadable`.
+
+This gives you the ability to finely control every instance of an async component.
+
+For example if we'd want to show another user count but with data fetched from a different source, we could define a custom `fetchData` option at instantiation time:
+
+```js
+// ...
+
+const users = new AsyncUsersOnline().mount('.UsersOnline');
+
+const altUsers = new AsyncUsersOnline({
+  fetchData: getOtherUsers,
+}).mount('.UsersOnline');
+```
+
 ## Showing a loader
 
 As a User Experience best practice, while loading data you should show a loader indicator to communicate to the user that something is going on.
 
-To define a loader for the loadable component use the `loader` options:
+To define a loader for the async component use the `loader` options:
 
 ```js
 // Loader.js
@@ -182,21 +220,26 @@ const AsyncUsersOnline = Loadable({
 });
 ```
 
-The `Loader` component will be shown while data are loading and will then be be [replaced](/packages/core/#child-component-replacement) with the component.
+The `Loader` component will be shown while data are loading and will then be [replaced](/packages/core/#child-component-replacement) by the rendered component.
 
 ## Component template
 
-In a real world application an async component could have a rather complex HTML structure. Since the Loadable root does not allow inner nodes, you can use the `template` option to dynamically render you components HTML.
+In a real world application a component could have a rather complex HTML structure. Since the Loadable root does not allow inner nodes, you can use the `template` option to dynamically render you component's HTML.
 
 `template` should be a function that returns a string of HTML. It receives the same data returned by `fetchData` as first argument.
 
-Let's modify the code to accomodate this changes:
+Let's modify the code accordingly:
 
 ```diff
 // UsersOnline.js
 import { Component } from '@yuzu/core';
 
 export class UsersOnline extends Component {
+
+  static defaultOptions = () => ({
+    label: 'Users online:',
+  });
+
   state = { count: 0 };
 
   actions = {
@@ -208,8 +251,9 @@ export class UsersOnline extends Component {
 + }
 
   update() {
--   this.$el.innerText = `Users online: ${this.state.count}`;
-+   this.$els.value.innerText = `Users online: ${this.state.count}`;
+    const { label } = this.options;
+-   this.$el.innerText = `${label} ${this.state.count}`;
++   this.$els.value.innerText = `${label} ${this.state.count}`;
   }
 }
 ```
@@ -217,9 +261,9 @@ export class UsersOnline extends Component {
 ```diff
 import Loader from './Loader';
 
-+ const renderHTML = (data) =>
++ const renderHTML = (data, options) =>
 +   `<div class="UsersOnline__value">
-+     <p>Users online: ${data.count}</p>
++     <p>${options.label} ${data.count}</p>
 +   </div>`;
 
 const AsyncUsersOnline = Loadable({
@@ -238,4 +282,73 @@ The resulting HTML will look like:
     <p>Users online: 35</p>
   </div>
 </div>
+```
+
+?> For simple templates ES6 [Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) are a fast end easy option. For more complex templates consider using something like [**lodash templates**](https://lodash.com/docs/4.17.10#template) or [**handlebars**](http://handlebarsjs.com/).
+
+!> The template must contain a **single root element**. If a template returns multiple root elements, just the first one will be injected into the DOM.
+
+## Component options
+
+To provide the rendered component with options you can:
+
+- pass them as the `options` object in the `Loadable` configuration object. It will be used as base options for every instance of the rendered component.
+- pass them as the `options` object in the async component configuration. In this case it will be used just in that instance.
+
+In the following example `instance1` will use the label defined in the Loadable factory (`'Friends online:'`), while `instance2` will use a custom label (`'Strangers online:'`):
+
+```js
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
+  options: {
+    label: 'Friends online:',
+  },
+});
+
+const instance1 = new AsyncUsersOnline();
+
+const instance2 = new AsyncUsersOnline({
+  options: {
+    label: 'Strangers online:',
+  },
+});
+```
+
+## Component state
+
+To provide an initial state to the rendered component you can define a `props` option on the configuration object:
+
+```diff
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
++ props: { count: 100 }
+});
+```
+
+Since the rendered component is actually a **child component** of the async component, you can leverage the [**computed state**](/packages/core/component/#child-components-initial-state-and-computed-state) feature in order to compute the component's state.
+
+?> To access the data returned by the `fetchData` function read the `state.props` property
+
+```diff
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
+- props: { count: 100 }
++ props: { count: (state) => state.props.count }
+});
+```
+
+As a bonus feature, you can define `props` as a factory function that returns an object. That lets you define one-time computed values.
+
+In the following example `count` will be computed just at initialization time. Any subsequent change to the parent's state will not be propagated to the rendered component.
+
+```diff
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
+- props: { count: (state) => state.props.count }
++ props: (data) => { count: data.count }
+});
 ```
