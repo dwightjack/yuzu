@@ -263,7 +263,7 @@ class Counter extends Component {
 const counter = new Counter().mount(Counter.root);
 ```
 
-[![Edit 4w5ml1kmk0](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?module=%2Fsrc%2Findex.js)
+[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Fbase&module=%2Fexamples%2Fbase%2Findex.js)
 
 ### Application Breakdown
 
