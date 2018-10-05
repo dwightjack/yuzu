@@ -440,8 +440,8 @@ Here is a full example:
 <div class="Counter">
   <span class="Text"></span>
   <div>
-    <button type="button" class="Counter__increment">Increment</button>
     <button type="button" class="Counter__decrement">Decrement</button>
+    <button type="button" class="Counter__increment">Increment</button>
   </div>
 </div>
 ```
