@@ -1,4 +1,4 @@
-# @yuzu/utils
+# yuzu-utils
 
 > Utility function for the @yuzu ecosystem
 
@@ -19,11 +19,11 @@
 ### as NPM package
 
 ```
-npm install @yuzu/utils --save
+npm install yuzu-utils --save
 
 # or
 
-yarn add @yuzu/utils
+yarn add yuzu-utils
 ```
 
 ### CDN delivered `<script>`
@@ -32,7 +32,7 @@ add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
-<script src="https://unpkg.com/@yuzu/utils"></script>
+<script src="https://unpkg.com/yuzu-utils"></script>
 ```
 
 Yuzu utils will be available in the global scope under `YZ.Utils`.
@@ -52,7 +52,7 @@ module.exports = {
   // ...
 +  resolve: {
 +    alias: {
-+      '@yuzu/utils': '@yuzu/utils/dist/index.next.js'
++      'yuzu-utils': 'yuzu-utils/dist/index.next.js'
 +    }
 +  }
 }
@@ -72,7 +72,7 @@ export default {
   plugins: [
     // ...
 +    alias({
-+      '@yuzu/utils': path.resolve(__dirname, 'node_modules/@yuzu/utils/dist/index.next.js')
++      'yuzu-utils': path.resolve(__dirname, 'node_modules/yuzu-utils/dist/index.next.js')
 +    })
   ],
 };
@@ -80,12 +80,12 @@ export default {
 
 ## Browser support
 
-Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
+Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `@yuzu/*` package.
 
 If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entrypoint:
 
 ```js
-import '@yuzu/polyfills';
+import 'yuzu-polyfills';
 ```
 
 ## Documentation

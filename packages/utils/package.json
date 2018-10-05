@@ -1,5 +1,5 @@
 {
-  "name": "@yuzu/utils",
+  "name": "yuzu-utils",
   "description": "Yuzu Utilities",
   "version": "2.0.0",
   "license": "MIT",

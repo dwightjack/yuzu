@@ -1,5 +1,5 @@
 {
-  "name": "@yuzu/loadable",
+  "name": "yuzu-loadable",
   "description": "Yuzu Async Component Loader",
   "version": "2.0.0",
   "license": "MIT",
@@ -36,9 +36,9 @@
     "bundle": "rimraf dist && rollup -c rollup.config.js"
   },
   "peerDependencies": {
-    "@yuzu/core": "^2.0.0"
+    "yuzu": "^2.0.0"
   },
   "dependencies": {
-    "@yuzu/utils": "^2.0.0"
+    "yuzu-utils": "^2.0.0"
   }
 }

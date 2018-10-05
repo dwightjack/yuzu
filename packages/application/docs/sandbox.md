@@ -58,9 +58,11 @@ And the following HTML:
 
 Without `Sandbox` we'd have to manually query the DOM and initialize a component for each matched element (one `Gallery` and two `Accordion`s).
 
-`Sanbox` will take care of that for us:
+`Sandbox` will take care of that for us:
 
 ```js
+import { Sandbox } from 'yuzu-application';
+
 const sandbox = new Sandbox({
   root: '#app',
   components: [Gallery, Accordion],

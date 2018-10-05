@@ -19,7 +19,7 @@ Type: [function][2]
 ### Examples
 
 ```javascript
-import { noop } from '@yuzu/utils';
+import { noop } from 'yuzu-utils';
 
 noop() === undefined
 ```
@@ -35,7 +35,7 @@ Returns a sequential uid with optional prefix.
 ### Examples
 
 ```javascript
-import { nextUid } from '@yuzu/utils';
+import { nextUid } from 'yuzu-utils';
 
 nextUid() === '_ui.0'
 nextUid() === '_ui.1'
@@ -55,7 +55,7 @@ Checks if a passed-in value has a `typeof` of `object`.
 ### Examples
 
 ```javascript
-import { isObjectLike } from '@yuzu/utils';
+import { isObjectLike } from 'yuzu-utils';
 
 isObjectLike({}) === true
 isObjectLike(false) === false
@@ -75,7 +75,7 @@ Checks if a value is a plain object (aka: _POJO_).
 ### Examples
 
 ```javascript
-import { isPlainObject } from '@yuzu/utils';
+import { isPlainObject } from 'yuzu-utils';
 
 isPlainObject({}) === true
 isPlainObject([]) === false
@@ -94,7 +94,7 @@ Checks if a value is a DOM element.
 ### Examples
 
 ```javascript
-import { isElement } from '@yuzu/utils';
+import { isElement } from 'yuzu-utils';
 
 isPlainObject(document.body) === true
 isPlainObject([]) === false
@@ -115,7 +115,7 @@ otherwise returns `value`.
 ### Examples
 
 ```javascript
-import { evaluate } from '@yuzu/utils';
+import { evaluate } from 'yuzu-utils';
 
 const yesNo = (v) => v ? 'yes' : 'no';
 
@@ -140,7 +140,7 @@ If `method` is a string it will try to resolve the function as a member of the c
 ### Examples
 
 ```javascript
-import { evaluate } from '@yuzu/utils';
+import { evaluate } from 'yuzu-utils';
 
 const user = {
   name: 'John',
@@ -181,7 +181,7 @@ Parses an element's `dataset` with optional filtering.
 // html:
 // <div id="demo" data-ui-bool data-ui-dashed-value="John">
 
-import { datasetParser, qs } from '@yuzu/utils';
+import { datasetParser, qs } from 'yuzu-utils';
 
 const data = datasetParser(qs('#demo'));
 
@@ -205,7 +205,7 @@ Returns the first element within the document that matches the specified group o
 ### Examples
 
 ```javascript
-import { qs } from '@yuzu/utils';
+import { qs } from 'yuzu-utils';
 
 const content = qs('#main-content');
 ```
@@ -226,7 +226,7 @@ Returns a list of the elements within the document that match the specified grou
 ### Examples
 
 ```javascript
-import { qsa } from '@yuzu/utils';
+import { qsa } from 'yuzu-utils';
 
 const listItems = qsa('.list .list-items');
 ```

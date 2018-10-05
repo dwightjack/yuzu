@@ -24,8 +24,8 @@ After the injection the context's data will be available inside the component th
 The most common usage scenario for Context is sharing data among a group of components by _injecting_ it into each instance:
 
 ```js
-import { Component } from '@yuzu/core';
-import { createContext } from '@yuzu/application';
+import { Component } from 'yuzu';
+import { createContext } from 'yuzu-application';
 
 const one = new Component();
 const two = new Component();
@@ -88,8 +88,8 @@ Context is meant to be used as an entry point for sharable data. This means ther
 In order to implement a shared store you could leverage a library like [Redux](https://redux.js.org/) or [unistore](https://www.npmjs.com/package/unistore) and attach the store instance to a context:
 
 ```js
-import { Component } from '@yuzu/core';
-import { createContext } from '@yuzu/application';
+import { Component } from 'yuzu';
+import { createContext } from 'yuzu-application';
 import createStore from 'unistore';
 
 const instance = new Component();

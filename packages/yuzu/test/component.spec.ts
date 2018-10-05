@@ -1,7 +1,7 @@
 import dush from 'dush';
 import { Component } from '../src/component';
 import { mount } from '../../../shared/utils';
-import * as utils from '@yuzu/utils';
+import * as utils from 'yuzu-utils';
 
 /* tslint:disable max-classes-per-file */
 describe('`Component`', () => {

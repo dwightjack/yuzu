@@ -1,4 +1,4 @@
-import { fn, IObject } from '@yuzu/core/types';
+import { fn, IObject } from 'yuzu/types';
 
 /**
  * !> This module is intended for usage inside the _@yuzu/*_ modules ecosystem and not for end-user applications.
@@ -25,7 +25,7 @@ let uid: number = -1;
  * @example
  * @type {function}
  * @example
- * import { noop } from '@yuzu/utils';
+ * import { noop } from 'yuzu-utils';
  *
  * noop() === undefined
  */
@@ -37,7 +37,7 @@ export const noop = (): void => {}; // tslint:disable-line no-empty
  * @param {string} [prefix=UID_PREFIX] uid prefix. Defaults to the value of `UID_PREFIX`
  * @returns {string}
  * @example
- * import { nextUid } from '@yuzu/utils';
+ * import { nextUid } from 'yuzu-utils';
  *
  * nextUid() === '_ui.0'
  * nextUid() === '_ui.1'
@@ -57,7 +57,7 @@ const objectCtorString = funcToString.call(Object);
  * @param {*} value Value to check
  * @returns {boolean}
  * @example
- * import { isObjectLike } from '@yuzu/utils';
+ * import { isObjectLike } from 'yuzu-utils';
  *
  * isObjectLike({}) === true
  * isObjectLike(false) === false
@@ -72,7 +72,7 @@ export const isObjectLike = (value: any): boolean =>
  * @param {*} value Value to check
  * @returns {boolean}
  * @example
- * import { isPlainObject } from '@yuzu/utils';
+ * import { isPlainObject } from 'yuzu-utils';
  *
  * isPlainObject({}) === true
  * isPlainObject([]) === false
@@ -99,7 +99,7 @@ export const isPlainObject = (value: any): value is IObject => {
  * @param {*} value Value to check
  * @returns {boolean}
  * @example
- * import { isElement } from '@yuzu/utils';
+ * import { isElement } from 'yuzu-utils';
  *
  * isPlainObject(document.body) === true
  * isPlainObject([]) === false
@@ -118,7 +118,7 @@ export const isElement = (value: any): value is Element =>
  * @param {...args} args Optional arguments
  * @return {*}
  * @example
- * import { evaluate } from '@yuzu/utils';
+ * import { evaluate } from 'yuzu-utils';
  *
  * const yesNo = (v) => v ? 'yes' : 'no';
  *
@@ -141,7 +141,7 @@ export const evaluate = <T = any>(
  * @param {object} ctx Context
  * @param {string|function} method Function to bind
  * @example
- * import { evaluate } from '@yuzu/utils';
+ * import { evaluate } from 'yuzu-utils';
  *
  * const user = {
  *   name: 'John',
@@ -184,7 +184,7 @@ export const bindMethod = (ctx: any, method: string | fn): fn => {
  * @param {any} value - Value to parse
  * @returns {*}
  * @example
- * import { parseString } from '@yuzu/utils';
+ * import { parseString } from 'yuzu-utils';
  *
  * parseString('true') === true
  * parseString('1') === 1
@@ -233,7 +233,7 @@ export const INLINE_STATE_REGEXP = /^ui([A-Z].+)$/;
  * // html:
  * // <div id="demo" data-ui-bool data-ui-dashed-value="John">
  *
- * import { datasetParser, qs } from '@yuzu/utils';
+ * import { datasetParser, qs } from 'yuzu-utils';
  *
  * const data = datasetParser(qs('#demo'));
  *
@@ -267,7 +267,7 @@ export const datasetParser = (
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
  * @return {Element|null}
  * @example
- * import { qs } from '@yuzu/utils';
+ * import { qs } from 'yuzu-utils';
  *
  * const content = qs('#main-content');
  */
@@ -286,7 +286,7 @@ export const qs = (
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
  * @return {Array}
  * @example
- * import { qsa } from '@yuzu/utils';
+ * import { qsa } from 'yuzu-utils';
  *
  * const listItems = qsa('.list .list-items');
  */

@@ -1,5 +1,5 @@
 {
-  "name": "@yuzu/polyfills",
+  "name": "yuzu-polyfills",
   "description": "older browsers support for Yuzu",
   "version": "2.0.0",
   "license": "MIT",

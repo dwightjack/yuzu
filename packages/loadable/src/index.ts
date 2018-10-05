@@ -1,6 +1,6 @@
-import { noop, isElement, evaluate } from '@yuzu/utils';
-import { Component } from '@yuzu/core';
-import { IObject } from '@yuzu/core/types';
+import { noop, isElement, evaluate } from 'yuzu-utils';
+import { Component } from 'yuzu';
+import { IObject } from 'yuzu/types';
 
 export interface ILoadableOptions {
   component: typeof Component;
@@ -20,6 +20,9 @@ export interface ILoadableOptions {
  * @param {*} opts.* Any other property will be merged with the Loadable default options
  * @returns {LoadableComponent} Component constructor
  * @example
+ *
+ * import { Component } from 'yuzu';
+ * import { Loadable } from 'yuzu-loadable';
  *
  * class Message extends Component {}
  * class Loader extends Component {}

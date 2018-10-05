@@ -25,6 +25,11 @@ const tsconf = {
     compilerOptions: {
       baseUrl: cwd,
       typeRoots: ['./types', path.resolve(cwd, '../../node_modules/@types')],
+      paths: {
+        yuzu: ['../yuzu'],
+        'yuzu/*': ['../yuzu/*'],
+        'yuzu-*': ['../utils'],
+      },
     },
   },
 };

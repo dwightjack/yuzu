@@ -14,7 +14,9 @@
     "typeRoots": ["./types", "./node_modules/@types"],
     "baseUrl": "./",
     "paths": {
-      "@yuzu/*": ["packages/*"]
+      "yuzu": ["packages/yuzu"],
+      "yuzu-*": ["packages/*"],
+      "yuzu/*": ["packages/yuzu/*"]
     }
   },
   "include": [

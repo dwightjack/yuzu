@@ -1,6 +1,6 @@
-# @yuzu/loadable
+# yuzu-loadable
 
-> Async component initializer for [@yuzu/core](https://github.com/dwightjack/yuzu/tree/master/packages/core)
+> Async component initializer for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 
 Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience.
 
@@ -34,11 +34,11 @@ Yuzu Loadable lets you define an async function call and use its returned data t
 ### As NPM Package
 
 ```
-npm install @yuzu/core @yuzu/loadable --save
+npm install yuzu yuzu-loadable --save
 
 # or
 
-yarn add @yuzu/core @yuzu/loadable
+yarn add yuzu yuzu-loadable
 ```
 
 ### CDN Delivered `<script>`
@@ -47,8 +47,8 @@ add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
-<script src="https://unpkg.com/@yuzu/core"></script>
-<script src="https://unpkg.com/@yuzu/loadable"></script>
+<script src="https://unpkg.com/yuzu"></script>
+<script src="https://unpkg.com/yuzu-loadable"></script>
 ```
 
 Yuzu Loadable will be available in the global scope under `YZ.Loadable`.
@@ -68,7 +68,7 @@ module.exports = {
   // ...
 +  resolve: {
 +    alias: {
-+      '@yuzu/loadable': '@yuzu/loadable/dist/index.next.js'
++      'yuzu-loadable': 'yuzu-loadable/dist/index.next.js'
 +    }
 +  }
 }
@@ -88,7 +88,7 @@ export default {
   plugins: [
     // ...
 +    alias({
-+      '@yuzu/loadable': path.resolve(__dirname, 'node_modules/@yuzu/loadable/dist/index.next.js')
++      'yuzu-loadable': path.resolve(__dirname, 'node_modules/yuzu-loadable/dist/index.next.js')
 +    })
   ],
 };
@@ -96,12 +96,12 @@ export default {
 
 ## Browser Support
 
-Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
+Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `@yuzu/*` package.
 
 If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entrypoint:
 
 ```js
-import '@yuzu/polyfills';
+import 'yuzu-polyfills';
 ```
 
 ## Key Concepts
@@ -127,7 +127,7 @@ Here are the HTML and the component for `UsersOnline`:
 
 ```js
 // UsersOnline.js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 export class UsersOnline extends Component {
   static defaultOptions = () => ({
@@ -151,7 +151,7 @@ To use `UsersOnline` asynchronously we'll defined it as the `component` option o
 
 ```js
 // AsyncUsersOnline.js
-import { Loadable } from '@yuzu/loadable';
+import { Loadable } from 'yuzu-loadable';
 import UsersOnline from './UsersOnline';
 
 const getUsers = () => {
@@ -203,7 +203,7 @@ To define a loader for the async component use the `loader` options:
 
 ```js
 // Loader.js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 export class Loader extends Component {
   mounted() {
@@ -222,7 +222,7 @@ const AsyncUsersOnline = Loadable({
 });
 ```
 
-The `Loader` component will be shown while data are loading and will then be [replaced](/packages/core/#child-component-replacement) by the rendered component.
+The `Loader` component will be shown while data are loading and will then be [replaced](/packages/yuzu/#child-component-replacement) by the rendered component.
 
 ## Custom Render Root
 
@@ -278,7 +278,7 @@ Let's modify the code accordingly:
 
 ```diff
 // UsersOnline.js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 export class UsersOnline extends Component {
 
@@ -373,7 +373,7 @@ const AsyncUsersOnline = Loadable({
 });
 ```
 
-Since the rendered component is actually a **child component** of the async component, you can leverage the [**computed state**](/packages/core/component/#child-components-initial-state-and-computed-state) feature in order to compute the component's state.
+Since the rendered component is actually a **child component** of the async component, you can leverage the [**computed state**](/packages/yuzu/component/#child-components-initial-state-and-computed-state) feature in order to compute the component's state.
 
 ?> To access the data returned by the `fetchData` function read the `state.props` property
 

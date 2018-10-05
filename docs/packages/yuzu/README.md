@@ -1,4 +1,4 @@
-# @yuzu/core
+# yuzu
 
 > old school component management
 
@@ -46,11 +46,11 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 ### As NPM Package
 
 ```
-npm install @yuzu/core --save
+npm install yuzu --save
 
 # or
 
-yarn add @yuzu/core
+yarn add yuzu
 ```
 
 ### CDN Delivered `<script>`
@@ -59,7 +59,7 @@ add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
-<script src="https://unpkg.com/@yuzu/core"></script>
+<script src="https://unpkg.com/yuzu"></script>
 ```
 
 Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ.Component`, `YZ.mount`, etc...)
@@ -79,7 +79,7 @@ module.exports = {
   // ...
 +  resolve: {
 +    alias: {
-+      '@yuzu/core': '@yuzu/core/dist/index.next.js'
++      'yuzu': 'yuzu/dist/index.next.js'
 +    }
 +  }
 }
@@ -99,7 +99,7 @@ export default {
   plugins: [
     // ...
 +    alias({
-+      '@yuzu/core': path.resolve(__dirname, 'node_modules/@yuzu/core/dist/index.next.js')
++      'yuzu': path.resolve(__dirname, 'node_modules/yuzu/dist/index.next.js')
 +    })
   ],
 };
@@ -107,12 +107,12 @@ export default {
 
 ## Browser Support
 
-Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
+Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `@yuzu/*` package.
 
 If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entrypoint:
 
 ```js
-import '@yuzu/polyfills';
+import 'yuzu-polyfills';
 ```
 
 ## Basic Usage
@@ -122,7 +122,7 @@ import '@yuzu/polyfills';
 Import `Component` into your project and extend it
 
 ```js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 class Counter extends Component {
   static defaultOptions = () => ({
@@ -147,7 +147,7 @@ In order to use it you will need to use [Babel](https://babeljs.io/) with the [`
 If you prefer not to, the previous code can be rewritten like this:
 
 ```js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 class Counter extends Component {
   static defaultOptions() {
@@ -208,7 +208,7 @@ Here is a _Counter_ component example:
 ```
 
 ```js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 class Counter extends Component {
   // Root element CSS selector
@@ -445,7 +445,7 @@ Here is a full example:
 ```
 
 ```js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 class Text extends Component {
   static root = '.Text';
@@ -717,7 +717,7 @@ You can overwrite this method with a custom implementation on your components.
 
 ## Functional Composition
 
-To compose nested components you can use the [`setRef`](/packages/core/api/component#setref) method to register child components:
+To compose nested components you can use the [`setRef`](/packages/yuzu/api/component#setref) method to register child components:
 
 ```js
 class Navigation extends Component {
@@ -738,10 +738,10 @@ class Gallery extends Component {
 const gallery = new Gallery().mount('#gallery', { currentImage: 1 });
 ```
 
-If you prefer a more _functional_ approach you can use the [`mount`](/packages/core/api/mount) helper:
+If you prefer a more _functional_ approach you can use the [`mount`](/packages/yuzu/api/mount) helper:
 
 ```js
-import { Component, mount } from '@yuzu/core';
+import { Component, mount } from 'yuzu';
 
 class Navigation extends Component {
   // ...
@@ -772,7 +772,7 @@ const gallery = galleryTree();
 In some scenarios you may need to manage a variable number of child components (like in a list of items). To account for that scenario, instead of an array of mount functions you can pass a function returning an array:
 
 ```js
-import { Component, mount } from '@yuzu/core';
+import { Component, mount } from 'yuzu';
 
 class Menu extends Component {
   // ...
@@ -804,7 +804,7 @@ const menu = menuTree();
 We could also rewrite the above example using Yuzu's `Children` utility function:
 
 ```js
-import { Component, Children, mount } from '@yuzu/core';
+import { Component, Children, mount } from 'yuzu';
 
 class Menu extends Component {
   // ...
@@ -830,7 +830,7 @@ const menu = menuTree();
 Yuzu provides a simple `devtools` module that will allow you to inspect a component instance by attaching a `$yuzu` to its root DOM element. To enable this feature copy the following snippet into your entry point:
 
 ```js
-import { Component, devtools } from '@yuzu/core';
+import { Component, devtools } from 'yuzu';
 
 devtools(Component);
 ```
@@ -844,8 +844,8 @@ _Inspecting the state in Chrome DevTools_
 
 ## API Documentation
 
-- [Component](/packages/core/api/component)
-- [Children](/packages/core/api/children)
-- [mount](/packages/core/api/mount)
-- [extend](/packages/core/api/extend)
-- [mount](/packages/core/api/devtools)
+- [Component](/packages/yuzu/api/component)
+- [Children](/packages/yuzu/api/children)
+- [mount](/packages/yuzu/api/mount)
+- [extend](/packages/yuzu/api/extend)
+- [mount](/packages/yuzu/api/devtools)

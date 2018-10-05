@@ -8,8 +8,8 @@ In those scenarios Yuzu can help you to keep your frontend application organized
 
 ## Packages
 
-- [@yuzu/core](packages/core/)
-- [@yuzu/application](packages/application/)
-- [@yuzu/utils](packages/utils/)
-- [@yuzu/loadable](packages/loadable/)
-- [@yuzu/polyfills](packages/polyfills/)
+- [yuzu](packages/yuzu/)
+- [yuzu-application](packages/application/)
+- [yuzu-utils](packages/utils/)
+- [yuzu-loadable](packages/loadable/)
+- [yuzu-polyfills](packages/polyfills/)

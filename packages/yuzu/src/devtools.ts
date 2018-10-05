@@ -8,7 +8,7 @@ import { Component } from './component';
  * To initialize the devtools copy the following code into your entry point:
  *
  * ```js
- * import { Component, devtools } from '@yuzu/core';
+ * import { Component, devtools } from 'yuzu';
  *
  * devtools(Component);
  * ```

@@ -7,7 +7,7 @@ import {
   evaluate,
   bindMethod,
   qs,
-} from '@yuzu/utils';
+} from 'yuzu-utils';
 
 import {
   IObject,
@@ -351,7 +351,7 @@ export class Component implements Idush {
    *
    * Overwrite this method with custom logic in your components.
    *
-   * ?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`](packages/core/#async-ready-state) method.
+   * ?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`](packages/yuzu/#async-ready-state) method.
    */
   public ready() {} // tslint:disable-line: no-empty
 

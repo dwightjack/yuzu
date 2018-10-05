@@ -1,8 +1,8 @@
 import dush from 'dush';
 import { Sandbox, sandboxComponentOptions } from '../src/sandbox';
 import * as context from '../src/context';
-import { Component } from '@yuzu/core';
-import * as utils from '@yuzu/utils';
+import { Component } from 'yuzu';
+import * as utils from 'yuzu-utils';
 
 /* tslint:disable max-classes-per-file */
 describe('`Sandbox`', () => {

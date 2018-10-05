@@ -1,6 +1,6 @@
-# @yuzu/application
+# yuzu-application
 
-> Components management for [@yuzu/core](https://github.com/dwightjack/yuzu/tree/master/packages/core)
+> Components management for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 
 Yuzu Application exposes a set of modules aimed to simplify the instantiation of Yuzu components in the context of a page.
 
@@ -25,11 +25,11 @@ Yuzu Application exposes a set of modules aimed to simplify the instantiation of
 ### as NPM package
 
 ```
-npm install @yuzu/core @yuzu/application --save
+npm install yuzu yuzu-application --save
 
 # or
 
-yarn add @yuzu/core @yuzu/application
+yarn add yuzu yuzu-application
 ```
 
 ### CDN delivered `<script>`
@@ -38,8 +38,8 @@ add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
-<script src="https://unpkg.com/@yuzu/core"></script>
-<script src="https://unpkg.com/@yuzu/application"></script>
+<script src="https://unpkg.com/yuzu"></script>
+<script src="https://unpkg.com/yuzu-application"></script>
 ```
 
 Yuzu application will be available in the global scope under `YZ.Application`.
@@ -59,7 +59,7 @@ module.exports = {
   // ...
 +  resolve: {
 +    alias: {
-+      '@yuzu/application': '@yuzu/application/dist/index.next.js'
++      'yuzu-application': 'yuzu-application/dist/index.next.js'
 +    }
 +  }
 }
@@ -79,7 +79,7 @@ export default {
   plugins: [
     // ...
 +    alias({
-+      '@yuzu/application': path.resolve(__dirname, 'node_modules/@yuzu/application/dist/index.next.js')
++      'yuzu-application': path.resolve(__dirname, 'node_modules/yuzu-application/dist/index.next.js')
 +    })
   ],
 };
@@ -87,12 +87,12 @@ export default {
 
 ## Browser support
 
-Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
+Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `@yuzu/*` package.
 
 If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entrypoint:
 
 ```js
-import '@yuzu/polyfills';
+import 'yuzu-polyfills';
 ```
 
 ## API Documentation

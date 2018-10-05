@@ -1,3 +1,3 @@
-# @yuzu/utils
+# yuzu-utils
 
 ### Exposed modules

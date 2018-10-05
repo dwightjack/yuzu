@@ -1,5 +1,5 @@
-import { Component } from '@yuzu/core';
-import { IObject } from '@yuzu/core/types';
+import { Component } from 'yuzu';
+import { IObject } from 'yuzu/types';
 
 export interface IContext {
   getData(): IObject;

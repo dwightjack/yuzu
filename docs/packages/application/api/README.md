@@ -1,4 +1,4 @@
-# @yuzu/application
+# yuzu-application
 
 ### Exposed modules
 

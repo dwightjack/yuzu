@@ -1,9 +1,9 @@
 {
-  "name": "@yuzu/core",
+  "name": "yuzu",
   "description": "Yuzu Core Component",
   "version": "2.0.0",
   "license": "MIT",
-  "homepage": "https://github.com/dwightjack/yuzu/packages/core",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/yuzu",
   "author": "Marco Solazzi",
   "unpkg": "dist/index.umd.js",
   "main": "dist/index.js",
@@ -35,7 +35,7 @@
     "bundle": "rimraf dist && rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@yuzu/utils": "^2.0.0",
+    "yuzu-utils": "^2.0.0",
     "dush": "^3.0.0"
   }
 }

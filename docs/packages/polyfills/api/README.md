@@ -1,3 +1,3 @@
-# @yuzu/polyfills
+# yuzu-polyfills
 
 ### Exposed modules

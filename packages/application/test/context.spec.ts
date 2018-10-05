@@ -1,5 +1,5 @@
 import { createContext, IContext } from '../src/context';
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 describe('`Children`', () => {
   let ctx: IContext;

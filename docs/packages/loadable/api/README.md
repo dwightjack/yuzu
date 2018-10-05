@@ -1,3 +1,3 @@
-# @yuzu/loadable
+# yuzu-loadable
 
 ### Exposed modules

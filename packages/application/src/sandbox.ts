@@ -1,7 +1,7 @@
 import dush, { Idush } from 'dush';
-import { qsa, qs, isElement, datasetParser } from '@yuzu/utils';
-import { IObject } from '@yuzu/core/types';
-import { Component } from '@yuzu/core';
+import { qsa, qs, isElement, datasetParser } from 'yuzu-utils';
+import { IObject } from 'yuzu/types';
+import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
 
 export type sandboxComponentOptions = [

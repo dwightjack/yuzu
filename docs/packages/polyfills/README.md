@@ -1,8 +1,8 @@
-# @yuzu/polyfills
+# yuzu-polyfills
 
 > ES5 environments support polyfill
 
-The `@yuzu/polyfills` package provides support for Yuzu in ES5 environments like Internet Explorer 11 and Safari 9.
+The `yuzu-polyfills` package provides support for Yuzu in ES5 environments like Internet Explorer 11 and Safari 9.
 
 ## Provided Polyfills
 
@@ -23,11 +23,11 @@ The `@yuzu/polyfills` package provides support for Yuzu in ES5 environments like
 ### As NPM Package
 
 ```
-npm install @yuzu/polyfills --save
+npm install yuzu-polyfills --save
 
 # or
 
-yarn add @yuzu/polyfills
+yarn add yuzu-polyfills
 ```
 
 ### CDN Delivered `<script>`
@@ -35,7 +35,7 @@ yarn add @yuzu/polyfills
 add the following script tags before your code
 
 ```html
-<script src="https://unpkg.com/@yuzu/polyfills"></script>
+<script src="https://unpkg.com/yuzu-polyfills"></script>
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ add the following script tags before your code
 If you are using a package bundler like Webpack, import this module at the very top of your entry point file:
 
 ```js
-import '@yuzu/polyfills';
+import 'yuzu-polyfills';
 ```
 
 **Note:** This package is not needed if you're already using polyfill libraries like `@babel/polyfill`.

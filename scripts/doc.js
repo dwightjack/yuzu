@@ -21,6 +21,7 @@ packages.forEach(async (package) => {
   const dest = path.join(docs, 'packages', package);
   const destApi = path.join(dest, 'api');
   const tmp = path.join(baseFolder, 'tmp');
+  const pkg = require(path.join(baseFolder, 'package.json'));
 
   rimraf.sync(dest);
   rimraf.sync(tmp);
@@ -64,7 +65,7 @@ packages.forEach(async (package) => {
 
   //create a readme
   const readme = `
-# @yuzu/${package}
+# ${pkg.name}
 
 ### Exposed modules
 
@@ -77,7 +78,7 @@ ${moduleLinks}
   const sidebar = await readAsync(path.join(docs, '_sidebar.md'), 'utf8');
   await writeAsync(
     path.join(destApi, '_sidebar.md'),
-    sidebar.replace(`<!-- @yuzu/${package} -->`, moduleLinks.trim()),
+    sidebar.replace(`<!-- ${pkg.name} -->`, moduleLinks.trim()),
     'utf8',
   );
 

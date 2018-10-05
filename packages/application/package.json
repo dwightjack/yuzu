@@ -1,5 +1,5 @@
 {
-  "name": "@yuzu/application",
+  "name": "yuzu-application",
   "description": "Yuzu Application Manager",
   "version": "2.0.0",
   "license": "MIT",
@@ -37,13 +37,13 @@
     "bundle": "rimraf dist && rollup -c rollup.config.js"
   },
   "peerDependencies": {
-    "@yuzu/core": "^2.0.0"
+    "yuzu": "^2.0.0"
   },
   "dependencies": {
-    "@yuzu/utils": "^2.0.0",
+    "yuzu-utils": "^2.0.0",
     "dush": "^3.0.0"
   },
   "devDependencies": {
-    "@yuzu/core": "^2.0.0"
+    "yuzu": "^2.0.0"
   }
 }

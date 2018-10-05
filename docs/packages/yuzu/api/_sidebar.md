@@ -11,10 +11,10 @@
 
 - [yuzu](packages/yuzu/api/)
   - [children](packages/yuzu/api/children)
-- [component](packages/yuzu/api/component)
-- [devtools](packages/yuzu/api/devtools)
-- [extend](packages/yuzu/api/extend)
-- [mount](packages/yuzu/api/mount)
+ - [component](packages/yuzu/api/component)
+ - [devtools](packages/yuzu/api/devtools)
+ - [extend](packages/yuzu/api/extend)
+ - [mount](packages/yuzu/api/mount)
 - [yuzu-application](packages/application/api/)
   <!-- yuzu-application -->
 - [yuzu-loadable](packages/loadable/api/index)

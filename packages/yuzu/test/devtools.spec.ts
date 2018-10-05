@@ -1,7 +1,7 @@
 import { mount as mountHTML } from '../../../shared/utils';
 import { Component } from '../src/component';
 import { devtools, YuzuRoot } from '../src/devtools';
-import * as utils from '@yuzu/utils';
+import * as utils from 'yuzu-utils';
 
 describe('`devtools`', () => {
   let el: HTMLElement;

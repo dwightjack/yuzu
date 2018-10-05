@@ -1,4 +1,4 @@
-# @yuzu/core
+# yuzu
 
 > old school component management
 
@@ -22,11 +22,11 @@ Manage your HTML based components in style with progressive enhancement.
 ### As NPM Package
 
 ```
-npm install @yuzu/core --save
+npm install yuzu --save
 
 # or
 
-yarn add @yuzu/core
+yarn add yuzu
 ```
 
 ### CDN Delivered `<script>`
@@ -35,7 +35,7 @@ add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
-<script src="https://unpkg.com/@yuzu/core"></script>
+<script src="https://unpkg.com/yuzu"></script>
 ```
 
 Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ.Component`, `YZ.mount`, etc...)
@@ -55,7 +55,7 @@ module.exports = {
   // ...
 +  resolve: {
 +    alias: {
-+      '@yuzu/core': '@yuzu/core/dist/index.next.js'
++      'yuzu': 'yuzu/dist/index.next.js'
 +    }
 +  }
 }
@@ -75,7 +75,7 @@ export default {
   plugins: [
     // ...
 +    alias({
-+      '@yuzu/core': path.resolve(__dirname, 'node_modules/@yuzu/core/dist/index.next.js')
++      'yuzu': path.resolve(__dirname, 'node_modules/yuzu/dist/index.next.js')
 +    })
   ],
 };
@@ -83,12 +83,12 @@ export default {
 
 ## Browser Support
 
-Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `@yuzu/polyfills` package before any other `@yuzu/*` package.
+Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `@yuzu/*` package.
 
 If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entrypoint:
 
 ```js
-import '@yuzu/polyfills';
+import 'yuzu-polyfills';
 ```
 
 ## Example
@@ -98,7 +98,7 @@ import '@yuzu/polyfills';
 ```
 
 ```js
-import { Component } from '@yuzu/core';
+import { Component } from 'yuzu';
 
 class Counter extends Component {
   state = { count: 0 };
@@ -126,7 +126,7 @@ class Counter extends Component {
 
 ## Documentation
 
-Learn more about Yuzu! Read the **[full documentation](#/packages/core)** or **[browse the API](#/packages/api/core)**.
+Learn more about Yuzu! Read the **[full documentation](#/packages/yuzu)** or **[browse the API](#/packages/api/core)**.
 
 ## Contributing
 

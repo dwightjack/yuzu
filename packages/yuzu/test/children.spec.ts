@@ -1,6 +1,6 @@
 import { Component } from '../src/component';
 import { Children } from '../src/children';
-import * as utils from '@yuzu/utils';
+import * as utils from 'yuzu-utils';
 import { mount } from '../../../shared/utils';
 
 describe('`Children`', () => {
