@@ -13,6 +13,9 @@ A function that returns a configurable async component loader.
 ## Examples
 
 ```javascript
+import { Component } from 'yuzu';
+import { Loadable } from 'yuzu-loadable';
+
 class Message extends Component {}
 class Loader extends Component {}
 

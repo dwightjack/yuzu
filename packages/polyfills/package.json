@@ -1,7 +1,7 @@
 {
   "name": "yuzu-polyfills",
   "description": "older browsers support for Yuzu",
-  "version": "2.0.0",
+  "version": "2.0.0-alpha.0",
   "license": "MIT",
   "homepage": "https://github.com/dwightjack/yuzu/packages/polyfills",
   "author": "Marco Solazzi",
@@ -34,5 +34,6 @@
   "dependencies": {
     "core-js": ">=2.5.3",
     "element-closest": ">=2.0.2"
-  }
+  },
+  "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
 }
