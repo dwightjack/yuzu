@@ -1,7 +1,7 @@
 import { fn, IObject } from 'yuzu/types';
 
 /**
- * !> This module is intended for usage inside the _@yuzu/*_ modules ecosystem and not for end-user applications.
+ * !> This module is intended for usage inside the _yuzu*_ modules ecosystem and not for end-user applications.
  *
  * @name yuzu/utils
  */

@@ -10,8 +10,8 @@
 **API**
 
 - [yuzu](packages/yuzu/api/)
-  - [component](packages/yuzu/api/component)
- - [children](packages/yuzu/api/children)
+  - [children](packages/yuzu/api/children)
+ - [component](packages/yuzu/api/component)
  - [devtools](packages/yuzu/api/devtools)
  - [extend](packages/yuzu/api/extend)
  - [mount](packages/yuzu/api/mount)
