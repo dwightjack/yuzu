@@ -201,8 +201,8 @@ Here is a _Counter_ component example:
 <div class="Counter">
   <span class="Counter__value"></span>
   <div>
-    <button type="button" class="Counter__increment">Increment</button>
     <button type="button" class="Counter__decrement">Decrement</button>
+    <button type="button" class="Counter__increment">Increment</button>
   </div>
 </div>
 ```
@@ -262,6 +262,8 @@ class Counter extends Component {
 
 const counter = new Counter().mount(Counter.root);
 ```
+
+[![Edit 4w5ml1kmk0](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?module=%2Fsrc%2Findex.js)
 
 ### Application Breakdown
 
