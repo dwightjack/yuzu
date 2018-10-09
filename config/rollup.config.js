@@ -122,17 +122,17 @@ module.exports = (pkg, globals) => [
       }),
       toAlias('umd'),
       ...plugins,
-      // uglify({
-      //   warnings: false,
-      //   mangle: true,
-      //   keep_fnames: true,
-      //   compress: {
-      //     pure_funcs: ['warn'],
-      //   },
-      //   output: {
-      //     comments: /^!/,
-      //   },
-      // }),
+      uglify({
+        warnings: false,
+        mangle: true,
+        keep_fnames: true,
+        compress: {
+          pure_funcs: ['warn'],
+        },
+        output: {
+          comments: /^!/,
+        },
+      }),
       filesize(),
     ],
   },
