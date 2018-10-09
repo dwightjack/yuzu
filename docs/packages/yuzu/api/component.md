@@ -2,6 +2,8 @@
 
 # Component
 
+**Extends Events**
+
 `Component` is an extensible class constructor which provides the building block of Yuzu component system.
 
 ```js

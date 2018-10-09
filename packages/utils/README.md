@@ -31,7 +31,6 @@ yarn add yuzu-utils
 Add the following script tags before your code
 
 ```html
-<script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
 <script src="https://unpkg.com/yuzu-utils"></script>
 ```
 

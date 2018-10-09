@@ -38,12 +38,8 @@ describe('`Component`', () => {
       inst = new Component();
     });
 
-    it('extends instance with dush methods', () => {
-      const ev: any = new utils.Events();
-      Object.keys(ev).forEach((k) => {
-        const m = (inst as any)[k];
-        expect(typeof m).toBe(typeof ev[k]);
-      });
+    it('extends utils.Events', () => {
+      expect(inst).toEqual(jasmine.any(utils.Events));
     });
     it('should set an `$active` property to `false`', () => {
       expect(inst.$active).toBe(false);

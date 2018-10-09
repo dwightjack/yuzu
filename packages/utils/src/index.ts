@@ -299,6 +299,19 @@ export const qsa = (
 // tslint:disable-next-line: interface-name no-empty-interface
 export interface Events extends Idush {}
 
+/**
+ * Creates an event hub object. Implements methods from [dush](https://github.com/tunnckoCoreLabs/dush)
+ * @class
+ * @see https://github.com/tunnckoCoreLabs/dush
+ * @example
+ * import { Events } from 'yuzu-utils';
+ *
+ * const events = new Events();
+ *
+ * events.on('log', (msg) => console.log(msg))
+ *
+ * events.emit('log', 'Hello world!') // logs 'Hello world!'
+ */
 export class Events implements Idush {
   constructor() {
     Object.assign(this, dush());

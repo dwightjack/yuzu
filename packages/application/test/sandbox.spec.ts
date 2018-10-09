@@ -6,13 +6,9 @@ import * as utils from 'yuzu-utils';
 /* tslint:disable max-classes-per-file */
 describe('`Sandbox`', () => {
   describe('constructor', () => {
-    it('extends instance with dush methods', () => {
+    it('extends utils.Events', () => {
       const inst = new Sandbox();
-      const ev: any = new utils.Events();
-      Object.keys(ev).forEach((k) => {
-        const m = (inst as any)[k];
-        expect(typeof m).toBe(typeof ev[k]);
-      });
+      expect(inst).toEqual(jasmine.any(utils.Events));
     });
 
     it('assigns prop `id` to $id attribute', () => {

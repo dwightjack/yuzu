@@ -233,6 +233,24 @@ const listItems = qsa('.list .list-items');
 
 Returns **[Array][11]** 
 
+## Events
+
+-   **See: [https://github.com/tunnckoCoreLabs/dush][12]**
+
+Creates an event hub object. Implements methods from [dush][12]
+
+### Examples
+
+```javascript
+import { Events } from 'yuzu-utils';
+
+const events = new Events();
+
+events.on('log', (msg) => console.log(msg))
+
+events.emit('log', 'Hello world!') // logs 'Hello world!'
+```
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
@@ -254,3 +272,5 @@ Returns **[Array][11]**
 [10]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
 
 [11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[12]: https://github.com/tunnckoCoreLabs/dush

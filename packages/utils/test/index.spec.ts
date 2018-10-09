@@ -1,4 +1,5 @@
 import * as utils from '../src/index';
+import dush, { Idush } from 'dush';
 import { mount } from '../../../shared/utils';
 
 describe('`Utils`', () => {
@@ -355,6 +356,16 @@ describe('`Utils`', () => {
 
       expect(results).toEqual(jasmine.any(Array));
       expect(results.length).toBe(0);
+    });
+  });
+
+  describe('`Events`', () => {
+    it('implements dush methods', () => {
+      const ev = dush();
+      const hub = new utils.Events();
+      Object.entries(ev).forEach(([key, prop]) => {
+        expect(typeof (hub as any)[key]).toBe(typeof prop);
+      });
     });
   });
 });

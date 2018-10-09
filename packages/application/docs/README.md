@@ -37,7 +37,6 @@ yarn add yuzu yuzu-application
 Add the following script tags before your code
 
 ```html
-<script src="https://unpkg.com/dush/dist/dush.umd.js"></script>
 <script src="https://unpkg.com/yuzu"></script>
 <script src="https://unpkg.com/yuzu-application"></script>
 ```
