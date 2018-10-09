@@ -40,7 +40,6 @@
     "yuzu": "^2.0.0"
   },
   "dependencies": {
-    "dush": "^3.0.0",
     "yuzu-utils": "^2.0.0-alpha.0"
   },
   "devDependencies": {

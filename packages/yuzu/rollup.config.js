@@ -2,4 +2,10 @@ const pkg = require('./package.json');
 const globals = {
   'yuzu-utils': 'YZ.Utils',
 };
-module.exports = require('../../config/rollup.config')(pkg, globals);
+const configs = require('../../config/rollup.config')(pkg, globals);
+
+const umd = configs.pop();
+
+// umd.external = [];
+
+module.exports = [...configs, umd];

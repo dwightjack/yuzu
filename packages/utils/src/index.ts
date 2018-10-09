@@ -1,4 +1,5 @@
 import { fn, IObject } from 'yuzu/types';
+import dush, { Idush } from 'dush';
 
 /**
  * !> This module is intended for usage inside the _yuzu*_ modules ecosystem and not for end-user applications.
@@ -294,3 +295,12 @@ export const qsa = (
   selector: string,
   ctx: Element | Document = document,
 ): HTMLElement[] => Array.from(ctx.querySelectorAll(selector));
+
+// tslint:disable-next-line: interface-name no-empty-interface
+export interface Events extends Idush {}
+
+export class Events implements Idush {
+  constructor() {
+    Object.assign(this, dush());
+  }
+}

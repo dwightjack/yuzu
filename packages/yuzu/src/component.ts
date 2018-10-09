@@ -1,5 +1,3 @@
-import dush, { Idush } from 'dush';
-
 import {
   nextUid,
   isElement,
@@ -7,6 +5,7 @@ import {
   evaluate,
   bindMethod,
   qs,
+  Events,
 } from 'yuzu-utils';
 
 import {
@@ -25,7 +24,6 @@ import {
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 
 // tslint:disable-next-line: interface-name no-empty-interface
-export interface Component extends Idush {}
 
 /**
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
@@ -53,7 +51,7 @@ export interface Component extends Idush {}
  * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
  */
-export class Component implements Idush {
+export class Component extends Events {
   public static root?: string;
 
   /**
@@ -135,6 +133,7 @@ export class Component implements Idush {
    * Component constructor
    */
   constructor(options: IObject = {}) {
+    super();
     const defaultOptionsFn = (this.constructor as typeof Component)
       .defaultOptions;
 
@@ -156,8 +155,6 @@ export class Component implements Idush {
       },
       {},
     );
-
-    Object.assign(this, dush());
 
     this.$active = false;
 

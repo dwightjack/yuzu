@@ -2,9 +2,57 @@
 
 > old school component management
 
-JavaScript view libraries such as Vue and React are cool, but sometimes you just can't or don't want to use them, maybe because of SEO or because there's already a server-side application that outputs a page's HTML.
+## Why?
 
-In those scenarios Yuzu can help you to keep your frontend application organized.
+There are scenarios where you need to add interactivity to a web page or web application where the HTML is already in place, rendered by a server-side service.
+
+To address these scenarios you can use Yuzu to organize your application in a component-based, progressive enhanced architecture.
+
+## Example
+
+```html
+<div class="Timer">
+  <p class="Timer__value">0<p>
+</div>
+```
+
+```js
+import { Component } from 'yuzu';
+
+class Timer extends Component {
+  selectors = {
+    value: '.Timer__value',
+  };
+
+  state = {
+    elapsed: 0,
+  };
+
+  actions = {
+    elapsed: 'update',
+  };
+
+  mounted() {
+    this.interval = setInterval(() => {
+      this.setState(({ elapsed }) => ({ elapsed: elapsed + 1 }));
+    }, 1000);
+  }
+
+  beforeDestroy() {
+    clearInterval(this.interval);
+  }
+
+  update() {
+    this.$els.value.innerText = this.state.elapsed;
+  }
+}
+
+new Timer().mount('.Timer');
+```
+
+[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Ftimer&module=%2Fexamples%2Ftimer%2Findex.js)
+
+Read the core package [documentation](#TODO) to learn more.
 
 ## Packages
 

@@ -1,4 +1,3 @@
-import dush from 'dush';
 import { Component } from '../src/component';
 import { mount } from '../../../shared/utils';
 import * as utils from 'yuzu-utils';
@@ -40,7 +39,7 @@ describe('`Component`', () => {
     });
 
     it('extends instance with dush methods', () => {
-      const ev: any = dush();
+      const ev: any = new utils.Events();
       Object.keys(ev).forEach((k) => {
         const m = (inst as any)[k];
         expect(typeof m).toBe(typeof ev[k]);

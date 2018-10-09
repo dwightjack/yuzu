@@ -5,6 +5,7 @@ const typescript = require('rollup-plugin-typescript2');
 const { uglify } = require('rollup-plugin-uglify');
 const replace = require('rollup-plugin-replace');
 const filesize = require('rollup-plugin-filesize');
+const alias = require('rollup-plugin-alias');
 
 const banner = (pkg) => `
 /*! ${pkg.name} - v${pkg.version}
@@ -25,11 +26,6 @@ const tsconf = {
     compilerOptions: {
       baseUrl: cwd,
       typeRoots: ['./types', path.resolve(cwd, '../../node_modules/@types')],
-      paths: {
-        yuzu: ['../yuzu'],
-        'yuzu/*': ['../yuzu/*'],
-        'yuzu-*': ['../utils'],
-      },
     },
   },
 };
@@ -71,6 +67,22 @@ const output = (obj) =>
     obj,
   );
 
+const toAlias = (version) => {
+  const map = external.reduce((acc, name) => {
+    if (name === 'yuzu') {
+      acc['yuzu'] = path.resolve(cwd, `../yuzu/dist/index.${version}.js`);
+    } else if (name.startsWith('yuzu-')) {
+      const [, package] = name.match(/^yuzu-(.+)$/);
+      acc[package] = path.resolve(
+        cwd,
+        `../${package}/dist/index.${version}.js`,
+      );
+    }
+    return acc;
+  }, {});
+  return alias(map);
+};
+
 module.exports = (pkg, globals) => [
   {
     input: './src/index.ts',
@@ -79,7 +91,7 @@ module.exports = (pkg, globals) => [
       output({ file: file(pkg.module), format: 'esm', banner: banner(pkg) }),
     ],
     external,
-    plugins: [...plugins, filesize()],
+    plugins: [...plugins, filesize(), toAlias('m')],
   },
   {
     input: './src/index.ts',
@@ -91,7 +103,7 @@ module.exports = (pkg, globals) => [
       }),
     ],
     external,
-    plugins: [...pluginsNext, filesize()],
+    plugins: [...pluginsNext, filesize(), toAlias('m')],
   },
   {
     input: './src/index.ts',
@@ -101,29 +113,26 @@ module.exports = (pkg, globals) => [
       name: pkg.amdName,
       extend: true,
       banner: banner(pkg),
-      globals: Object.assign(
-        {
-          dush: 'dush',
-        },
-        globals,
-      ),
+      globals,
     }),
     external,
     plugins: [
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
       }),
+      toAlias('umd'),
       ...plugins,
-      uglify({
-        warnings: false,
-        mangle: true,
-        compress: {
-          pure_funcs: ['warn'],
-        },
-        output: {
-          comments: /^!/,
-        },
-      }),
+      // uglify({
+      //   warnings: false,
+      //   mangle: true,
+      //   keep_fnames: true,
+      //   compress: {
+      //     pure_funcs: ['warn'],
+      //   },
+      //   output: {
+      //     comments: /^!/,
+      //   },
+      // }),
       filesize(),
     ],
   },

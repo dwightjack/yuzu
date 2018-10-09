@@ -1,4 +1,3 @@
-import dush from 'dush';
 import { Sandbox, sandboxComponentOptions } from '../src/sandbox';
 import * as context from '../src/context';
 import { Component } from 'yuzu';
@@ -9,7 +8,7 @@ describe('`Sandbox`', () => {
   describe('constructor', () => {
     it('extends instance with dush methods', () => {
       const inst = new Sandbox();
-      const ev: any = dush();
+      const ev: any = new utils.Events();
       Object.keys(ev).forEach((k) => {
         const m = (inst as any)[k];
         expect(typeof m).toBe(typeof ev[k]);

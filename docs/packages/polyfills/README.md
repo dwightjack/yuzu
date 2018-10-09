@@ -32,7 +32,7 @@ yarn add yuzu-polyfills
 
 ### CDN Delivered `<script>`
 
-add the following script tags before your code
+Add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/yuzu-polyfills"></script>

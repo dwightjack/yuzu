@@ -34,7 +34,7 @@ yarn add yuzu yuzu-application
 
 ### CDN delivered `<script>`
 
-add the following script tags before your code
+Add the following script tags before your code
 
 ```html
 <script src="https://unpkg.com/dush/dist/dush.umd.js"></script>

@@ -1,5 +1,4 @@
-import dush, { Idush } from 'dush';
-import { qsa, qs, isElement, datasetParser } from 'yuzu-utils';
+import { qsa, qs, isElement, datasetParser, Events } from 'yuzu-utils';
 import { IObject } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
@@ -58,9 +57,6 @@ let idx = -1;
  *
  */
 
-// tslint:disable-next-line: interface-name no-empty-interface
-export interface Sandbox extends Idush {}
-
 /**
  * Components' container
  * @class
@@ -83,7 +79,7 @@ export interface Sandbox extends Idush {}
  *
  * sandbox.start()
  */
-export class Sandbox implements Idush {
+export class Sandbox extends Events {
   public static UID_DATA_ATTR = 'data-sandbox';
 
   public $id: string;
@@ -102,9 +98,8 @@ export class Sandbox implements Idush {
    * @constructor
    */
   constructor(options: ISandboxOptions = {}) {
+    super();
     const { components = [], root = document.body, id } = options;
-
-    Object.assign(this, dush());
 
     this.$id = id || `_sbx-${++idx}`; // eslint-disable-line no-plusplus
 
