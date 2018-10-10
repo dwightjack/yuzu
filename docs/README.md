@@ -6,7 +6,7 @@
 
 There are scenarios where you need to add interactivity to a web page or web application where the HTML is already in place, rendered by a server-side service.
 
-To address these scenarios you can use Yuzu to organize your application in a component-based, progressive enhanced architecture.
+To address these scenarios you can use **Yuzu** to organize your application in a component-based, progressive enhanced architecture.
 
 ## Example
 
@@ -52,9 +52,9 @@ new Timer().mount('.Timer');
 
 [![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Ftimer&module=%2Fexamples%2Ftimer%2Findex.js)
 
-Read the core package [documentation](packages/yuzu/) to learn more.
+Learn more about Yuzu on the core package [**documentation**](packages/yuzu/).
 
-## Packages
+## Official Packages
 
 - [yuzu](packages/yuzu/)
 - [yuzu-application](packages/application/)

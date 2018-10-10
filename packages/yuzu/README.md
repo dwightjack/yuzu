@@ -37,7 +37,7 @@ Add the following script tags before your code
 <script src="https://unpkg.com/yuzu"></script>
 ```
 
-Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ.Component`, `YZ.mount`, etc...)
+Yuzu modules will be available in the global scope under the `YZ` namespace (`YZ.Component`, `YZ.mount`, etc.).
 
 ### ES2017 Syntax
 
