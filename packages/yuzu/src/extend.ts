@@ -15,7 +15,7 @@ export interface IExtendedComponent<P extends Component, M>
  * @example
  * // UMD environment
  * const Text = YZ.extend(YZ.Component, {
- *  initialize: function () {
+ *  created: function () {
  *    this.state = { body:  '' };
  *  },
  *  mounted: function () {
