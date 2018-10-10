@@ -1,10 +1,8 @@
 # yuzu-loadable
 
-> Async component initializer for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
+> async component initializer for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 
-Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience.
-
-But in some scenarios the HTML you need is not rendered, or you have to deal with data from a remote JSON API.
+Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience. But there are scenarios where the HTML you need is not rendered, or you have to deal with data from a remote JSON API.
 
 This is where **Yuzu Loadable** comes in hand.
 
@@ -47,7 +45,7 @@ Yuzu Loadable will be available in the global scope under `YZ.Loadable`.
 
 ### ES2017 Syntax
 
-To provide maximum compatibility with every development environment, packages are transpiled to ES5. When used with a bundler like Webpack or rollup the module resolution system will automatically pick either the Commonjs or ESM version based on your configuration.
+To provide maximum compatibility with every development environment, packages are transpiled to ES5. When used with a bundler like [Webpack](https://webpack.js.org/) or [rollup](https://rollupjs.org) the module resolution system will automatically pick either the Commonjs or ESM version based on your configuration.
 
 If you want to import the ES2017 version of a package you can do so by setting an alias on the bundler's configuration file:
 
@@ -98,7 +96,7 @@ import 'yuzu-polyfills';
 
 ## Documentation
 
-Learn more about Yuzu! Read the **[full documentation](#/packages/loadable)** or **[browse the API](#/packages/api/loadable)**.
+Learn more about Yuzu! Read the **[full documentation](#TODO)** or **[browse the API](#TODO)**.
 
 ## Contributing
 

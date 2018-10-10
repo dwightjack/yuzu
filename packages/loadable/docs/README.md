@@ -54,7 +54,7 @@ Yuzu Loadable will be available in the global scope under `YZ.Loadable`.
 
 ### ES2017 Syntax
 
-To provide maximum compatibility with every development environment, packages are transpiled to ES5. When used with a bundler like Webpack or rollup the module resolution system will automatically pick either the Commonjs or ESM version based on your configuration.
+To provide maximum compatibility with every development environment, packages are transpiled to ES5. When used with a bundler like [Webpack](https://webpack.js.org/) or [rollup](https://rollupjs.org) the module resolution system will automatically pick either the Commonjs or ESM version based on your configuration.
 
 If you want to import the ES2017 version of a package you can do so by setting an alias on the bundler's configuration file:
 
@@ -108,7 +108,7 @@ import 'yuzu-polyfills';
 `Loadable` comprises some key concepts:
 
 - The **`Loadable` factory** function itself
-- An **async component** returned by the factory function
+- An **outlet component** returned by the factory function
 - A **rendered component** defined in a `component` options of the factory
 - An optional **loader component**
 
@@ -116,9 +116,9 @@ Let's start getting this concepts sorted.
 
 ## Basic Usage
 
-Let's imagine you have a component `UsersOnline` that renders the number of user online reading that data from a remove endpoint.
+Let's imagine you have a component `UsersOnline` that renders the number of online users reading that data from a remove API endpoint.
 
-Here are the HTML and the component for `UsersOnline`:
+Here are the HTML and component class for `UsersOnline`:
 
 ```html
 <div class="UsersOnline"></div>
@@ -166,7 +166,7 @@ const AsyncUsersOnline = Loadable({
 const users = new AsyncUsersOnline().mount('.UsersOnline');
 ```
 
-`AsyncUsersOnline` is an async component that will first execute `getUsers`. When the promise returned by fetch resolves it will initialize the rendered component `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.UsersOnline`.
+`AsyncUsersOnline` is an outlet component that will first execute `getUsers`. When the promise returned by `fetch` resolves it will initialize the rendered component `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.UsersOnline`.
 
 The resulting HTML will look like:
 
@@ -178,9 +178,9 @@ The resulting HTML will look like:
 
 ## Option Override
 
-Each async component accepts the same configuration options that you can pass to `Loadable`.
+Each outlet component accepts the same configuration options that you can pass to `Loadable`.
 
-This gives you the ability to finely control every instance of an async component.
+This gives you the ability to finely control every instance of an outlet component.
 
 For example if we'd want to show another user count but with data fetched from a different source, we could define a custom `fetchData` option at instantiation time:
 
@@ -189,16 +189,20 @@ For example if we'd want to show another user count but with data fetched from a
 
 const users = new AsyncUsersOnline().mount('.UsersOnline');
 
+const getUsersAlt = () => {
+  return fetch('/api/v2/users-live').then((response) => response.json());
+};
+
 const altUsers = new AsyncUsersOnline({
-  fetchData: getOtherUsers,
+  fetchData: getUsersAlt,
 }).mount('.UsersOnline');
 ```
 
 ## Showing a Loader
 
-As a User Experience best practice, while loading data you should show a loader indicator to communicate to the user that something is going on.
+As User Experience best practice, while fetching data you should show a loader indicator to communicate to the user that something is going on.
 
-To define a loader for the async component use the `loader` options:
+To define a loader for the outlet component use the `loader` options:
 
 ```js
 // Loader.js
@@ -206,7 +210,7 @@ import { Component } from 'yuzu';
 
 export class Loader extends Component {
   mounted() {
-    this.$el.innerText = 'loading';
+    this.$el.innerText = 'loading...';
   }
 }
 ```
@@ -225,9 +229,11 @@ The `Loader` component will be shown while data are loading and will then be [re
 
 ## Custom Render Root
 
-The child element used as root for both the loader and rendered component is called the **render root**. While in most cases it should be fine, you might want to customize it.
+The child element used as root for both the loader and rendered component is called the **render root**. It will be dynamically created when the outlet component gets mounted.
 
-This can be achieved by defining the `renderRoot` configuration property:
+By default the render root is a `div` element, but you might want to customize it.
+
+This can be achieved by defining a `renderRoot` configuration property:
 
 ```diff
 const AsyncUsersOnline = Loadable({
@@ -245,7 +251,7 @@ The resulting HTML will look like:
 </div>
 ```
 
-If you need more control over the element than just its tag name, you can pass a function returning a DOM element. The function will receive the async component's root element as parameter:
+If you need more control over the element than just choosing its tag name, you can pass a function returning a DOM element. The function will receive the outlet component's root element as parameter:
 
 ```diff
 const AsyncUsersOnline = Loadable({
@@ -319,7 +325,7 @@ const AsyncUsersOnline = Loadable({
 });
 ```
 
-The resulting HTML will look like:
+The HTML returned by the template will **replace the render root** resulting in something like:
 
 ```html
 <div class="UsersOnline">
@@ -338,7 +344,7 @@ The resulting HTML will look like:
 To provide the rendered component with options you can:
 
 - pass them as the `options` object in the `Loadable` configuration object. It will be used as base options for every instance of the rendered component.
-- pass them as the `options` object in the async component configuration. In this case it will be used just in that instance.
+- pass them as the `options` object in the outlet component configuration. In this case it will be used just in that instance.
 
 In the following example `instance1` will use the label defined in the Loadable factory (`'Friends online:'`), while `instance2` will use a custom label (`'Strangers online:'`):
 
@@ -372,9 +378,9 @@ const AsyncUsersOnline = Loadable({
 });
 ```
 
-Since the rendered component is actually a **child component** of the async component, you can leverage the [**computed state**](/packages/yuzu/component/#child-components-initial-state-and-computed-state) feature in order to compute the component's state.
+Since the rendered component is actually a **child component** of the outlet component, you can leverage the [**computed state**](/packages/yuzu/component/#child-components-initial-state-and-computed-state) feature in order to compute the component's state.
 
-?> To access the data returned by the `fetchData` function read the `state.props` property
+?> To access the data returned by the `fetchData` function read the `state.props` property.
 
 ```diff
 const AsyncUsersOnline = Loadable({
