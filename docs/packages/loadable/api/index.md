@@ -7,8 +7,13 @@ A function that returns a configurable async component loader.
 ### Parameters
 
 -   `opts` **[object][1]** 
-    -   `opts.component` **Component** Component to make async
-    -   `opts.null` **any** -   Any other property will be merged with the Loadable default options
+    -   `opts.component` **Component** Component to initialize when `opts.fetchData` is resolved
+    -   `opts.fetchData` **[function][2]?** A function to load remote data. Must return a promise
+    -   `opts.template` **[function][2]?** Component template. A function returning a string
+    -   `opts.loader` **Component?** Loader component. Shown during `opts.fetchData` execution
+    -   `opts.renderRoot` **([string][3] \| [function][2])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
+    -   `opts.options` **[object][1]?** Component options
+    -   `opts.props` **props?** Computed state attached to the component
 
 ## Examples
 
@@ -37,7 +42,7 @@ const LoadableMessage = Loadable({
 const message = new LoadableMessage().mount('#loadable-message');
 ```
 
-Returns **[LoadableComponent][2]** Component constructor
+Returns **[LoadableComponent][4]** Component constructor
 
 # LoadableComponent
 
@@ -49,35 +54,35 @@ Async component loader
 
 -   `config` **[object][1]?** 
     -   `config.component` **Component** Component to initialize when `config.fetchData` is resolved
-    -   `config.fetchData` **[function][3]?** A function to load remote data. Must return a promise
-    -   `config.template` **[function][3]?** Component template. A function returning a string
+    -   `config.fetchData` **[function][2]?** A function to load remote data. Must return a promise
+    -   `config.template` **[function][2]?** Component template. A function returning a string
     -   `config.loader` **Component?** Loader component. Shown during `config.fetchData` execution
-    -   `config.renderRoot` **([string][4] \| [function][3])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
+    -   `config.renderRoot` **([string][3] \| [function][2])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
     -   `config.options` **[object][1]?** Component options
     -   `config.props` **props?** Computed state attached to the component
 
-Returns **[LoadableComponent][2]** 
+Returns **[LoadableComponent][4]** 
 
 ## mounted
 
-Mounted hook
+Mounted hook.
 
 Will replace the current root element contents with an empty element used as root for both the optional loader (passed as `config.loader` to the constructor)
-and the async component.
+the rendered component root.
 
 It will then set the loader (if available) and fetch the data (`config.fetchData`) before initializing the async component.
 
-Returns **[LoadableComponent][2]** 
+Returns **[LoadableComponent][4]** 
 
 ## setComponent
 
-Initializes the async component as child of the loadable instance.
+Initializes the rendered component as child of the loadable instance.
 
-The component will be attached as component child into `$refs.async`.
+The component will be attached as child into `$refs.async`.
 
 ### Parameters
 
--   `root` **[Element][5]?** Component root element. Will default the `$els.async` if not defined.
+-   `root` **[Element][5]?** Component root element. Will default to `$els.async` if not defined.
 
 ### Examples
 
@@ -100,12 +105,12 @@ Returns **[Promise][6]**
 
 ## setLoader
 
-Initializes a loader
+Initializes a loader.
 
 If defined, will initialize the loader component set in `config.loader`,
 else will return a resolved promise.
 
-The loader will be attached as component child into `$refs.async`.
+The loader will be attached as child into `$refs.async`.
 
 ### Examples
 
@@ -129,7 +134,7 @@ Returns **[Promise][6]**
 
 ## render
 
-Renders the optional template
+Renders an optional template.
 
 Executes the template function set in `config.template` passing an object containing a `props`
 key equal to the `state.props` key.
@@ -150,15 +155,15 @@ const html = loadable.render();
 html === '<div>Hello World</div>';
 ```
 
-Returns **([string][4] | null)** returns null if the template function returns a falsy value
+Returns **([string][3] | null)** returns null if the template function returns a falsy value
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[2]: #loadablecomponent
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[4]: #loadablecomponent
 
 [5]: https://developer.mozilla.org/docs/Web/API/Element
 

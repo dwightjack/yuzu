@@ -16,8 +16,13 @@ export interface ILoadableOptions {
  * A function that returns a configurable async component loader.
  *
  * @param {object} opts
- * @param {Component} opts.component Component to make async
- * @param {*} opts.* Any other property will be merged with the Loadable default options
+ * @param {Component} opts.component Component to initialize when `opts.fetchData` is resolved
+ * @param {function} [opts.fetchData] A function to load remote data. Must return a promise
+ * @param {function} [opts.template] Component template. A function returning a string
+ * @param {Component} [opts.loader] Loader component. Shown during `opts.fetchData` execution
+ * @param {string|function} [opts.renderRoot='div'] Tag used for the element holding the async component. Either a string or a function returning a DOM element.
+ * @param {object} [opts.options] Component options
+ * @param {props} [opts.props] Computed state attached to the component
  * @returns {LoadableComponent} Component constructor
  * @example
  *
@@ -84,12 +89,13 @@ export const Loadable = (opts: ILoadableOptions) => {
     };
 
     /**
-     * Mounted hook
+     * Mounted hook.
      *
      * Will replace the current root element contents with an empty element used as root for both the optional loader (passed as `config.loader` to the constructor)
-     * and the async component.
+     * the rendered component root.
      *
      * It will then set the loader (if available) and fetch the data (`config.fetchData`) before initializing the async component.
+     *
      * @async
      * @memberof LoadableComponent
      * @returns {LoadableComponent}
@@ -131,12 +137,12 @@ export const Loadable = (opts: ILoadableOptions) => {
     }
 
     /**
-     * Initializes the async component as child of the loadable instance.
+     * Initializes the rendered component as child of the loadable instance.
      *
-     * The component will be attached as component child into `$refs.async`.
+     * The component will be attached as child into `$refs.async`.
      *
      * @memberof LoadableComponent
-     * @param {Element} [root] Component root element. Will default the `$els.async` if not defined.
+     * @param {Element} [root] Component root element. Will default to `$els.async` if not defined.
      * @return {Promise}
      * @example
      * class Loader extends Component {
@@ -167,12 +173,12 @@ export const Loadable = (opts: ILoadableOptions) => {
     }
 
     /**
-     * Initializes a loader
+     * Initializes a loader.
      *
      * If defined, will initialize the loader component set in `config.loader`,
      * else will return a resolved promise.
      *
-     * The loader will be attached as component child into `$refs.async`.
+     * The loader will be attached as child into `$refs.async`.
      *
      * @memberof LoadableComponent
      * @returns {Promise}
@@ -207,7 +213,7 @@ export const Loadable = (opts: ILoadableOptions) => {
     }
 
     /**
-     * Renders the optional template
+     * Renders an optional template.
      *
      * Executes the template function set in `config.template` passing an object containing a `props`
      * key equal to the `state.props` key.
