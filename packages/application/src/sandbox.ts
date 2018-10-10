@@ -23,8 +23,6 @@ export interface ISandboxOptions {
 let idx = -1;
 
 /**
- * ## Sandbox
- *
  * A sandbox can be used to initialize a set of components based on an element's innerHTML.
  *
  * Lets say we have the following component:
@@ -37,47 +35,35 @@ let idx = -1;
  * }
  * ```
  *
- * We can register the component inside a sandbox like this
+ * We can register the component inside a sandbox like this:
  *
  * ```js
  * const sandbox = new Sandbox({
  *   components: [Counter],
- *   root: '#main' // (defaults to `document.body`),
- *   id: 'main' // optional
- * })
+ *   root: '#main', // (defaults to `document.body`)
+ *   id: 'main', // optional
+ * });
  *
- * sandbox.start()
+ * sandbox.start();
  * ```
  *
  * In this way the sandbox will attach itself to the element matching `#main` and will traverse its children
  * looking for every `.Counter` element attaching an instance of the Counter component onto it.
  *
  * To prevent a component for being initialized (for example when you want to initialize it at a later moment)
- * just add a data-skip attribute to it's root element
+ * just add a `data-skip` attribute to its root element.
  *
- */
-
-/**
- * Components' container
  * @class
  * @param {object} config
- * @param {Component[]|[Component, object][]} [config.components] Array of: components constructor or array with [ComponentConstructor, option]
- * @param {HTMLElement|string} [config.root=document.body] Root element of the sandbox. Either a dom element
+ * @param {Component[]|[Component, object][]} [config.components] Array of components constructor or array with [ComponentConstructor, options]
+ * @param {HTMLElement|string} [config.root=document.body] Root element of the sandbox. Either a DOM element or a CSS selector
  * @param {string} [config.id] ID of the sandbox
  * @property {string} $id Sandbox internal id
  * @property {HTMLElement} $root Sandbox root DOM element
- * @property {Context} $context Internal [context](/packages/application/api/context/). Used to share data across child instances
+ * @property {Context} $context Internal [context](/packages/application/api/context). Used to share data across child instances
  * @property {object[]} $registry Registered components storage
  * @property {Map} $instances Running instances storage
  * @returns {Sandbox}
- * @example
- * const sandbox = new Sandbox({
- *  id: 'application',
- *  el: '#app',
- *  components: [Counter, [Navigation, { theme: 'dark' }]]
- * });
- *
- * sandbox.start()
  */
 export class Sandbox extends Events {
   public static UID_DATA_ATTR = 'data-sandbox';
@@ -132,13 +118,12 @@ export class Sandbox extends Events {
    * register(params)
    * ```
    *
-   * Registers a new component into the sandbox. The register will be traversed on `.start()`
-   * Initializing every matching component
+   * Registers a new component into the sandbox. The registered components
+   * will be traversed on `.start()` initializing every matching component.
    *
-   * @param {object} params
+   * @param {object} params Every property other than `component` and `selector` will be used as component option
    * @param {Component} params.component Component constructor
    * @param {string} params.selector Child component root CSS selector
-   * @param {*} params.* Every other property will be used as component option
    * @example
    * sandbox.register({
    *   component: Counter,
@@ -169,7 +154,7 @@ export class Sandbox extends Events {
    *
    * Starts the sandbox with an optional context.
    *
-   * The store will be available inside a component at `this.$context`
+   * The store will be available inside each component at `this.$context`.
    *
    * @param {object} [data] Optional context data object to be injected into the child components.
    * @fires Sandbox#beforeStart

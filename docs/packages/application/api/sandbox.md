@@ -4,8 +4,6 @@
 
 **Extends Events**
 
-# Sandbox
-
 A sandbox can be used to initialize a set of components based on an element's innerHTML.
 
 Lets say we have the following component:
@@ -18,130 +16,41 @@ class Counter extends Component {
 }
 ```
 
-We can register the component inside a sandbox like this
+We can register the component inside a sandbox like this:
 
 ```js
 const sandbox = new Sandbox({
   components: [Counter],
-  root: '#main' // (defaults to `document.body`),
-  id: 'main' // optional
-})
+  root: '#main', // (defaults to `document.body`)
+  id: 'main', // optional
+});
 
-sandbox.start()
+sandbox.start();
 ```
 
 In this way the sandbox will attach itself to the element matching `#main` and will traverse its children
 looking for every `.Counter` element attaching an instance of the Counter component onto it.
 
 To prevent a component for being initialized (for example when you want to initialize it at a later moment)
-just add a data-skip attribute to it's root element
-
-### Parameters
-
--   `options`   (optional, default `{}`)
-
-## register
-
-```js
-register(params)
-```
-
-Registers a new component into the sandbox. The register will be traversed on `.start()`
-Initializing every matching component
-
-### Parameters
-
--   `params` **[object][1]**  (optional, default `{}`)
-    -   `params.component` **Component** Component constructor
-    -   `params.selector` **[string][2]** Child component root CSS selector
-    -   `params.null` **any** -   Every other property will be used as component option
-
-### Examples
-
-```javascript
-sandbox.register({
-  component: Counter,
-  selector: '.Counter',
-  theme: 'dark' // <-- instance options
-});
-```
-
-## start
-
-```js
-start([data])
-```
-
-Starts the sandbox with an optional context.
-
-The store will be available inside a component at `this.$context`
-
-### Parameters
-
--   `data` **[object][1]?** Optional context data object to be injected into the child components. (optional, default `{}`)
-
-### Examples
-
-```javascript
-sandbox.start();
-
-// with context data
-sandbox.start({ globalTheme: 'dark' });
-```
-
-Returns **[Sandbox][3]** 
-
-## stop
-
-```js
-stop()
-```
-
-Stops every running component and clears sandbox events.
-
-### Examples
-
-```javascript
-sandbox.stop();
-```
-
-Returns **[Promise][4]&lt;void>** 
-
-# Sandbox
-
-**Extends Events**
-
-Components' container
+just add a `data-skip` attribute to its root element.
 
 ### Parameters
 
 -   `options`   (optional, default `{}`)
 -   `config` **[object][1]** 
-    -   `config.components` **([Array][5]&lt;Component> | [Array][5]&lt;\[Component, [object][1]]>)?** Array of: components constructor or array with [ComponentConstructor, option]
-    -   `config.root` **([HTMLElement][6] \| [string][2])** Root element of the sandbox. Either a dom element (optional, default `document.body`)
-    -   `config.id` **[string][2]?** ID of the sandbox
+    -   `config.components` **([Array][2]&lt;Component> | [Array][2]&lt;\[Component, [object][1]]>)?** Array of components constructor or array with [ComponentConstructor, options]
+    -   `config.root` **([HTMLElement][3] \| [string][4])** Root element of the sandbox. Either a DOM element or a CSS selector (optional, default `document.body`)
+    -   `config.id` **[string][4]?** ID of the sandbox
 
 ## Properties
 
--   `$id` **[string][2]** Sandbox internal id
--   `$root` **[HTMLElement][6]** Sandbox root DOM element
--   `$context` **Context** Internal [context][7]. Used to share data across child instances
--   `$registry` **[Array][5]&lt;[object][1]>** Registered components storage
--   `$instances` **[Map][8]** Running instances storage
+-   `$id` **[string][4]** Sandbox internal id
+-   `$root` **[HTMLElement][3]** Sandbox root DOM element
+-   `$context` **Context** Internal [context][5]. Used to share data across child instances
+-   `$registry` **[Array][2]&lt;[object][1]>** Registered components storage
+-   `$instances` **[Map][6]** Running instances storage
 
-## Examples
-
-```javascript
-const sandbox = new Sandbox({
- id: 'application',
- el: '#app',
- components: [Counter, [Navigation, { theme: 'dark' }]]
-});
-
-sandbox.start()
-```
-
-Returns **[Sandbox][3]** 
+Returns **[Sandbox][7]** 
 
 ## register
 
@@ -149,15 +58,14 @@ Returns **[Sandbox][3]**
 register(params)
 ```
 
-Registers a new component into the sandbox. The register will be traversed on `.start()`
-Initializing every matching component
+Registers a new component into the sandbox. The registered components
+will be traversed on `.start()` initializing every matching component.
 
 ### Parameters
 
--   `params` **[object][1]**  (optional, default `{}`)
+-   `params` **[object][1]** Every property other than `component` and `selector` will be used as component option (optional, default `{}`)
     -   `params.component` **Component** Component constructor
-    -   `params.selector` **[string][2]** Child component root CSS selector
-    -   `params.null` **any** -   Every other property will be used as component option
+    -   `params.selector` **[string][4]** Child component root CSS selector
 
 ### Examples
 
@@ -177,7 +85,7 @@ start([data])
 
 Starts the sandbox with an optional context.
 
-The store will be available inside a component at `this.$context`
+The store will be available inside each component at `this.$context`.
 
 ### Parameters
 
@@ -192,7 +100,7 @@ sandbox.start();
 sandbox.start({ globalTheme: 'dark' });
 ```
 
-Returns **[Sandbox][3]** 
+Returns **[Sandbox][7]** 
 
 ## stop
 
@@ -208,20 +116,20 @@ Stops every running component and clears sandbox events.
 sandbox.stop();
 ```
 
-Returns **[Promise][4]&lt;void>** 
+Returns **[Promise][8]&lt;void>** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[3]: #sandbox
+[3]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[5]: /packages/application/api/context
 
-[6]: https://developer.mozilla.org/docs/Web/HTML/Element
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map
 
-[7]: /packages/application/api/context/
+[7]: #sandbox
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
