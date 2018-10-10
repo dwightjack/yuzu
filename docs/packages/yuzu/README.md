@@ -842,7 +842,7 @@ const menuTree = mount(
   Menu,
   '#menu',
   {},
-  Children('.menu__link', (el, i) => mount(Link, el)),
+  Children('.Menu__link', (el, i) => mount(Link, el)),
 );
 
 //mount it onto the DOM

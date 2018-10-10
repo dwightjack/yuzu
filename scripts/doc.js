@@ -54,7 +54,7 @@ packages.forEach(async (package) => {
   let moduleLinks = '';
 
   if (files.length > 1) {
-    files = files.filter((f) => !f.endsWith('index.ts'));
+    files = files.filter((f) => !/index(|\.umd)\.ts$/.test(f));
     moduleLinks = files
       .map((f) => {
         const base = path.basename(f, '.ts');
