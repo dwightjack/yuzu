@@ -223,7 +223,7 @@ export const parseString = (value: any): any => {
 export const INLINE_STATE_REGEXP = /^ui([A-Z].+)$/;
 
 /**
- * Parses an element's `dataset` with optional filtering.
+ * Parses an element's [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset) with optional filtering.
  *
  * @param {HTMLElement} el HTML element
  * @param {RegExp} [matcher] Optional regexp to filter dataset by key (defaults to `/^ui([A-Z].+)$/`)
@@ -278,7 +278,7 @@ export const qs = (
 ): Element | null => ctx.querySelector(selector);
 
 /**
- * Returns a list of the elements within the document that match the specified group of selectors.
+ * Returns an array of elements within the document that match the specified group of selectors.
  *
  * @name qsa
  * @function
@@ -300,7 +300,10 @@ export const qsa = (
 export interface Events extends Idush {}
 
 /**
- * Creates an event hub object. Implements methods from [dush](https://github.com/tunnckoCoreLabs/dush)
+ * Creates an event hub object.
+ *
+ * Implements methods from [dush](https://github.com/tunnckoCoreLabs/dush).
+ *
  * @class
  * @see https://github.com/tunnckoCoreLabs/dush
  * @example

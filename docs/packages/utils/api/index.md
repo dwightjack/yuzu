@@ -167,12 +167,12 @@ boundMethod() === 'john'
 
 ## datasetParser
 
-Parses an element's `dataset` with optional filtering.
+Parses an element's [`dataset`][5] with optional filtering.
 
 ### Parameters
 
--   `el` **[HTMLElement][5]** HTML element
--   `matcher` **[RegExp][6]?** Optional regexp to filter dataset by key (defaults to `/^ui([A-Z].+)$/`) (optional, default `INLINE_STATE_REGEXP`)
+-   `el` **[HTMLElement][6]** HTML element
+-   `matcher` **[RegExp][7]?** Optional regexp to filter dataset by key (defaults to `/^ui([A-Z].+)$/`) (optional, default `INLINE_STATE_REGEXP`)
 -   `formatter` **[function][2]** Optional formatter function. (optional, default `parseString`)
 
 ### Examples
@@ -193,14 +193,14 @@ Returns **[object][4]**
 
 ## qs
 
--   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector][7]**
+-   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector][8]**
 
 Returns the first element within the document that matches the specified group of selectors.
 
 ### Parameters
 
 -   `selector` **[string][1]** CSS selector
--   `ctx` **([Element][8] \| [Document][9])** Root element. `document` by default (optional, default `document`)
+-   `ctx` **([Element][9] \| [Document][10])** Root element. `document` by default (optional, default `document`)
 
 ### Examples
 
@@ -210,18 +210,18 @@ import { qs } from 'yuzu-utils';
 const content = qs('#main-content');
 ```
 
-Returns **([Element][8] | null)** 
+Returns **([Element][9] | null)** 
 
 ## qsa
 
--   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll][10]**
+-   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll][11]**
 
-Returns a list of the elements within the document that match the specified group of selectors.
+Returns an array of elements within the document that match the specified group of selectors.
 
 ### Parameters
 
 -   `selector` **[string][1]** One or more CSS selectors separated by commas.
--   `ctx` **([Element][8] \| [Document][9])** Root element. `document` by default (optional, default `document`)
+-   `ctx` **([Element][9] \| [Document][10])** Root element. `document` by default (optional, default `document`)
 
 ### Examples
 
@@ -231,13 +231,15 @@ import { qsa } from 'yuzu-utils';
 const listItems = qsa('.list .list-items');
 ```
 
-Returns **[Array][11]** 
+Returns **[Array][12]** 
 
 ## Events
 
--   **See: [https://github.com/tunnckoCoreLabs/dush][12]**
+-   **See: [https://github.com/tunnckoCoreLabs/dush][13]**
 
-Creates an event hub object. Implements methods from [dush][12]
+Creates an event hub object.
+
+Implements methods from [dush][13].
 
 ### Examples
 
@@ -259,18 +261,20 @@ events.emit('log', 'Hello world!') // logs 'Hello world!'
 
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[5]: https://developer.mozilla.org/docs/Web/HTML/Element
+[5]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+[6]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[7]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
 
-[8]: https://developer.mozilla.org/docs/Web/API/Element
+[8]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript
+[9]: https://developer.mozilla.org/docs/Web/API/Element
 
-[10]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
+[10]: https://developer.mozilla.org/docs/Web/JavaScript
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[11]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
 
-[12]: https://github.com/tunnckoCoreLabs/dush
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[13]: https://github.com/tunnckoCoreLabs/dush
