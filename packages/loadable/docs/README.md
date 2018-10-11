@@ -23,8 +23,8 @@ Yuzu Loadable lets you define an async function call and use its returned data t
 - [Showing a Loader](#showing-a-loader)
 - [Custom Render Root](#custom-render-root)
 - [Component Template](#component-template)
-- [Component Options](#component-options)
 - [Component State](#component-state)
+- [Component Options](#component-options)
 - [API Documentation](#api-documentation)
 
 <!-- /TOC -->
@@ -277,7 +277,7 @@ Resulting in the following HTML:
 
 In a real world application a component could have a rather complex HTML structure. Since the Loadable root does not allow inner nodes, you can use the `template` option to dynamically render you component's HTML.
 
-`template` should be a function that returns a string of HTML. It receives the same data returned by `fetchData` as first argument.
+`template` should be a function that returns a string of HTML. It receives an object containing `state.props` and `options` from the outlet component.
 
 Let's modify the code accordingly:
 
@@ -312,9 +312,9 @@ export class UsersOnline extends Component {
 ```diff
 import Loader from './Loader';
 
-+ const renderHTML = (data, options) =>
++ const renderHTML = ({ props, options }) =>
 +   `<div class="UsersOnline__value">
-+     <p>${options.label} ${data.count}</p>
++     <p>${options.label} ${props.count}</p>
 +   </div>`;
 
 const AsyncUsersOnline = Loadable({
@@ -335,40 +335,17 @@ The HTML returned by the template will **replace the render root** resulting in 
 </div>
 ```
 
+[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Floadable&module=%2Fexamples%2Floadable%2Findex.js)
+
 ?> For simple templates ES6 [Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) are a fast end easy option. For more complex templates consider using something like [**lodash templates**](https://lodash.com/docs/4.17.10#template) or [**handlebars**](http://handlebarsjs.com/).
 
 !> The template must contain a **single root element**. If a template returns multiple root elements, just the first one will be injected into the DOM.
 
-## Component Options
-
-To provide the rendered component with options you can:
-
-- pass them as the `options` object in the `Loadable` configuration object. It will be used as base options for every instance of the rendered component.
-- pass them as the `options` object in the outlet component configuration. In this case it will be used just in that instance.
-
-In the following example `instance1` will use the label defined in the Loadable factory (`'Friends online:'`), while `instance2` will use a custom label (`'Strangers online:'`):
-
-```js
-const AsyncUsersOnline = Loadable({
-  component: UsersOnline,
-  fetchData: getUsers,
-  options: {
-    label: 'Friends online:',
-  },
-});
-
-const instance1 = new AsyncUsersOnline();
-
-const instance2 = new AsyncUsersOnline({
-  options: {
-    label: 'Strangers online:',
-  },
-});
-```
-
 ## Component State
 
-To provide an initial state to the rendered component you can define a `props` option on the configuration object:
+By default the rendered component receives the data returned by the dataFetch function as initial state.
+
+To provide a custom initial state to the rendered component you can define a `props` option on the configuration object:
 
 ```diff
 const AsyncUsersOnline = Loadable({
@@ -401,6 +378,33 @@ const AsyncUsersOnline = Loadable({
   fetchData: getUsers,
 - props: { count: (state) => state.props.count }
 + props: (data) => { count: data.count }
+});
+```
+
+## Component Options
+
+To provide the rendered component with options you can:
+
+- pass them as the `options` object in the `Loadable` configuration object. It will be used as base options for every instance of the rendered component.
+- pass them as the `options` object in the outlet component configuration. In this case it will be used just in that instance.
+
+In the following example `instance1` will use the label defined in the Loadable factory (`'Friends online:'`), while `instance2` will use a custom label (`'Strangers online:'`):
+
+```js
+const AsyncUsersOnline = Loadable({
+  component: UsersOnline,
+  fetchData: getUsers,
+  options: {
+    label: 'Friends online:',
+  },
+});
+
+const instance1 = new AsyncUsersOnline();
+
+const instance2 = new AsyncUsersOnline({
+  options: {
+    label: 'Strangers online:',
+  },
 });
 ```
 

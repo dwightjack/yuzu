@@ -59,7 +59,7 @@ Async component loader
     -   `config.loader` **Component?** Loader component. Shown during `config.fetchData` execution
     -   `config.renderRoot` **([string][3] \| [function][2])** Tag used for the element holding the async component. Either a string or a function returning a DOM element. (optional, default `'div'`)
     -   `config.options` **[object][1]?** Component options
-    -   `config.props` **props?** Computed state attached to the component
+    -   `config.props` **([object][1] \| [function][2])?** Computed state attached to the component
 
 Returns **[LoadableComponent][4]** 
 
