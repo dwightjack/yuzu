@@ -2,144 +2,62 @@
 
 > old school component management
 
-## Installation
+## Why?
 
-### as NPM package
+There are scenarios where you need to add interactivity to a web page or web application where the HTML is already in place, rendered by a server-side service.
 
-```
-npm install yuzu --save
+To address these scenarios you can use Yuzu to organize your application in a component-based, progressive enhanced architecture.
 
-# or
+## Example
 
-yarn add yuzu
-```
-
-### CDN delivered `<script>`
-
-add the following script tags before your code
 ```html
-<script src="https://unpkg.com/tsumami"></script> <!-- hard dependency -->
-<script src="https://unpkg.com/yuzu"></script>
+<div class="Timer">
+  <p class="Timer__value">0<p>
+</div>
 ```
-
-Yuzu modules will be available in the global scope under the `YZ` namespace:
-
-* `YZ.Component`: Component constructor [docs](doc/component.md)
-* `YZ.Children`: children elements iterator founction [docs](doc/children.md)
-* `YZ.mount`: functional components' tree generator [docs](doc/mount.md)
-
-## Usage
-
-### ES6+ usage
-
-Import `Component` constructor into your project and use it
 
 ```js
 import { Component } from 'yuzu';
 
-class MyComponent extends Component {
+class Timer extends Component {
+  selectors = {
+    value: '.Timer__value',
+  };
 
-	getInitialState() {
-		return {
-			key: 'value'
-		};
-	}
+  state = {
+    elapsed: 0,
+  };
 
-	beforeInit() {
-		//...
-	}
+  actions = {
+    elapsed: 'update',
+  };
+
+  mounted() {
+    this.interval = setInterval(() => {
+      this.setState(({ elapsed }) => ({ elapsed: elapsed + 1 }));
+    }, 1000);
+  }
+
+  beforeDestroy() {
+    clearInterval(this.interval);
+  }
+
+  update() {
+    this.$els.value.innerText = this.state.elapsed;
+  }
 }
 
-const app = new MyComponent('#app');
+new Timer().mount('.Timer');
 ```
 
-### ES5 usage
+[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Ftimer&module=%2Fexamples%2Ftimer%2Findex.js)
 
-In environments that don't support `extends` (such as ES5), you can use the static `Component.create` method to achieve the same result:
+Read the core package [documentation](#TODO) to learn more.
 
- ```js
-var MyComponent = YZ.Component.create({
+## Packages
 
-	getInitialState: function () {
-		return {
-			key: 'value'
-		};
-	},
-
-	beforeInit: function () {
-		//...
-	}
-});
-
-var app = new MyComponent('#app');
-```
-
-### Functional composition
-
-To compose nested components you can simply use parent's [`setRef`](doc/component.md#setref) method to register child components:
-
-```js
-
-class Navigation extends Component {
-	// ...
-}
-
-class Gallery extends Component {
-	beforeInit() {
-
-		this.setRef({
-			id: 'navigation',
-			component: Navigation,
-			el: '.gallery__nav'
-		});
-		// this.$refs.navigation.$el === '<ul class="gallery__nav" />'
-	}
-}
-
-const gallery = new Gallery('#gallery');
-```
-
-If you prefer a more _functional_ approach you can use the [`mount`](doc/mount.md) helper:
-
-```js
-import { Component, Children, mount } from 'yuzu';
-
-
-class Navigation extends Component {
-	// ...
-}
-
-class Gallery extends Component {
-	// ...
-}
-
-//setup a component tree
-const galleryTree = mount(
-	Gallery,
-	'#gallery',
-	null, // <-- options
-	[
-		mount(
-			Navigation,
-			'.gallery__nav'
-		)
-	]
-);
-
-//mount it onto the DOM
-const gallery = galleryTree();
-```
-
-## Documentation
-
-* [Component](doc/component.md)
-* [Children](doc/children.md)
-* [mount](doc/mount.md)
-
-## Contributing
-
-1. Fork it or clone the repo
-1. Install dependencies `yarn install`
-1. Code your changes and write new tests in the `test` folder.
-1. Ensure everything is fine by running `yarn build`
-1. Push it or submit a pull request :D
+- [yuzu](packages/yuzu/)
+- [yuzu-application](packages/application/)
+- [yuzu-utils](packages/utils/)
+- [yuzu-loadable](packages/loadable/)
+- [yuzu-polyfills](packages/polyfills/)
