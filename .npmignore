@@ -2,9 +2,10 @@
 *.log
 test
 examples
-.babelrc
 .editorconfig
+.eslintignore
 .eslintrc.js
-karma.conf.js
-karma.sauce.conf.js
-webpack.*
+karma*.conf.js
+rollup.*
+.rpt2_cache
+tmp
