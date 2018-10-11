@@ -43,7 +43,7 @@ describe('`Loadable`', () => {
         loader: null,
         renderRoot: 'div',
         options: {},
-        props: {},
+        props: jasmine.any(Function),
       });
     });
   });
@@ -129,12 +129,10 @@ describe('`Loadable`', () => {
     class Child extends Component {}
     let LoadableComponent: typeof Component;
     const options = { demo: true };
-    const props = {};
     let inst: any;
     beforeEach(() => {
       LoadableComponent = Loadable({
         component: Child,
-        props,
         options,
         fetchData: () => ({}),
       });
@@ -154,11 +152,13 @@ describe('`Loadable`', () => {
           component: Child,
           demo: true,
         },
-        props,
+        inst.state.props,
       );
     });
 
     it('evaluates passed-in props', async () => {
+      const props = {};
+      inst.options.props = props;
       const spy = spyOn(utils, 'evaluate').and.callThrough();
       spyOn(inst, 'setRef');
       await inst.setComponent(document.createElement('div'));

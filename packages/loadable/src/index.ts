@@ -64,7 +64,7 @@ export const Loadable = (opts: ILoadableOptions) => {
    * @param {Component} [config.loader] Loader component. Shown during `config.fetchData` execution
    * @param {string|function} [config.renderRoot='div'] Tag used for the element holding the async component. Either a string or a function returning a DOM element.
    * @param {object} [config.options] Component options
-   * @param {props} [config.props] Computed state attached to the component
+   * @param {object|function} [config.props] Computed state attached to the component
    * @returns {LoadableComponent}
    */
   const LoadableComponent = class extends Component {
@@ -79,7 +79,7 @@ export const Loadable = (opts: ILoadableOptions) => {
           loader: null,
           options: {},
           renderRoot: 'div',
-          props: {},
+          props: (v: IObject) => v,
         },
         params,
       );
