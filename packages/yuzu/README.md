@@ -125,7 +125,7 @@ class Counter extends Component {
 
 ## Documentation
 
-Learn more about Yuzu! Read the **[full documentation](#TODO)** or **[browse the API](#TODO)**.
+Learn more about Yuzu! Read the **[full documentation](https://dwightjack.github.io/yuzu/#/packages/yuzu/)** or **[browse the API](https://dwightjack.github.io/yuzu/#/packages/yuzu/api/)**.
 
 ## Contributing
 

@@ -8,6 +8,8 @@ There are scenarios where you need to add interactivity to a web page or web app
 
 To address these scenarios you can use Yuzu to organize your application in a component-based, progressive enhanced architecture.
 
+Learn more at https://dwightjack.github.io/yuzu/.
+
 ## Example
 
 ```html
@@ -52,7 +54,7 @@ new Timer().mount('.Timer');
 
 [![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Ftimer&module=%2Fexamples%2Ftimer%2Findex.js)
 
-Read the core package [documentation](#TODO) to learn more.
+Read the core package [documentation](https://dwightjack.github.io/yuzu/#/packages/yuzu/) to learn more.
 
 ## Packages
 

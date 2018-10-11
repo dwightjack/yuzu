@@ -91,7 +91,7 @@ import 'yuzu-polyfills';
 
 ## Documentation
 
-Learn more about Yuzu utils! Browse **[the API](#TODO)**.
+Learn more about Yuzu utils! Browse **[the API](https://dwightjack.github.io/yuzu/#/packages/utils/api/index)**.
 
 ## Contributing
 
