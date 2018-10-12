@@ -96,6 +96,8 @@ export class Component extends Events {
 
   public options: IObject;
 
+  public rootless?: boolean;
+
   public $active: boolean;
 
   public $el!: Element;
@@ -196,6 +198,12 @@ export class Component extends Events {
       throw new Error('Component is already mounted');
     }
 
+    if (this.rootless) {
+      throw new Error(
+        'You cannot mount a root-less component. Please use `init` instead',
+      );
+    }
+
     const $el = typeof el === 'string' ? qs(el) : el;
 
     if (!isElement($el)) {
@@ -245,13 +253,13 @@ export class Component extends Events {
    * @returns {Component}
    */
   public init(state: IState = {}) {
-    if (!isElement(this.$el)) {
+    if (!this.rootless && !isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
     const { $el } = this;
 
     // initialization placeholder
-    let uid = $el.getAttribute(Component.UID_DATA_ATTR);
+    let uid = $el && $el.getAttribute(Component.UID_DATA_ATTR);
 
     if (uid) {
       console.warn(`Element ${uid} is already initialized... skipping`, $el); // tslint:disable-line no-console
@@ -263,10 +271,12 @@ export class Component extends Events {
     uid = nextUid();
     this.$uid = uid;
 
-    $el.setAttribute(Component.UID_DATA_ATTR, uid);
+    if ($el) {
+      $el.setAttribute(Component.UID_DATA_ATTR, uid);
 
-    if (!$el.id) {
-      $el.id = `c_${uid}`;
+      if (!$el.id) {
+        $el.id = `c_${uid}`;
+      }
     }
 
     this.initialize();
