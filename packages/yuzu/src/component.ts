@@ -96,7 +96,7 @@ export class Component extends Events {
 
   public options: IObject;
 
-  public rootless?: boolean;
+  public detached?: boolean;
 
   public $active: boolean;
 
@@ -198,9 +198,9 @@ export class Component extends Events {
       throw new Error('Component is already mounted');
     }
 
-    if (this.rootless) {
+    if (this.detached) {
       throw new Error(
-        'You cannot mount a root-less component. Please use `init` instead',
+        'You cannot mount a detached component. Please use `init` instead',
       );
     }
 
@@ -253,7 +253,7 @@ export class Component extends Events {
    * @returns {Component}
    */
   public init(state: IState = {}) {
-    if (!this.rootless && !isElement(this.$el)) {
+    if (!this.detached && !isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
     const { $el } = this;
@@ -659,12 +659,19 @@ export class Component extends Events {
     }
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
+    const { detached } = this;
 
-    if (Component.isComponent(ChildComponent) && el) {
+    if (el && detached) {
+      throw new Error(
+        `setRef "${id}": you cannot define a component with DOM root as child of a detached component.`,
+      );
+    }
+
+    if (Component.isComponent(ChildComponent)) {
       ref = new ChildComponent(options);
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
-    } else if (typeof ChildComponent === 'function' && el) {
+    } else if (typeof ChildComponent === 'function') {
       ref = (ChildComponent as IRefFactory<Component>['component'])(
         el,
         this.state,
@@ -699,7 +706,7 @@ export class Component extends Events {
     $refs[id] = ref;
     this.$refsStore.set(id, ref);
 
-    if (!ref.$el && el) {
+    if (!ref.$el && !ref.detached) {
       ref.mount(el, null);
     }
 
