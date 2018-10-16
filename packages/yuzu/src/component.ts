@@ -768,6 +768,11 @@ export class Component extends Events {
   public async closeRefs() {
     const { $refsStore } = this;
 
+    if ($refsStore.size === 0) {
+      // exit early!
+      return Promise.resolve();
+    }
+
     try {
       const result = await Promise.all(
         [...$refsStore.values()].map((ref) => ref.destroy()),
