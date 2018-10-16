@@ -22,6 +22,7 @@ Manage your HTML based components in style with progressive enhancement.
   - [Child Components' Initial State and Computed State](#child-components-initial-state-and-computed-state)
   - [Child to Parent Communication](#child-to-parent-communication)
   - [Child Component Replacement](#child-component-replacement)
+- [Detached Components](#detached-components)
 - [API Summary](#api-summary)
   - [Lifecycle Methods](#lifecycle-methods)
   - [State Management](#state-management)
@@ -630,6 +631,47 @@ Open the following link to see a working example.
 
 [![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?fontsize=16&initialpath=%2Fchildreplace&module=%2Fexamples%2Fchild-replace%2Findex.js)
 
+## Detached Components
+
+By default a component requires a DOM node to be mounted onto.
+
+Anyway you may tell Yuzu that a component doesn't have a root element by setting its `detached` property to `true` .
+
+```js
+import { Component } from 'yuzu';
+
+class Detached extends Component {
+  created() {
+    this.detached = true;
+  }
+  // ...
+}
+
+const instance = new Detached().init(); // <-- call init instead of mount
+```
+
+For your convenience yuzu provides a `DetachedComponent` base class as well
+
+```diff
+- import { Component } from 'yuzu';
++ import { DetachedComponent } from 'yuzu';
+
+- class Detached extends Component {
+-   created() {
+-     this.detached = true;
+-   }
+-   // ...
+- }
+
++ class Detached extends DetachedComponent {
++   // ...
++ }
+
+const instance = new Detached().init(); // <-- call init instead of mount
+```
+
+!> You cannot call `mount()` on a detached component. `beforeMount` and `mounted` hooks will not be available as well.
+
 ## API Summary
 
 Full documentation available [here](/packages/yuzu/api/component).
@@ -637,7 +679,7 @@ Full documentation available [here](/packages/yuzu/api/component).
 ### Lifecycle Methods
 
 - `init` Initializes the component with state
-- `mount` Mounts a component instance onto a DOM element and initializes it
+- `mount` Mounts a component instance onto a DOM element and initializes it (_not available for detached components_)
 - `destroy` (_async_) Un-mounts a component and its children
 
 ### State Management
@@ -648,8 +690,8 @@ Full documentation available [here](/packages/yuzu/api/component).
 ### Lifecycle Hooks
 
 - `created` Instance created
-- `beforeMount` Before mounting onto the DOM
-- `mounted` Mounted onto the DOM
+- `beforeMount` Before mounting onto the DOM (_not called for detached components_)
+- `mounted` Mounted onto the DOM (_not called for detached components_)
 - `initialize` Just before component actions evaluation
 - `ready` Instance fully initialized
 - `beforeDestroy` (_async_) Just before tearing down the instance

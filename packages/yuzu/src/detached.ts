@@ -18,6 +18,13 @@ export interface DetachedComponent extends Component {
   ) => Promise<DetachedComponent>;
 }
 
+/**
+ * `DetachedComponent` is a special kind of `Component` that does not have a root element (`$el`).
+ *
+ * @class
+ * @see [Component](/packages/yuzu/api/component)
+ * @returns {DetachedComponent}
+ */
 export class DetachedComponent extends Component {
   public detached = true;
 }

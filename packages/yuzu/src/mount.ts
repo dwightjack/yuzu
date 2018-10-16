@@ -23,7 +23,7 @@ let childRefIdx = 0;
  * See the guide on **[functional composition](/packages/yuzu/#functional-composition)** for implementation examples.
  *
  * @param {Component} ComponentConstructor A component constructor (either created by extending `Component` or by [`extend`](/packages/yuzu/api/extend))
- * @param {HTMLElement|string} el A mount DOM node (either a CSS selector string or a DOM element)
+ * @param {HTMLElement|string|null} el A mount DOM node (either a CSS selector string or a DOM element). Can be `null` if the component is a [detached component](/packages/yuzu/#detached-components)
  * @param {function[]|function} [children] Child components. Either an array of `mount` functions or a function returning an array of mount functions
  * @param {object} [props] Mount props
  * @param {string} [props.id] Optional component id (used to create a reference onto the parent component)
