@@ -706,7 +706,12 @@ export class Component extends Events {
     $refs[id] = ref;
     this.$refsStore.set(id, ref);
 
-    if (!ref.$el && !ref.detached) {
+    if (!ref.detached && !ref.$el) {
+      if (!el) {
+        throw new Error(
+          `You need to provide a root element for the child element with id "${id}".`,
+        );
+      }
       ref.mount(el, null);
     }
 
