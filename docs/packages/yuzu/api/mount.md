@@ -13,13 +13,13 @@ See the guide on **[functional composition][2]** for implementation examples.
 ### Parameters
 
 -   `ComponentConstructor` **Component** A component constructor (either created by extending `Component` or by [`extend`][3])
--   `el` **([HTMLElement][4] \| [string][5])** A mount DOM node (either a CSS selector string or a DOM element)
--   `props` **[object][6]?** Mount props (optional, default `{}`)
+-   `el` **([HTMLElement][4] \| [string][5] | null)** A mount DOM node (either a CSS selector string or a DOM element). Can be `null` if the component is a [detached component][6]
+-   `props` **[object][7]?** Mount props (optional, default `{}`)
     -   `props.id` **[string][5]?** Optional component id (used to create a reference onto the parent component)
-    -   `props.state` **[object][6]?** Component initial state
--   `children` **([Array][7]&lt;[function][8]> | [function][8])?** Child components. Either an array of `mount` functions or a function returning an array of mount functions
+    -   `props.state` **[object][7]?** Component initial state
+-   `children` **([Array][8]&lt;[function][9]> | [function][9])?** Child components. Either an array of `mount` functions or a function returning an array of mount functions
 
-Returns **[function][8]** 
+Returns **[function][9]** 
 
 [1]: /packages/yuzu/api/component#setref
 
@@ -31,8 +31,10 @@ Returns **[function][8]**
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[6]: /packages/yuzu/#detached-components
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function

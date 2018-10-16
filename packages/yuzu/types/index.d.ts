@@ -13,7 +13,14 @@ export interface IListener {
 
 export interface IRefConstructor<T> {
   id: string;
-  el: Element | HTMLElement | string;
+  el?: Element | HTMLElement | string;
+  component: T;
+  on?: IObject<fn>;
+  [key: string]: any;
+}
+
+export interface IAbstractRefConstructor<T> {
+  id: string;
   component: T;
   on?: IObject<fn>;
   [key: string]: any;
@@ -28,7 +35,14 @@ export interface IRefInstance<T> {
 
 export interface IRefFactory<T> {
   id: string;
-  el: Element | HTMLElement | string;
+  el?: Element | HTMLElement | string;
+  component: (el: Element, state: IState) => T;
+  on?: IObject<fn>;
+  [key: string]: any;
+}
+
+export interface IAbstractRefFactory<T> {
+  id: string;
   component: (el: Element, state: IState) => T;
   on?: IObject<fn>;
   [key: string]: any;

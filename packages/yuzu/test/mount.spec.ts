@@ -69,6 +69,14 @@ describe('`mount`', () => {
       expect(spy).toHaveBeenCalledWith('.child', ctx.$el);
     });
 
+    it('accepts a string as root element', () => {
+      const root = document.createElement('div');
+      const spy = spyOn(utils, 'qs').and.returnValue(root);
+      mount(Component, '#root')();
+
+      expect(spy).toHaveBeenCalledWith('#root', undefined);
+    });
+
     it('should call `.mount()` on generated component', () => {
       const root = document.getElementById('app');
 
@@ -91,7 +99,7 @@ describe('`mount`', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should initialize generated component with provided state', () => {
+    it('should mount generated component with provided state', () => {
       class MyComponent extends Component {} // tslint:disable-line
       const spy = spyOn(MyComponent.prototype, 'mount');
       const state = {};
@@ -100,6 +108,22 @@ describe('`mount`', () => {
       mount(MyComponent, root, { state })();
 
       expect(spy).toHaveBeenCalledWith(root, state);
+    });
+
+    it('should instead initialize the component if it is a detached component', () => {
+      class MyComponent extends Component {} // tslint:disable-line
+      const spy = spyOn(MyComponent.prototype, 'mount');
+      const spyInit = spyOn(MyComponent.prototype, 'init');
+      const state = {};
+
+      MyComponent.prototype.created = function() {
+        this.detached = true;
+      };
+
+      mount(MyComponent, null, { state })();
+
+      expect(spy).not.toHaveBeenCalled();
+      expect(spyInit).toHaveBeenCalledWith(state);
     });
 
     it('should return a component instance', () => {
@@ -132,9 +156,21 @@ describe('`mount`', () => {
         {
           component,
           id: jasmine.any(String),
+          on: jasmine.any(Object),
         },
         state,
       );
+    });
+
+    it('should evaluate the "on" property', () => {
+      const ctx = new Component().mount('#ref');
+      class MyComponent extends Component {} // tslint:disable-line
+
+      const state = {};
+      const spy = jasmine.createSpy().and.returnValue({});
+      const component = mount(MyComponent, '.child', { state, on: spy })(ctx);
+
+      expect(spy).toHaveBeenCalledWith(ctx);
     });
   });
 

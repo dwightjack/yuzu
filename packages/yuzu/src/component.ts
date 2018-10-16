@@ -96,6 +96,8 @@ export class Component extends Events {
 
   public options: IObject;
 
+  public detached?: boolean;
+
   public $active: boolean;
 
   public $el!: Element;
@@ -196,6 +198,12 @@ export class Component extends Events {
       throw new Error('Component is already mounted');
     }
 
+    if (this.detached) {
+      throw new Error(
+        'You cannot mount a detached component. Please use `init` instead',
+      );
+    }
+
     const $el = typeof el === 'string' ? qs(el) : el;
 
     if (!isElement($el)) {
@@ -245,13 +253,13 @@ export class Component extends Events {
    * @returns {Component}
    */
   public init(state: IState = {}) {
-    if (!isElement(this.$el)) {
+    if (!this.detached && !isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
     const { $el } = this;
 
     // initialization placeholder
-    let uid = $el.getAttribute(Component.UID_DATA_ATTR);
+    let uid = $el && $el.getAttribute(Component.UID_DATA_ATTR);
 
     if (uid) {
       console.warn(`Element ${uid} is already initialized... skipping`, $el); // tslint:disable-line no-console
@@ -263,10 +271,12 @@ export class Component extends Events {
     uid = nextUid();
     this.$uid = uid;
 
-    $el.setAttribute(Component.UID_DATA_ATTR, uid);
+    if ($el) {
+      $el.setAttribute(Component.UID_DATA_ATTR, uid);
 
-    if (!$el.id) {
-      $el.id = `c_${uid}`;
+      if (!$el.id) {
+        $el.id = `c_${uid}`;
+      }
     }
 
     this.initialize();
@@ -649,12 +659,19 @@ export class Component extends Events {
     }
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
+    const { detached } = this;
 
-    if (Component.isComponent(ChildComponent) && el) {
+    if (el && detached) {
+      throw new Error(
+        `setRef "${id}": you cannot define a component with DOM root as child of a detached component.`,
+      );
+    }
+
+    if (Component.isComponent(ChildComponent)) {
       ref = new ChildComponent(options);
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
-    } else if (typeof ChildComponent === 'function' && el) {
+    } else if (typeof ChildComponent === 'function') {
       ref = (ChildComponent as IRefFactory<Component>['component'])(
         el,
         this.state,
@@ -689,7 +706,12 @@ export class Component extends Events {
     $refs[id] = ref;
     this.$refsStore.set(id, ref);
 
-    if (!ref.$el && el) {
+    if (!ref.detached && !ref.$el) {
+      if (!el) {
+        throw new Error(
+          `You need to provide a root element for the child element with id "${id}".`,
+        );
+      }
       ref.mount(el, null);
     }
 
@@ -745,6 +767,11 @@ export class Component extends Events {
    */
   public async closeRefs() {
     const { $refsStore } = this;
+
+    if ($refsStore.size === 0) {
+      // exit early!
+      return Promise.resolve();
+    }
 
     try {
       const result = await Promise.all(

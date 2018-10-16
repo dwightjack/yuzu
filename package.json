@@ -29,10 +29,12 @@
     "bundle": "lerna run bundle",
     "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",
-    "dev": "karma start karma.conf.js"
+    "dev": "karma start karma.conf.js",
+    "demo": "rollup -c ./examples/bundled/rollup.config.js -w"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.8",
+    "@types/node": "^10.11.7",
     "core-js": "~2.5.7",
     "cpy": "^7.0.1",
     "documentation": "^8.1.2",
@@ -57,8 +59,10 @@
     "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-commonjs": "~9.1.5",
     "rollup-plugin-filesize": "~4.0.1",
+    "rollup-plugin-livereload": "^0.6.0",
     "rollup-plugin-node-resolve": "~3.3.0",
     "rollup-plugin-replace": "~2.0.0",
+    "rollup-plugin-serve": "^0.6.0",
     "rollup-plugin-typescript2": "~0.16.1",
     "rollup-plugin-uglify": "~4.0.0",
     "serve": "^10.0.0",
