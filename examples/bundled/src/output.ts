@@ -4,9 +4,9 @@ export class Output extends DetachedComponent {
   public emitter: any;
 
   public initialize() {
-    // this.emitter = setInterval(() => {
-    //   this.emit('append', {});
-    // }, 1000);
+    this.emitter = setInterval(() => {
+      this.emit('append', {});
+    }, 1000);
 
     this.setRef({
       id: 'child',

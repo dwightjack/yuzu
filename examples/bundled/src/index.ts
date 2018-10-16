@@ -1,4 +1,4 @@
-import { Component, devtools } from '../../../packages/yuzu/src';
+import { Component, devtools, mount } from '../../../packages/yuzu/src';
 import { Output } from './output';
 
 devtools(Component);
@@ -18,19 +18,32 @@ class App extends Component {
     },
   };
 
-  public initialize() {
-    this.setRef({
-      id: 'output',
-      component: Output,
-      on: {
-        append: (value) => {
-          this.setState(({ output }) => ({
-            output: [...output, value],
-          }));
-        },
-      },
-    });
-  }
+  // public initialize() {
+  //   this.setRef({
+  //     id: 'output',
+  //     component: Output,
+  //     on: {
+  //       append: (value) => {
+  //         this.setState(({ output }) => ({
+  //           output: [...output, value],
+  //         }));
+  //       },
+  //     },
+  //   });
+  // }
 }
 
-new App().mount('#app');
+mount(App, '#app', null, [
+  mount(Output, null, {
+    id: 'output',
+    on: (app) => ({
+      append: (value) => {
+        app.setState(({ output }) => ({
+          output: [...output, value],
+        }));
+      },
+    }),
+  }),
+])();
+
+// new App().mount('#app');
