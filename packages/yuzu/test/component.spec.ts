@@ -134,6 +134,12 @@ describe('`Component`', () => {
         inst.mount(root);
       }).toThrow();
     });
+    it('should throw if the component is detached', () => {
+      expect(() => {
+        inst.detached = true;
+        inst.mount(root);
+      }).toThrow();
+    });
     it('should emit a warning if passed-in root is not an element', () => {
       const spy = spyOn(console, 'warn');
       const spyHook = spyOn(inst, 'beforeMount');
@@ -226,6 +232,13 @@ describe('`Component`', () => {
       expect(() => {
         inst.init();
       }).toThrow();
+    });
+    it('should NOT check $el on detached components', () => {
+      spyOn(utils, 'isElement').and.returnValue(false);
+      expect(() => {
+        inst.detached = true;
+        inst.init();
+      }).not.toThrow();
     });
     it('should check if a component has already been initialized on the DOM element', () => {
       const spy = spyOn(console, 'warn');
@@ -647,6 +660,17 @@ describe('`Component`', () => {
       expect(e).toEqual(jasmine.any(TypeError));
     });
 
+    it('throws if setting a component with root as child of a detached component', async () => {
+      inst.detached = true;
+      let e: any;
+      try {
+        await inst.setRef(cfg);
+      } catch (err) {
+        e = err;
+      }
+      expect(e).toEqual(jasmine.any(Error));
+    });
+
     it('calls component constructors with options', () => {
       spyOn(Component, 'isComponent').and.returnValue(true);
       const el = document.createElement('div');
@@ -785,6 +809,19 @@ describe('`Component`', () => {
       const config = {
         ...cfg,
         el: null as any,
+        component: child,
+      };
+      inst.setRef(config);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('does NOT mount if the component is detached', () => {
+      const child = new Component();
+      child.detached = true;
+
+      const spy = spyOn(child, 'mount').and.callThrough();
+      const config = {
+        ...cfg,
         component: child,
       };
       inst.setRef(config);
