@@ -1,4 +1,4 @@
-import { qs, isElement } from 'yuzu-utils';
+import { qs, isElement, evaluate } from 'yuzu-utils';
 import { Component } from './component';
 import { IObject, IState } from '../types';
 
@@ -33,18 +33,22 @@ let childRefIdx = 0;
  */
 export function mount(
   ComponentConstructor: typeof Component,
-  el: HTMLElement | string,
+  el: HTMLElement | string | null,
   props: IMountProps | null = {},
   children?: mountChildren,
 ) {
-  const { state = {}, id, ...options } = props || ({} as IMountProps);
+  const { state = {}, id, on = {}, ...options } = props || ({} as IMountProps);
   const component = new ComponentConstructor(options);
 
   return function mounter(ctx?: Component) {
-    const root = typeof el === 'string' && ctx ? qs(el, ctx.$el) : el;
+    if (!component.detached) {
+      const root = typeof el === 'string' ? qs(el, ctx && ctx.$el) : el;
 
-    if (isElement(root)) {
-      component.mount(root, ctx ? null : state);
+      if (isElement(root)) {
+        component.mount(root, ctx ? null : state);
+      }
+    } else if (component.detached && !ctx) {
+      component.init(state);
     }
 
     if (ctx) {
@@ -52,6 +56,7 @@ export function mount(
         {
           component,
           id: id || `ref__${++childRefIdx}`,
+          on: evaluate(on, ctx),
         },
         state,
       );
