@@ -16,6 +16,8 @@ Manage your HTML based components in style with progressive enhancement.
   - [ES5 Usage](#es5-usage)
 - [Example Application](#example-application)
   - [Application Breakdown](#application-breakdown)
+- [Component Options](#component-options)
+  - [Default Options](#default-options)
 - [State and Update Tracking](#state-and-update-tracking)
   - [Tracking Updates](#tracking-updates)
 - [Child Components](#child-components)
@@ -379,6 +381,41 @@ update() {
 ```
 
 Any other method is treated as a class method. You can use it like you'd do on any _plain_ javascript object instance.
+
+## Component Options
+
+Component options are properties you can use to customize a component instance.
+
+You can pass them as the first argument of a component's constructor:
+
+```js
+const counter = new Counter({ label: 'Amount' });
+```
+
+Options will be then available inside the component `this.options` object.
+
+?> Note that, unlike `this.state`, changes to the `this.options` object will not trigger any event.
+
+### Default Options
+
+You can define options default value by adding a static `defaultOptions` method to the class.
+
+Function options will be bound to the instance itself.
+
+```js
+class Counter extends Component {
+  static defaultOptions = () => ({
+    label: 'Count',
+    onClick() {
+      // this instanceof Counter === true
+    },
+  });
+
+  // ...
+}
+```
+
+!> To actually use an option you have to set a default value for it. **Options not defined in `defaultOptions` will be discarted.**
 
 ## State and Update Tracking
 
