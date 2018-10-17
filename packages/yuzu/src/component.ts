@@ -759,13 +759,38 @@ export class Component extends Events {
   }
 
   /**
+   * Destroys and detaches a specific child component by its reference `id` (as set in `setRef`).
+   *
+   * @param {string} id Child component reference id
+   * @param {boolean} [detach=false] Remove the child component root element from the DOM
+   * @returns {Promise}
+   */
+  public async destroyRef(id: string, detach: boolean = false) {
+    const { $refsStore } = this;
+    const ref = $refsStore.get(id);
+    if (!ref) {
+      throw new Error(`Child component "${id}" not found.`);
+    }
+    $refsStore.delete(id);
+    delete this.$refs[id];
+    if (!detach) {
+      return ref.destroy();
+    }
+    return ref.destroy().then(() => {
+      if (ref.$el && ref.$el.parentElement) {
+        ref.$el.parentElement.removeChild(ref.$el);
+      }
+    });
+  }
+
+  /**
    * Calls `.destroy()` on every child references and detaches them from the parent component.
    *
    * !> This is an async method returning a promise
    *
    * @returns {Promise}
    */
-  public async closeRefs() {
+  public async destroyRefs() {
     const { $refsStore } = this;
 
     if ($refsStore.size === 0) {
@@ -781,7 +806,11 @@ export class Component extends Events {
       $refsStore.clear();
       return result;
     } catch (e) {
-      console.error('close refs', e); // tslint:disable-line no-console
+      // tslint:disable-next-line no-console
+      console.error(
+        'An error occurred while destroy the component child components',
+        e,
+      );
       return Promise.reject(e);
     }
   }
@@ -813,7 +842,7 @@ export class Component extends Events {
     }
 
     try {
-      await this.closeRefs();
+      await this.destroyRefs();
       this.$active = false;
 
       return Promise.resolve();

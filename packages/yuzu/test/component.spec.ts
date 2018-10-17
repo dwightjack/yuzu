@@ -983,7 +983,51 @@ describe('`Component`', () => {
     });
   });
 
-  describe('`.closeRefs`', () => {
+  describe('`.destroyRef`', () => {
+    let inst: Component;
+    let child: Component;
+
+    beforeEach(() => {
+      inst = new Component();
+      child = new Component();
+      inst.$refs.child = child;
+      inst.$refsStore.set('child', child);
+    });
+
+    it('should throw if a ref is not found`', async () => {
+      let err: any;
+      try {
+        await inst.destroyRef('random');
+      } catch (e) {
+        err = e;
+      }
+      expect(err).toEqual(jasmine.any(Error));
+    });
+
+    it('should call the destroy method of the child component', async () => {
+      const spy = spyOn(child, 'destroy');
+      await inst.destroyRef('child');
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should remove the reference from $refs and $refsStore', async () => {
+      await inst.destroyRef('child');
+      expect(inst.$refs.hasOwnProperty('child')).toBe(false);
+      expect(inst.$refsStore.has('child')).toBe(false);
+    });
+
+    it('should detach the child root element as well', async () => {
+      child.$el = document.createElement('div');
+      inst.$el = document.createElement('div');
+      inst.$el.appendChild(child.$el);
+      const spy = spyOn(inst.$el, 'removeChild');
+
+      await inst.destroyRef('child', true);
+      expect(spy).toHaveBeenCalledWith(child.$el);
+    });
+  });
+
+  describe('`.destroyRefs`', () => {
     let inst: Component;
     let child: Component;
 
@@ -996,19 +1040,19 @@ describe('`Component`', () => {
 
     it('should cycle every ref and call its `destroy method`', async () => {
       const spy = spyOn(child, 'destroy');
-      await inst.closeRefs();
+      await inst.destroyRefs();
       expect(spy).toHaveBeenCalled();
     });
 
     it('should clear the reference store', async () => {
       const spy = spyOn(inst.$refsStore, 'clear');
-      await inst.closeRefs();
+      await inst.destroyRefs();
       expect(Object.keys(inst.$refs).length).toBe(0);
       expect(spy).toHaveBeenCalled();
     });
 
     it('should return a Promise', () => {
-      expect(inst.closeRefs()).toEqual(jasmine.any(Promise));
+      expect(inst.destroyRefs()).toEqual(jasmine.any(Promise));
     });
 
     it('should log any caught error to `console.error`', (done) => {
@@ -1016,8 +1060,11 @@ describe('`Component`', () => {
 
       const spy = spyOn(console, 'error');
 
-      inst.closeRefs().catch(() => {
-        expect(spy).toHaveBeenCalledWith('close refs', jasmine.any(Error));
+      inst.destroyRefs().catch(() => {
+        expect(spy).toHaveBeenCalledWith(
+          jasmine.any(String),
+          jasmine.any(Error),
+        );
         done();
       });
     });
@@ -1059,8 +1106,8 @@ describe('`Component`', () => {
       expect(spy).toHaveBeenCalledWith(Component.UID_DATA_ATTR);
     });
 
-    it('should call `closeRefs()` and deactivate the instance', async () => {
-      const spy = spyOn(inst, 'closeRefs');
+    it('should call `destroyRefs()` and deactivate the instance', async () => {
+      const spy = spyOn(inst, 'destroyRefs');
 
       await inst.destroy();
 
@@ -1073,7 +1120,7 @@ describe('`Component`', () => {
     });
 
     it('should log any caught error to `console.error`', (done) => {
-      spyOn(inst, 'closeRefs').and.throwError('MOCK');
+      spyOn(inst, 'destroyRefs').and.throwError('MOCK');
 
       const spy = spyOn(console, 'error');
 
