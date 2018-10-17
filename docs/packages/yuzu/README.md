@@ -24,6 +24,7 @@ Manage your HTML based components in style with progressive enhancement.
   - [Child Components' Initial State and Computed State](#child-components-initial-state-and-computed-state)
   - [Child to Parent Communication](#child-to-parent-communication)
   - [Child Component Replacement](#child-component-replacement)
+  - [Remove Child Components](#remove-child-components)
 - [Detached Components](#detached-components)
 - [API Summary](#api-summary)
   - [Lifecycle Methods](#lifecycle-methods)
@@ -667,6 +668,28 @@ If you assign a child reference to an `id` value already assigned to an active c
 Open the following link to see a working example.
 
 [![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?fontsize=16&initialpath=%2Fchildreplace&module=%2Fexamples%2Fchild-replace%2Findex.js)
+
+### Remove Child Components
+
+Child components are automatically destroyed when the parent `destroy()` method is called.
+
+If you need to destroy a specific child component, you can use the async method `destroyRef(refId)`:
+
+```js
+this.setRef({
+  id: 'mychild',
+  component: ChildComponent,
+  // ...
+});
+
+// later on...
+
+this.destroyRef('mychild').then(() => {
+  console.log('mychild destroyed');
+});
+```
+
+?> To remove the child component root element from the DOM pass `true` as second argument: `this.destroyRef('mychild', true)`.
 
 ## Detached Components
 

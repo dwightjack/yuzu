@@ -363,7 +363,18 @@ parent.setRef({
 
 Returns **[Promise][18]** 
 
-## closeRefs
+## destroyRef
+
+Destroys and detaches a specific child component by its reference `id` (as set in `setRef`).
+
+### Parameters
+
+-   `id` **[string][7]** Child component reference id
+-   `detach` **[boolean][2]** Remove the child component root element from the DOM (optional, default `false`)
+
+Returns **[Promise][18]** 
+
+## destroyRefs
 
 Calls `.destroy()` on every child references and detaches them from the parent component.
 
