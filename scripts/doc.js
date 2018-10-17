@@ -45,6 +45,15 @@ packages.forEach(async (package) => {
     console.log('-> Documentation files copied!');
   }
 
+  //add the version number to the main readme
+  const readmeFile = path.join(dest, 'README.md');
+  const readmeSrc = await readAsync(readmeFile, 'utf8');
+  writeAsync(
+    readmeFile,
+    readmeSrc.replace(/^(# .+)/, `$1 <sub>${pkg.version}<sub>`),
+    'utf8',
+  );
+
   // generate API
   let files = await glob('src/*.ts', {
     cwd: baseFolder,
