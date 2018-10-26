@@ -28,7 +28,7 @@ const instance = new Component({ ... })
 -   `$el` **[Element][5]** The instance root DOM element (see [mount][6])
 -   `$els` **[Object][1]&lt;[string][7], [Element][5]>** Object mapping references to component's child DOM elements (see `selectors` below)
 -   `$refs` **{string: [Component][8]}** Object mapping references to child components (see [setRef][9])
--   `selectors` **[object][1]** Object mapping a child element's reference name and a CSS selector
+-   `selectors` **[object][1]** Object mapping a child element's reference name and a CSS selector or custom function
 -   `listeners` **[Object][1]&lt;[string][7], ([function][10] \| [string][7])>** Object mapping DOM listeners and handlers (see [setListener][11])
 -   `actions` **[Object][1]&lt;[string][7], ([function][10] \| [string][7])>** Object mapping state keys and functions to executed on state update
 
