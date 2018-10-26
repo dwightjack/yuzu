@@ -310,6 +310,8 @@ selectors = {
 
 This is used to set a reference to component's child DOM elements. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
 
+**Array reference**
+
 If the key ends with `[]` the attached reference will be an array of matching elements (uses [`Element.querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/querySelectorAll))
 
 ```js
@@ -320,7 +322,18 @@ selectors = {
 // Array.isArray(this.$els.listItems) === true
 ```
 
-?> If you need to access the component's root element use `this.$el`.
+**Custom selector**
+
+To select elements based on a custom logic, you can use a function selector. The function will receive the component root element as first argument
+
+```js
+selectors = {
+  'children[]': (el) => Array.from(el.children),
+  first: (el) => el.firstElementChild,
+};
+```
+
+?> If you need to access the component's root element inside a component method use `this.$el`.
 
 #### `listeners` (object)
 

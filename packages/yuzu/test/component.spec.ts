@@ -210,6 +210,18 @@ describe('`Component`', () => {
       expect(spy).toHaveBeenCalledWith(inst, handler);
       expect(spy2).toHaveBeenCalledWith(def, fn);
     });
+
+    it('should support selectors as function', () => {
+      const children = [document.createElement('div')];
+      const spy = jasmine.createSpy().and.returnValue(children);
+      inst.selectors = {
+        'children[]': spy,
+      };
+      inst.mount(root);
+      expect(spy).toHaveBeenCalledWith(inst.$el);
+      expect(inst.$els.children).toEqual(children);
+    });
+
     it('should call init method by default', () => {
       const spy = spyOn(inst, 'init');
       inst.mount(root);

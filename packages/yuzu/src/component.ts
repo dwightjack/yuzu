@@ -47,7 +47,7 @@ const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
  * @property {Element} $el The instance root DOM element (see [mount](#mount))
  * @property {Object.<string, Element>} $els  Object mapping references to component's child DOM elements (see `selectors` below)
  * @property {{ string: Component }} $refs Object mapping references to child components (see [setRef](#setRef))
- * @property {object} selectors Object mapping a child element's reference name and a CSS selector
+ * @property {object} selectors Object mapping a child element's reference name and a CSS selector or custom function
  * @property {Object.<string, function|string>} listeners Object mapping DOM listeners and handlers (see [setListener](#setListener))
  * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
@@ -108,7 +108,7 @@ export class Component extends Events {
   public state: IState;
   public $context?: IObject;
 
-  public selectors?: IObject<string>;
+  public selectors?: IObject<string | ((el: Element) => Element | Element[])>;
   public listeners?: IObject<string | eventHandlerFn>;
   public actions?: IObject<string | fn>;
 
@@ -219,6 +219,10 @@ export class Component extends Events {
 
     if (this.selectors) {
       Object.entries(this.selectors).forEach(([key, selector]) => {
+        if (typeof selector === 'function') {
+          this.$els[key.replace('[]', '')] = selector(this.$el);
+          return;
+        }
         if (!key.endsWith('[]')) {
           this.$els[key] = qs(selector, this.$el);
         } else {
