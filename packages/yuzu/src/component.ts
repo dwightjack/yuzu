@@ -5,6 +5,7 @@ import {
   evaluate,
   bindMethod,
   qs,
+  qsa,
   Events,
 } from 'yuzu-utils';
 
@@ -102,7 +103,7 @@ export class Component extends Events {
 
   public $el!: Element;
   public $uid!: string;
-  public $els: { [key: string]: Element | null };
+  public $els: { [key: string]: Element | Element[] | null };
   public $refs: { [key: string]: Component };
   public state: IState;
   public $context?: IObject;
@@ -218,7 +219,11 @@ export class Component extends Events {
 
     if (this.selectors) {
       Object.entries(this.selectors).forEach(([key, selector]) => {
-        this.$els[key] = qs(selector, this.$el);
+        if (!key.endsWith('[]')) {
+          this.$els[key] = qs(selector, this.$el);
+        } else {
+          this.$els[key.slice(0, -2)] = qsa(selector, this.$el);
+        }
       });
     }
 
@@ -559,7 +564,7 @@ export class Component extends Events {
    * instance.setListener('click', () => ...)
    */
   public setListener(def: string, handler: eventHandlerFn) {
-    let event;
+    let event: string;
     let selector;
     const match = def && def.match(LISTENER_REGEXP);
     if (match) {
@@ -576,8 +581,16 @@ export class Component extends Events {
       }
 
       if (element) {
-        element.addEventListener(event, handler);
-        this.$listeners.set(handler, { event, element });
+        if (Array.isArray(element)) {
+          element.forEach((el, i) => {
+            const h = (e: Event) => handler.call(this, e, i);
+            el.addEventListener(event, h);
+            this.$listeners.set(h, { event, element: el });
+          });
+        } else {
+          element.addEventListener(event, handler);
+          this.$listeners.set(handler, { event, element });
+        }
       }
     }
   }

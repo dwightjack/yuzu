@@ -185,6 +185,18 @@ describe('`Component`', () => {
       expect(spy).toHaveBeenCalledWith('.child-demo', root);
       expect(inst.$els.child).toBe(child);
     });
+
+    it('should resolve arrays of child elements selectors', () => {
+      const children = [document.createElement('div')];
+      const spy = spyOn(utils, 'qsa').and.returnValue(children);
+      inst.selectors = {
+        'children[]': '.child-demo',
+      };
+      inst.mount(root);
+      expect(spy).toHaveBeenCalledWith('.child-demo', root);
+      expect(inst.$els.children).toEqual(children);
+    });
+
     it('should attach event listeners. handlers are binded to the instance', () => {
       const fn = () => undefined;
       const handler = fn;
@@ -591,6 +603,40 @@ describe('`Component`', () => {
         event: 'click',
         element: btn,
       });
+    });
+
+    it('will cycle when references are arrays', () => {
+      inst.$els.btn = [btn, btn];
+      const spy = spyOn(btn, 'addEventListener');
+      inst.setListener('click @btn', handler);
+      expect(spy.calls.count()).toBe(2);
+    });
+
+    it('will add the element index as second argument', () => {
+      inst.$els.btn = [btn, btn];
+      const spy = jasmine.createSpy();
+      inst.setListener('click @btn', spy);
+      const event = new MouseEvent('click');
+      btn.dispatchEvent(event);
+      expect(spy.calls.argsFor(0)).toEqual([event, 0]);
+      expect(spy.calls.argsFor(1)).toEqual([event, 1]);
+    });
+
+    it('will keep the context', () => {
+      class Custom extends Component {
+        public onClick() {
+          return true;
+        }
+        public initialize() {
+          this.$els.btn = [btn, btn];
+        }
+      }
+      const inst2 = new Custom().mount(document.createElement('div'));
+      const spy = spyOn(inst2, 'onClick');
+      inst2.setListener('click @btn', inst2.onClick);
+      const event = new MouseEvent('click');
+      btn.dispatchEvent(event);
+      expect(spy.calls.mostRecent().object).toBe(inst2);
     });
 
     it('will lookup elements reference if the selector starts with "@"', () => {
