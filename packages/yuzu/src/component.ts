@@ -7,6 +7,7 @@ import {
   qs,
   qsa,
   Events,
+  noop,
 } from 'yuzu-utils';
 
 import {
@@ -23,6 +24,21 @@ import {
 } from '../types';
 
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
+
+let objDiff: any = noop;
+
+if (process.env.NODE_ENV !== 'production') {
+  objDiff = (match: IObject, obj: IObject, msg: string): void => {
+    const keys = Object.keys(match);
+    const keyStr = keys.length > 0 ? keys.join(', ') : 'no keys';
+    Object.keys(obj).forEach((k) => {
+      if (keys.indexOf(k) === -1) {
+        // tslint:disable-next-line no-console
+        console.warn(msg, k, keyStr);
+      }
+    });
+  };
+}
 
 // tslint:disable-next-line: interface-name no-empty-interface
 
@@ -146,6 +162,14 @@ export class Component extends Events {
         : {};
 
     this.state = {};
+
+    if (process.env.NODE_ENV !== 'production') {
+      objDiff(
+        defaultOptions,
+        options,
+        `Option "%s" has been discarded because it is not defined in component's defaultOptions. Accepted keys are: %s`,
+      );
+    }
 
     this.options = Object.entries(defaultOptions).reduce(
       (opts: IObject, [key, value]) => {
@@ -461,6 +485,14 @@ export class Component extends Events {
     const { state: prevState } = this;
 
     const changeSet = evaluate(updater as stateUpdaterFn<T>, this.state);
+
+    if (process.env.NODE_ENV !== 'production') {
+      objDiff(
+        this.state,
+        changeSet,
+        `setState: key "%s" has been discarded because it is not defined in the component's initial state. Accepted keys are: %s`,
+      );
+    }
 
     this.state = Object.entries(this.state).reduce(
       (newState: IState, [k, prevValue]) => {
