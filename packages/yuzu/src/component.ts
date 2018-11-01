@@ -28,13 +28,17 @@ const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 let objDiff: any = noop;
 
 if (process.env.NODE_ENV !== 'production') {
-  objDiff = (match: IObject, obj: IObject, msg: string): void => {
+  objDiff = (
+    match: IObject,
+    obj: IObject,
+    msg: (k: string, keys: string) => string,
+  ): void => {
     const keys = Object.keys(match);
     const keyStr = keys.length > 0 ? keys.join(', ') : 'no keys';
     Object.keys(obj).forEach((k) => {
       if (keys.indexOf(k) === -1) {
         // tslint:disable-next-line no-console
-        console.warn(msg, k, keyStr);
+        console.warn(msg(k, keyStr));
       }
     });
   };
@@ -167,7 +171,8 @@ export class Component extends Events {
       objDiff(
         defaultOptions,
         options,
-        `Option "%s" has been discarded because it is not defined in component's defaultOptions. Accepted keys are: %s`,
+        (k: string, keys: string) =>
+          `Option ${k}" has been discarded because it is not defined in component's defaultOptions. Accepted keys are: ${keys}`,
       );
     }
 
@@ -490,7 +495,8 @@ export class Component extends Events {
       objDiff(
         this.state,
         changeSet,
-        `setState: key "%s" has been discarded because it is not defined in the component's initial state. Accepted keys are: %s`,
+        (k: string, keys: string) =>
+          `setState: key "${k}" has been discarded because it is not defined in the component's initial state. Accepted keys are: ${keys}`,
       );
     }
 
