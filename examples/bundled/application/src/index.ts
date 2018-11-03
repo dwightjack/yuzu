@@ -1,4 +1,4 @@
-import { Component, devtools, mount } from '../../../packages/yuzu/src';
+import { Component, devtools, mount } from '../../../../packages/yuzu/src';
 import { Output } from './output';
 
 devtools(Component);
@@ -46,4 +46,4 @@ mount(App, '#app', null, [
   }),
 ])();
 
-// new App().mount('#app');
+new App().mount('#app');

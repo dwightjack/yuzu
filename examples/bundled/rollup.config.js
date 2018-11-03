@@ -15,10 +15,10 @@ const tsconf = {
 
 const plugins = [resolve(), commonjs(), typescript(tsconf)];
 
-module.exports = {
-  input: path.join(__dirname, 'src/index.ts'),
+module.exports = ['application', 'store'].map((folder) => ({
+  input: path.join(__dirname, folder, 'src', 'index.ts'),
   output: {
-    file: path.join(__dirname, 'tmp/bundle.js'),
+    file: path.join(__dirname, folder, 'tmp', 'bundle.js'),
     format: 'iife',
     name: 'YuzuDemo',
   },
@@ -27,11 +27,11 @@ module.exports = {
     replace({
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
-    serve({
-      host: '0.0.0.0',
-      port: 8080,
-      contentBase: 'examples/bundled',
-    }),
-    livereload('examples/bundled'),
+    // serve({
+    //   host: '0.0.0.0',
+    //   port: 8080,
+    //   contentBase: 'examples/bundled',
+    // }),
+    // livereload('examples/bundled'),
   ],
-};
+}));

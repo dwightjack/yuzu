@@ -1,4 +1,4 @@
-import { DetachedComponent } from '../../../packages/yuzu/src';
+import { DetachedComponent } from '../../../../packages/yuzu/src';
 
 export class Output extends DetachedComponent {
   public emitter: any;
