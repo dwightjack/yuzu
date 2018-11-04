@@ -30,7 +30,7 @@
     "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",
     "dev": "karma start karma.conf.js",
-    "demo": "rollup -c ./examples/bundled/rollup.config.js -w"
+    "demo": "rollup -c ./examples/rollup.config.js -w"
   },
   "devDependencies": {
     "@types/jasmine": "~2.8.8",

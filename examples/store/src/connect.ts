@@ -1,3 +1,5 @@
+import { Component } from '@packages/yuzu/src';
+
 const bindActions = (actions, store) => {
   if (typeof actions === 'function') {
     return actions(store.dispatch);
@@ -11,13 +13,15 @@ const bindActions = (actions, store) => {
 };
 
 /* eslint-disable no-param-reassign */
-export function attachStore(instance, selector, actions) {
+export function attachStore(instance, selector?, actions?) {
   if (!instance.$context) {
     return;
   }
   const { $store } = instance.$context;
 
-  Object.assign(instance.options, bindActions(actions, $store));
+  if (actions) {
+    Object.assign(instance.options, bindActions(actions, $store));
+  }
 
   if (!selector) {
     return;
@@ -52,9 +56,9 @@ export function inject(instance, store) {
   return instance;
 }
 
-export const connect = (selector, actions) => (Child) => {
+export const connect = (selector?, actions?) => (Child: typeof Component) => {
   const Connected = class extends Child {
-    constructor(options) {
+    constructor(options?) {
       super(options);
 
       Object.defineProperty(this, '$connected', {
@@ -64,7 +68,7 @@ export const connect = (selector, actions) => (Child) => {
       });
     }
 
-    initialize() {
+    public initialize() {
       attachStore(this, selector, actions);
       super.initialize();
     }

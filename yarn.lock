@@ -5153,6 +5153,7 @@ mime-types@^2.1.12, mime-types@~2.1.18, mime-types@~2.1.19:
 mime@^1.3.6:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
+  integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
 mime@^2.0.3, mime@^2.2.0, mime@^2.3.1:
   version "2.3.1"
@@ -5577,6 +5578,7 @@ onetime@^2.0.0:
 opener@^1.4.3:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.1.tgz#6d2f0e77f1a0af0032aca716c2c1fbb8e7e8abed"
+  integrity sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
 
 optimist@^0.6.1:
   version "0.6.1"
@@ -6748,6 +6750,7 @@ rollup-plugin-replace@~2.0.0:
 rollup-plugin-serve@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-0.6.0.tgz#5243111999ffde4269434e2af69e4b032b4fdefb"
+  integrity sha512-V/V62bpoPf1meWwrTJ/u1WI/cnDW9n50zPj6hTPh0SHZLmT9i3KOnHPZHA33mabcisgm5Rqvo+aP9A/kh0vnfQ==
   dependencies:
     mime "^1.3.6"
     opener "^1.4.3"

@@ -1,34 +1,42 @@
-import { DetachedComponent } from 'yuzu';
+import { DetachedComponent } from '@packages/yuzu/src';
 
 export default class Store extends DetachedComponent {
-  static defaultOptions = () => ({ name: 'default', debug: true, effects: {} });
+  public static defaultOptions = () => ({
+    name: 'default',
+    debug: true,
+    effects: {},
+  });
 
-  dispatch = async (action, ...args) => {
+  public dispatch = async (action, ...args) => {
     const { state: oldState } = this;
     const state = await action(this.state, ...args);
     if (state) {
       this.setState(state);
     }
-    this.logAction(`${action.name || ''}`, oldState, this.state);
+    this.logAction(`${action.name || ''}`, oldState, this.state, args);
   };
 
-  initialize() {
+  public initialize() {
     this.actions = this.options.effects;
   }
 
-  ready() {
-    this.logAction(`@@INIT`, this.state);
+  public ready() {
+    this.logAction(`@@INIT`, this.state, null);
   }
 
-  logAction(msg, prev, next) {
-    if (__DEV__) {
+  public logAction(msg, prev, next, args?) {
+    if (process.env.NODE_ENV !== 'production') {
       if (this.options.debug === true) {
-        /* eslint-disable no-console */
-        console.groupCollapsed(
+        /* tslint:disable no-console */
+        const head = [
           `%c${this.options.name}: %c${msg}`,
           'color: gray; font-weight: lighter',
           'color: green; font-weight: bolder',
-        );
+        ];
+        if (args && args.length > 0) {
+          head.push(args);
+        }
+        console.groupCollapsed(...head);
 
         if (next) {
           console.log('%cprev state', 'color: gray; font-weight: bolder', prev);
@@ -45,21 +53,21 @@ export default class Store extends DetachedComponent {
           );
         }
         console.groupEnd();
-        /* eslint-enable no-console */
+        /* tslint:enable no-console */
       }
     }
   }
 
-  subscribe(fn) {
+  public subscribe(fn) {
     const listener = (state) => fn(state);
     this.on('change:*', listener);
     return () => this.unsubscribe(listener);
   }
 
-  unsubscribe(fn) {
+  public unsubscribe(fn) {
     this.off('change:*', fn);
   }
 }
 
-export const createStore = (initialState, options) =>
+export const createStore = (initialState, options?) =>
   new Store(options).init(initialState);
