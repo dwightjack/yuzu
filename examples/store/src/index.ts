@@ -29,17 +29,8 @@ const context = createContext({ $store });
 
 class App extends Component {
   public initialize() {
-    this.setRef({
-      id: 'list',
-      component: ConnectedList,
-      el: this.$el.querySelector('#list'),
-    });
-
-    this.setRef({
-      id: 'num',
-      component: ConnectedCounter,
-      el: this.$el.querySelector('#num'),
-    });
+    mount(ConnectedList, '#list')(this);
+    mount(ConnectedCounter, '#num')(this);
   }
 }
 
