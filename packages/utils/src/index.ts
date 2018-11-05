@@ -272,10 +272,10 @@ export const datasetParser = (
  *
  * const content = qs('#main-content');
  */
-export const qs = (
+export const qs = <E extends Element = Element>(
   selector: string,
   ctx: Document | Element = document,
-): Element | null => ctx.querySelector(selector);
+): E | null => ctx.querySelector(selector);
 
 /**
  * Returns an array of elements within the document that match the specified group of selectors.
@@ -285,16 +285,16 @@ export const qs = (
  * @param {string} selector - One or more CSS selectors separated by commas.
  * @param {Element|Document} [ctx=document] - Root element. `document` by default
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
- * @return {Array}
+ * @return {Element[]}
  * @example
  * import { qsa } from 'yuzu-utils';
  *
  * const listItems = qsa('.list .list-items');
  */
-export const qsa = (
+export const qsa = <E extends Element = Element>(
   selector: string,
   ctx: Element | Document = document,
-): HTMLElement[] => Array.from(ctx.querySelectorAll(selector));
+): E[] => Array.from(ctx.querySelectorAll(selector));
 
 // tslint:disable-next-line: interface-name no-empty-interface
 export interface Events extends Idush {}

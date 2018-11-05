@@ -179,7 +179,7 @@ export class Sandbox extends Events {
           return;
         }
         const { $root } = this;
-        const instances = qsa(selector, $root).reduce(
+        const instances = qsa<HTMLElement>(selector, $root).reduce(
           (acc: Component[], el) => {
             if (
               !el.dataset.skip &&
