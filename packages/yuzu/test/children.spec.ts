@@ -26,6 +26,25 @@ describe('`Children`', () => {
     expect(spy).toHaveBeenCalledWith(selector, root.$el);
   });
 
+  it('should execute passed in selector function', () => {
+    const els = [document.createElement('div')];
+    const selector = jasmine.createSpy().and.returnValue(els);
+    const iterator = Children(selector, (v) => v);
+    iterator(root);
+    expect(selector).toHaveBeenCalledWith(root.$el);
+  });
+
+  it('should use passed-in array of elements', () => {
+    const els = [document.createElement('div')];
+    const iterator = Children(els, (v) => v);
+    expect(iterator(root)).toEqual(els);
+  });
+
+  it('should throw if an invalid selector is passed in', () => {
+    const iterator = Children(null as any, (v) => v);
+    expect(() => iterator(root)).toThrowError(TypeError);
+  });
+
   it('should call a function on every matched element', () => {
     const selector = '.item';
     const spy = jasmine.createSpy();

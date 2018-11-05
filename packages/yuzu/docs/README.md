@@ -976,6 +976,8 @@ const menuTree = mount(
 const menu = menuTree();
 ```
 
+?> The first argument of `Children` could also be an array of elements (like `this.$els.menuLinks`) .
+
 ## Developer Tools
 
 Yuzu provides a simple `devtools` module that will allow you to inspect a component instance by attaching a `$yuzu` to its root DOM element. To enable this feature copy the following snippet into your entry point:
