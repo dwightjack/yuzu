@@ -1,4 +1,4 @@
-import { Component } from 'yuzu';
+import { Component } from '@packages/yuzu/src';
 
 const bindActions = (actions, store) => {
   if (typeof actions === 'function') {
@@ -27,11 +27,11 @@ export function attachStore(instance, selector?, actions?) {
     return;
   }
 
-  const state = selector($store.state);
+  const state = selector($store.getState());
   Object.assign(instance.state, state);
 
-  const update = (newState) => {
-    instance.setState(selector(newState));
+  const update = () => {
+    instance.setState(selector($store.getState()));
   };
 
   const unsubscribe = $store.subscribe(update);

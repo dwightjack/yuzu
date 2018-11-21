@@ -1,12 +1,10 @@
-import { Component } from 'yuzu';
+import { Component } from '@packages/yuzu/src';
 
 const bindActions = (actions, store) => {
-  if (typeof actions === 'function') {
-    return actions(store.dispatch);
-  }
+  const src = typeof actions === 'function' ? actions(store) : actions;
   const mapped = {};
-  Object.keys(actions).forEach((i) => {
-    mapped[i] = (...args) => store.dispatch(actions[i], ...args);
+  Object.keys(src).forEach((i) => {
+    mapped[i] = store.action(src[i]);
   });
 
   return mapped;
@@ -27,11 +25,11 @@ export function attachStore(instance, selector?, actions?) {
     return;
   }
 
-  const state = selector($store.state);
+  const state = selector($store.getState());
   Object.assign(instance.state, state);
 
-  const update = (newState) => {
-    instance.setState(selector(newState));
+  const update = () => {
+    instance.setState(selector($store.getState()));
   };
 
   const unsubscribe = $store.subscribe(update);

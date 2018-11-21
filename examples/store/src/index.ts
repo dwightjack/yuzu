@@ -11,20 +11,28 @@ const addItem = ({ items }) => ({
   items: [...items, items.length],
 });
 
+const setTotal = ({ items }) => ({
+  total: items.length,
+});
+
 const ConnectedList = connect(
   ({ items }) => ({ items }),
   (dispatch) => ({
-    onClick: () => dispatch(addItem),
+    onClick: async () => {
+      await dispatch(addItem);
+      dispatch(setTotal);
+    },
   }),
 )(List);
 
 const ConnectedCounter = connect(
-  ({ items }) => ({ count: items.length }),
+  ({ total }) => ({ count: total }),
   null,
 )(Counter);
 
 const $store = createStore({
   items: [],
+  total: 0,
 });
 
 // const context = createContext({ $store });
