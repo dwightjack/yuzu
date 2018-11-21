@@ -58,6 +58,12 @@ if (process.env.NODE_ENV !== 'production') {
       });
       return this;
     };
+
+    // @ts-ignore: Devtools Hooks
+    if (window.__YUZU_DEVTOOLS_GLOBAL_HOOK__) {
+      // @ts-ignore
+      window.__YUZU_DEVTOOLS_GLOBAL_HOOK__.init(Component);
+    }
   };
   /* eslint-enable no-param-reassign */
 } else {
