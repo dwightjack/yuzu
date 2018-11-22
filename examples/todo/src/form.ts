@@ -1,8 +1,8 @@
 import { Component } from '@packages/yuzu/src';
 
 export class Form extends Component {
-  public $els: Component['$els'] & {
-    input: any;
+  public $els: {
+    input: HTMLInputElement;
   };
 
   public selectors = {
@@ -15,8 +15,10 @@ export class Form extends Component {
 
   public onSubmit(e) {
     e.preventDefault();
-    this.emit('submit', this.$els.input.value);
-
-    this.$els.input.value = '';
+    const str = this.$els.input.value.trim();
+    if (str) {
+      this.emit('submit', str);
+      this.$els.input.value = '';
+    }
   }
 }
