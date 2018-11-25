@@ -127,6 +127,7 @@ export class Component extends Events {
   public $refs: { [key: string]: Component };
   public state: IState;
   public $context?: IObject;
+  public $parent?: Component;
 
   public selectors?: IObject<string | ((el: Element) => Element | Element[])>;
   public listeners?: IObject<string | eventHandlerFn>;
@@ -744,6 +745,12 @@ export class Component extends Events {
       });
     }
 
+    Object.defineProperty(ref, '$parent', {
+      writable: true,
+      enumerable: false,
+      value: this,
+    });
+
     if (!id) {
       throw new Error('Invalid reference id string');
     }
@@ -891,6 +898,10 @@ export class Component extends Events {
   public async destroy() {
     await this.beforeDestroy();
     this.removeListeners();
+    if (this.$parent) {
+      // clear the reference to the parent component
+      this.$parent = undefined;
+    }
     this.off();
     if (this.$el) {
       this.$el.removeAttribute(Component.UID_DATA_ATTR); // eslint-disable-line no-console
