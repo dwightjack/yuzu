@@ -48,6 +48,12 @@ export interface IAbstractRefFactory<T> {
   [key: string]: any;
 }
 
+export interface IStateLogger<T> {
+  subscribe: (instance: T) => (() => void);
+  unsubscribe: (instance: T) => void;
+  log: (msg: string, next: IState, prev: IState, args?: any[]) => void;
+}
+
 export type fn = (...args: any[]) => any;
 export type eventHandlerFn = (e: Event, ...args: any[]) => void;
 export type stateUpdaterFn<T = IState> = (state: T) => Partial<T>;

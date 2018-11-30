@@ -21,6 +21,7 @@ import {
   eventHandlerFn,
   stateUpdaterFn,
   ReadyStateFn,
+  IStateLogger,
 } from '../types';
 
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
@@ -137,6 +138,11 @@ export class Component extends Events {
   public $listeners: Map<eventHandlerFn, IListener>;
   public readyState?: ReadyStateFn;
 
+  // devtools methods
+  public $$logStart?: fn;
+  public $$logEnd?: fn;
+  public $$logger?: IStateLogger<Component>;
+  public $$getTree?: IObject;
   /**
    * ```js
    * this.readyState(state, prevState)

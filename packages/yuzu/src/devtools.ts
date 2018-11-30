@@ -1,5 +1,5 @@
 import { Component } from './component';
-import { IObject } from '../types';
+import { IObject, IStateLogger } from '../types';
 /**
  * `devtools` is an helper function that will expose the instance of a Component in a `$yuzu` property attached to its root DOM element.
  *
@@ -18,10 +18,66 @@ let devtools: (c: typeof Component) => void;
 export type YuzuRoot = Element & { $yuzu: Component };
 
 if (process.env.NODE_ENV !== 'production') {
+  const createStateLogger = (label: string): IStateLogger<Component> => {
+    const $listeners = new Map<Component, any>();
+
+    return {
+      subscribe(instance) {
+        const listener = this.log.bind(this, 'change');
+        instance.on('change:*', listener);
+        $listeners.set(instance, listener);
+        return () => {
+          this.unsubscribe(instance);
+        };
+      },
+      unsubscribe(instance) {
+        if ($listeners.has(instance)) {
+          instance.off('change:*', $listeners.get(instance));
+          $listeners.delete(instance);
+        }
+      },
+      log(msg, next, prev, args) {
+        if (process.env.NODE_ENV !== 'production') {
+          /* tslint:disable no-console */
+          const head = [
+            `%c${label}: %c${msg}`,
+            'color: gray; font-weight: lighter',
+            'color: green; font-weight: bolder',
+          ];
+          if (args && args.length > 0) {
+            head.push(...args);
+          }
+          console.groupCollapsed(...head);
+
+          if (prev) {
+            console.log(
+              '%cprev state',
+              'color: gray; font-weight: bolder',
+              prev,
+            );
+            console.log(
+              '%cnext state',
+              'color: green; font-weight: bolder',
+              next,
+            );
+          } else {
+            console.log(
+              '%cinitial state',
+              'color: gray; font-weight: bolder',
+              next,
+            );
+          }
+          console.groupEnd();
+          /* tslint:enable no-console */
+        }
+      },
+    };
+  };
+
   /* eslint-disable no-param-reassign */
   devtools = (ComponentClass) => {
     const proto = ComponentClass.prototype;
-    const { mount } = proto;
+    const { mount, init } = proto;
 
     function refTree(root: Component, tree: IObject) {
       if (root.$refsStore.size > 0) {
@@ -56,7 +112,39 @@ if (process.env.NODE_ENV !== 'production') {
           return refTree(this, tree);
         },
       });
+
       return this;
+    };
+
+    proto.init = function mountDev(state) {
+      Object.defineProperties(this, {
+        $$logStart: {
+          enumerable: false,
+          writable: false,
+          value(label = null, listen = true) {
+            const name =
+              label ||
+              this.options.debugLabel ||
+              this.constructor.name ||
+              'Component';
+            this.$$logger = createStateLogger(name);
+            if (listen) {
+              this.$$logger.subscribe(this);
+            }
+          },
+        },
+        $$logEnd: {
+          enumerable: false,
+          writable: false,
+          value() {
+            if (this.$$logger) {
+              this.$$logger.unsubscribe(this);
+              this.$$logger = undefined;
+            }
+          },
+        },
+      });
+      return init.call(this, state);
     };
 
     // @ts-ignore: Devtools Hooks
@@ -65,6 +153,7 @@ if (process.env.NODE_ENV !== 'production') {
       window.__YUZU_DEVTOOLS_GLOBAL_HOOK__.init(Component);
     }
   };
+
   /* eslint-enable no-param-reassign */
 } else {
   devtools = (ComponentClass) => undefined;
