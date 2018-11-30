@@ -1,9 +1,11 @@
-import { Component, mount } from '@packages/yuzu/src';
+import { Component, mount, devtools } from '@packages/yuzu/src';
 import { createContext } from '@packages/application/src';
 import { List } from './list';
 import { Counter } from './counter';
 import { createStore } from './store';
 import { connect } from './connect';
+
+devtools(Component);
 
 const addItem = ({ items }) => ({
   items: [...items, items.length],
@@ -35,3 +37,5 @@ class App extends Component {
 }
 
 context.inject(new App()).mount('#app');
+
+(window as any).store = $store;

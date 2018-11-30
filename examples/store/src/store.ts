@@ -13,10 +13,13 @@ export default class Store extends DetachedComponent {
     if (state) {
       this.setState(state);
     }
-    this.logAction(`${action.name || ''}`, oldState, this.state, args);
+    this.logAction(`${action.name || ''}`, this.state, oldState, args);
   };
 
   public initialize() {
+    if (this.options.debug && this.$$logStart) {
+      this.$$logStart(this.options.name, false);
+    }
     this.actions = this.options.effects;
   }
 
@@ -25,36 +28,8 @@ export default class Store extends DetachedComponent {
   }
 
   public logAction(msg, prev, next, args?) {
-    if (process.env.NODE_ENV !== 'production') {
-      if (this.options.debug === true) {
-        /* tslint:disable no-console */
-        const head = [
-          `%c${this.options.name}: %c${msg}`,
-          'color: gray; font-weight: lighter',
-          'color: green; font-weight: bolder',
-        ];
-        if (args && args.length > 0) {
-          head.push(args);
-        }
-        console.groupCollapsed(...head);
-
-        if (next) {
-          console.log('%cprev state', 'color: gray; font-weight: bolder', prev);
-          console.log(
-            '%cnext state',
-            'color: green; font-weight: bolder',
-            next,
-          );
-        } else {
-          console.log(
-            '%cinitial state',
-            'color: gray; font-weight: bolder',
-            prev,
-          );
-        }
-        console.groupEnd();
-        /* tslint:enable no-console */
-      }
+    if (this.options.debug && this.$$logger) {
+      this.$$logger.log(msg, prev, next, args);
     }
   }
 
