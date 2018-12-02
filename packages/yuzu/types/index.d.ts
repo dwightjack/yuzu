@@ -49,8 +49,9 @@ export interface IAbstractRefFactory<T> {
 }
 
 export interface IStateLogger<T> {
-  subscribe: (instance: T) => (() => void);
-  unsubscribe: (instance: T) => void;
+  subscribe: (instance: T, event: string) => (() => void);
+  unsubscribe: (instance: T, event: string) => void;
+  unsubscribeAll: (instance: T) => void;
   log: (msg: string, next: IState, prev: IState, args?: any[]) => void;
 }
 

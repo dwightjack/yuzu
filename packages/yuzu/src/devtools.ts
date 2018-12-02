@@ -19,22 +19,35 @@ export type YuzuRoot = Element & { $yuzu: Component };
 
 if (process.env.NODE_ENV !== 'production') {
   const createStateLogger = (label: string): IStateLogger<Component> => {
-    const $listeners = new Map<Component, any>();
+    const $listeners = new Map<string, any>();
 
     return {
-      subscribe(instance) {
+
+      subscribe(instance, event = 'change:*') {
         const listener = this.log.bind(this, 'change');
-        instance.on('change:*', listener);
-        $listeners.set(instance, listener);
-        return () => {
-          this.unsubscribe(instance);
-        };
-      },
-      unsubscribe(instance) {
-        if ($listeners.has(instance)) {
-          instance.off('change:*', $listeners.get(instance));
-          $listeners.delete(instance);
+        if ($listeners.has(event)) {
+          /* tslint:disable no-console */
+          console.warn(`Already listening for "${event}" on ${instance.$uid}`)
+          /* tslint:enable no-console */
         }
+        instance.on(event, listener);
+        $listeners.set(event, listener);
+        return () => {
+          this.unsubscribe(instance, event);
+        };
+
+      },
+      unsubscribe(instance, event = 'change:*') {
+        if ($listeners.has(event)) {
+          instance.off(event, $listeners.get(event));
+          $listeners.delete(event);
+        }
+      },
+      unsubscribeAll(instance) {
+        $listeners.forEach((listener, event) => {
+          instance.off(event, listener);
+        })
+        $listeners.clear();
       },
       log(msg, next, prev, args) {
         if (process.env.NODE_ENV !== 'production') {
@@ -47,6 +60,7 @@ if (process.env.NODE_ENV !== 'production') {
           if (args && args.length > 0) {
             head.push(...args);
           }
+
           console.groupCollapsed(...head);
 
           if (prev) {
@@ -121,24 +135,30 @@ if (process.env.NODE_ENV !== 'production') {
         $$logStart: {
           enumerable: false,
           writable: false,
-          value(label = null, listen = true) {
+          value(label = null, event = 'change:*', listen = true) {
             const name =
               label ||
               this.options.debugLabel ||
-              this.constructor.name ||
-              'Component';
-            this.$$logger = createStateLogger(name);
+             `${this.constructor.name || 'Component'}#${this.$uid}`
+
+            if (!this.$$logger) {
+              this.$$logger = createStateLogger(name);
+            }
             if (listen) {
-              this.$$logger.subscribe(this);
+              this.$$logger.subscribe(this, event);
             }
           },
         },
         $$logEnd: {
           enumerable: false,
           writable: false,
-          value() {
+          value(event?: string) {
             if (this.$$logger) {
-              this.$$logger.unsubscribe(this);
+              if (event) {
+                this.$$logger.unsubscribe(this, event);
+                return
+              }
+              this.$$logger.unsubscribeAll(this)
               this.$$logger = undefined;
             }
           },
