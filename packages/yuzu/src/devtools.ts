@@ -22,12 +22,11 @@ if (process.env.NODE_ENV !== 'production') {
     const $listeners = new Map<string, any>();
 
     return {
-
       subscribe(instance, event = 'change:*') {
         const listener = this.log.bind(this, 'change');
         if ($listeners.has(event)) {
           /* tslint:disable no-console */
-          console.warn(`Already listening for "${event}" on ${instance.$uid}`)
+          console.warn(`Already listening for "${event}" on ${instance.$uid}`);
           /* tslint:enable no-console */
         }
         instance.on(event, listener);
@@ -35,7 +34,6 @@ if (process.env.NODE_ENV !== 'production') {
         return () => {
           this.unsubscribe(instance, event);
         };
-
       },
       unsubscribe(instance, event = 'change:*') {
         if ($listeners.has(event)) {
@@ -46,7 +44,7 @@ if (process.env.NODE_ENV !== 'production') {
       unsubscribeAll(instance) {
         $listeners.forEach((listener, event) => {
           instance.off(event, listener);
-        })
+        });
         $listeners.clear();
       },
       log(msg, next, prev, args) {
@@ -139,7 +137,9 @@ if (process.env.NODE_ENV !== 'production') {
             const name =
               label ||
               this.options.debugLabel ||
-             `${this.constructor.name || 'Component'}#${this.$uid}`
+              `${this.constructor.displayName ||
+                this.constructor.name ||
+                'Component'}#${this.$uid}`;
 
             if (!this.$$logger) {
               this.$$logger = createStateLogger(name);
@@ -156,9 +156,9 @@ if (process.env.NODE_ENV !== 'production') {
             if (this.$$logger) {
               if (event) {
                 this.$$logger.unsubscribe(this, event);
-                return
+                return;
               }
-              this.$$logger.unsubscribeAll(this)
+              this.$$logger.unsubscribeAll(this);
               this.$$logger = undefined;
             }
           },
