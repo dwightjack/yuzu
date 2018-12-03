@@ -231,7 +231,7 @@ import { qsa } from 'yuzu-utils';
 const listItems = qsa('.list .list-items');
 ```
 
-Returns **[Array][12]** 
+Returns **[Array][12]&lt;[Element][9]>** 
 
 ## Events
 

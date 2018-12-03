@@ -12,9 +12,9 @@
 - [yuzu](packages/yuzu/api/)
   - [children](packages/yuzu/api/children)
  - [component](packages/yuzu/api/component)
- - [detached](packages/yuzu/api/detached)
  - [devtools](packages/yuzu/api/devtools)
  - [extend](packages/yuzu/api/extend)
+ - [detached](packages/yuzu/api/detached)
  - [mount](packages/yuzu/api/mount)
 - [yuzu-application](packages/application/api/)
   <!-- yuzu-application -->

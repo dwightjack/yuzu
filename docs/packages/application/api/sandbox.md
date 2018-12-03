@@ -2,7 +2,7 @@
 
 # Sandbox
 
-**Extends Events**
+**Extends Component**
 
 A sandbox can be used to initialize a set of components based on an element's innerHTML.
 
@@ -45,8 +45,8 @@ just add a `data-skip` attribute to its root element.
 ## Properties
 
 -   `$id` **[string][4]** Sandbox internal id
--   `$root` **[HTMLElement][3]** Sandbox root DOM element
--   `$context` **Context** Internal [context][5]. Used to share data across child instances
+-   `$el` **[HTMLElement][3]** Sandbox root DOM element
+-   `$ctx` **Context** Internal [context][5]. Used to share data across child instances
 -   `$registry` **[Array][2]&lt;[object][1]>** Registered components storage
 -   `$instances` **[Map][6]** Running instances storage
 
