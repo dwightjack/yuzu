@@ -1,5 +1,5 @@
 import { Component, mount, devtools } from '@packages/yuzu/src';
-import { createContext } from '@packages/application/src';
+import { createContext, Sandbox } from '@packages/application/src';
 import { List } from './list';
 import { Counter } from './counter';
 import { createStore } from './store';
@@ -27,15 +27,16 @@ const $store = createStore({
   items: [],
 });
 
-const context = createContext({ $store });
+// const context = createContext({ $store });
 
-class App extends Component {
-  public initialize() {
-    mount(ConnectedList, '#list')(this);
-    mount(ConnectedCounter, '#num')(this);
-  }
-}
+const sandbox = new Sandbox({
+  root: '#app',
+  components: [
+    [ConnectedList, { selector: '#list' }],
+    [ConnectedCounter, { selector: '#num' }],
+  ],
+});
 
-context.inject(new App()).mount('#app');
+sandbox.start({ $store });
 
 (window as any).store = $store;
