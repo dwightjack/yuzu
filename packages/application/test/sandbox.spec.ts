@@ -6,9 +6,9 @@ import * as utils from 'yuzu-utils';
 /* tslint:disable max-classes-per-file */
 describe('`Sandbox`', () => {
   describe('constructor', () => {
-    it('extends utils.Events', () => {
+    it('extends Component', () => {
       const inst = new Sandbox();
-      expect(inst).toEqual(jasmine.any(utils.Events));
+      expect(inst).toEqual(jasmine.any(Component));
     });
 
     it('assigns prop `id` to $id attribute', () => {
@@ -16,35 +16,23 @@ describe('`Sandbox`', () => {
       expect(inst.$id).toBe('demo');
     });
 
-    it('auto-generates in id if it is not passed in', () => {
+    it('auto-generates an id if it is not passed in', () => {
       const inst = new Sandbox();
       expect(inst.$id).toMatch(/_sbx-[0-9]+/);
     });
 
-    it('accepts a CSS selector string as $root', () => {
-      const root = document.createElement('div');
-      const spy = spyOn(utils, 'qs').and.returnValue(root);
-      const inst = new Sandbox({ root: '#root' });
-      expect(spy).toHaveBeenCalledWith('#root');
-      expect(inst.$root).toBe(root);
-    });
-
-    it('accepts an element as $root', () => {
+    it('passes `options.root` to mount method', () => {
       const root = document.createElement('div');
       const inst = new Sandbox({ root });
-      expect(inst.$root).toBe(root);
-    });
-
-    it('throws if it resolved root is not an element', () => {
-      spyOn(utils, 'qs').and.returnValue(null);
-      expect(() => {
-        const inst = new Sandbox({ root: '#root' });
-      }).toThrowError();
+      const spy = spyOn(inst, 'mount').and.callThrough();
+      inst.start();
+      expect(spy).toHaveBeenCalledWith(root);
     });
 
     it('sets a data-sandbox attribute on the root element', () => {
       const root = document.createElement('div');
       const inst = new Sandbox({ root, id: 'demo' });
+      inst.start();
       expect(root.getAttribute('data-sandbox')).toBe('demo');
     });
 
@@ -146,13 +134,28 @@ describe('`Sandbox`', () => {
       const ctx = {};
       inst.start(ctx);
       expect(spy).toHaveBeenCalledWith(ctx);
-      expect(inst.$context).toBe(mock);
+      expect(inst.$ctx).toBe(mock);
+    });
+
+    it('injects the context data in the sandbox itself (for inheritance)', () => {
+      const mock = {
+        inject: jasmine.createSpy('inject'),
+      };
+      spyOn(context, 'createContext').and.returnValue(mock);
+      inst.start({});
+      expect(mock.inject).toHaveBeenCalledWith(inst);
     });
 
     it('should emit a "beforeStart" event', () => {
       const spy = spyOn(inst, 'emit');
       inst.start();
       expect(spy).toHaveBeenCalledWith('beforeStart');
+    });
+
+    it('should call `mount` method', () => {
+      const spy = spyOn(inst, 'mount').and.callThrough();
+      inst.start();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should abort component initialization if it is already registered', () => {
@@ -167,7 +170,7 @@ describe('`Sandbox`', () => {
     it('should query the root DOM tree', () => {
       const spy = spyOn(utils, 'qsa').and.returnValue([]);
       inst.start();
-      expect(spy).toHaveBeenCalledWith(params.selector, inst.$root);
+      expect(spy).toHaveBeenCalledWith(params.selector, inst.$el);
     });
 
     it('should call "createInstance" for each matched element', () => {
@@ -232,7 +235,7 @@ describe('`Sandbox`', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('sets a record with component instances', () => {
+    it('sets a record with component instances', (done) => {
       const child = document.createElement('div');
       root.appendChild(child);
 
@@ -242,13 +245,19 @@ describe('`Sandbox`', () => {
       const spy = spyOn(inst.$instances, 'set');
       inst.start();
 
-      expect(spy).toHaveBeenCalledWith(Component, [childInstance]);
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledWith(Component, [childInstance]);
+        done();
+      }, 0);
     });
 
-    it('emits a "start" event', () => {
+    it('emits a "start" event', (done) => {
       const spy = spyOn(inst, 'emit');
       inst.start();
-      expect(spy).toHaveBeenCalledWith('start');
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledWith('start');
+        done();
+      });
     });
   });
 
@@ -260,7 +269,7 @@ describe('`Sandbox`', () => {
     beforeEach(() => {
       el = document.createElement('div');
       root = document.createElement('div');
-      inst = new Sandbox({ root });
+      inst = new Sandbox({ root }).start();
     });
 
     it('initializes a child instance', () => {
@@ -276,8 +285,28 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith(jasmine.any(Child), options);
     });
 
-    it('returns a component instance', () => {
-      const ret = inst.createInstance(Component, {}, el);
+    it('sets the component as sandbox child ref', () => {
+      const spy = spyOn(inst, 'setRef');
+      const options = { demo: true };
+      class Child extends Component {
+        constructor(opts: any) {
+          super(opts);
+          spy(this, opts);
+        }
+      }
+      inst.createInstance(Child, options, el);
+      expect(spy).toHaveBeenCalledWith({
+        component: Child,
+        el,
+        id: jasmine.any(String),
+        ...options,
+      });
+    });
+
+    it('returns a the setRef result', async () => {
+      // const val = new Component();
+      // spyOn(inst, 'setRef').and.returnValue(val);
+      const ret = await inst.createInstance(Component, {}, el);
       expect(ret).toEqual(jasmine.any(Component));
     });
 
@@ -297,25 +326,25 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith({ demo: true, inline: true });
     });
 
-    it('injects the context', () => {
-      class Child extends Component {}
+    // it('injects the context', () => {
+    //   class Child extends Component {}
 
-      const spy = jasmine.createSpy('inject');
+    //   const spy = jasmine.createSpy('inject');
 
-      inst.$context = context.createContext();
-      inst.$context.inject = spy;
+    //   inst.$context = context.createContext();
+    //   inst.$context.inject = spy;
 
-      inst.createInstance(Child, {}, el);
-      expect(spy).toHaveBeenCalledWith(jasmine.any(Child));
-    });
+    //   inst.createInstance(Child, {}, el);
+    //   expect(spy).toHaveBeenCalledWith(jasmine.any(Child));
+    // });
 
-    it('mounts the instance', () => {
-      class Child extends Component {}
-      const spy = spyOn(Child.prototype, 'mount');
+    // it('mounts the instance', () => {
+    //   class Child extends Component {}
+    //   const spy = spyOn(Child.prototype, 'mount');
 
-      inst.createInstance(Child, {}, el);
-      expect(spy).toHaveBeenCalledWith(el);
-    });
+    //   inst.createInstance(Child, {}, el);
+    //   expect(spy).toHaveBeenCalledWith(el);
+    // });
   });
 
   describe('.stop()', () => {
@@ -342,29 +371,32 @@ describe('`Sandbox`', () => {
     it('returns a promise', () => {
       expect(inst.stop()).toEqual(jasmine.any(Promise));
     });
-    it('cycles stored instances and calls destroy on them', async () => {
+    // it('cycles stored instances and calls destroy on them', async () => {
+    //   await inst.stop();
+    //   expect(spy.calls.count()).toBe(2);
+    // });
+    it('calls beforeDestroy hook', async () => {
+      const hookSpy = spyOn(inst, 'beforeDestroy');
       await inst.stop();
-      expect(spy.calls.count()).toBe(2);
+      expect(hookSpy).toHaveBeenCalled();
     });
 
-    it('waits until the destroy promises are resolved', (done) => {
-      let resolveFn: any;
-      let resolved = false;
-      const promise = new Promise((resolve) => {
-        resolveFn = () => {
-          resolved = true;
-          resolve();
-        };
-      });
+    it('calls beforeDestroy hook', async () => {
+      const hookSpy = spyOn(inst, 'beforeDestroy');
+      await inst.stop();
+      expect(hookSpy).toHaveBeenCalled();
+    });
 
-      spy.and.returnValue(promise);
+    it('calls `removeListeners` method', async () => {
+      const removeSpy = spyOn(inst, 'removeListeners');
+      await inst.stop();
+      expect(removeSpy).toHaveBeenCalled();
+    });
 
-      inst.stop().then(() => {
-        expect(resolved).toBe(true);
-        done();
-      });
-
-      setTimeout(resolveFn, 1000);
+    it('calls destroyRefs and waits until the destroy promises are resolved', async () => {
+      const destroySpy = spyOn(inst, 'destroyRefs');
+      await inst.stop();
+      expect(destroySpy).toHaveBeenCalled();
     });
 
     it('rejects if something goes wrong', () => {
@@ -377,6 +409,11 @@ describe('`Sandbox`', () => {
     it('clears the instances register', async () => {
       await inst.stop();
       expect(inst.$instances.size).toBe(0);
+    });
+
+    it('sets the `$active` property to false', async () => {
+      await inst.stop();
+      expect(inst.$active).toBe(false);
     });
 
     it('calls "clear()"', async () => {
@@ -418,12 +455,12 @@ describe('`Sandbox`', () => {
 
     beforeEach(() => {
       inst = new Sandbox({ root: document.createElement('div') });
-      inst.$context = context.createContext({});
+      inst.$ctx = context.createContext({});
     });
 
     it('clears the context', () => {
       inst.clear();
-      expect(inst.$context).toBeUndefined();
+      expect(inst.$ctx).toBeUndefined();
     });
 
     it('detaches events', () => {

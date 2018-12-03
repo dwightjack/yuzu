@@ -1,4 +1,4 @@
-import { qsa, qs, isElement, datasetParser, Events } from 'yuzu-utils';
+import { qsa, datasetParser, isElement } from 'yuzu-utils';
 import { IObject } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
@@ -16,11 +16,12 @@ export interface ISandboxRegistryEntry {
 
 export interface ISandboxOptions {
   components?: Array<(typeof Component) | sandboxComponentOptions>;
-  root?: HTMLElement | string;
-  id?: string;
+  root: HTMLElement | string;
+  id: string;
 }
 
 let idx = -1;
+let childIdx = -1;
 
 /**
  * A sandbox can be used to initialize a set of components based on an element's innerHTML.
@@ -59,20 +60,24 @@ let idx = -1;
  * @param {HTMLElement|string} [config.root=document.body] Root element of the sandbox. Either a DOM element or a CSS selector
  * @param {string} [config.id] ID of the sandbox
  * @property {string} $id Sandbox internal id
- * @property {HTMLElement} $root Sandbox root DOM element
- * @property {Context} $context Internal [context](/packages/application/api/context). Used to share data across child instances
+ * @property {HTMLElement} $el Sandbox root DOM element
+ * @property {Context} $ctx Internal [context](/packages/application/api/context). Used to share data across child instances
  * @property {object[]} $registry Registered components storage
  * @property {Map} $instances Running instances storage
  * @returns {Sandbox}
  */
-export class Sandbox extends Events {
+export class Sandbox extends Component {
   public static UID_DATA_ATTR = 'data-sandbox';
+
+  public static defaultOptions = () => ({
+    components: [],
+    id: `_sbx-${++idx}`,
+    root: document.body,
+  });
 
   public $id: string;
 
-  public $root!: Element;
-
-  public $context?: IContext;
+  public $ctx?: IContext;
 
   public $registry: ISandboxRegistryEntry[] = [];
 
@@ -83,23 +88,11 @@ export class Sandbox extends Events {
    *
    * @constructor
    */
-  constructor(options: ISandboxOptions = {}) {
-    super();
-    const { components = [], root = document.body, id } = options;
+  constructor(options: Partial<ISandboxOptions> = {}) {
+    super(options);
+    const { components = [], id } = this.options as ISandboxOptions;
 
-    this.$id = id || `_sbx-${++idx}`; // eslint-disable-line no-plusplus
-
-    const $root = typeof root === 'string' ? qs(root) : root;
-
-    if (!isElement($root)) {
-      throw new Error(
-        `Unable to initialize the sandbox on the following element: ${root}`,
-      );
-    }
-
-    this.$root = $root;
-
-    $root.setAttribute(Sandbox.UID_DATA_ATTR, this.$id);
+    this.$id = id as string;
 
     components.forEach((config) => {
       if (!Array.isArray(config)) {
@@ -167,42 +160,41 @@ export class Sandbox extends Events {
    * sandbox.start({ globalTheme: 'dark' });
    */
   public start(data = {}): Sandbox {
-    this.$context = createContext(data);
+    this.mount(this.options.root);
+    if (!isElement(this.$el)) {
+      throw new TypeError('this.$el is not a DOM element');
+    }
+    this.$el.setAttribute(Sandbox.UID_DATA_ATTR, this.$id);
+    this.$ctx = createContext(data);
+    this.$ctx.inject(this);
     this.emit('beforeStart');
 
     const sbSelector = `[${Sandbox.UID_DATA_ATTR}]`;
 
-    this.$registry.forEach(
-      ({ component: ComponentConstructor, selector, ...options }) => {
+    const ret = this.$registry.map(
+      async ({ component: ComponentConstructor, selector, ...options }) => {
         if (this.$instances.has(ComponentConstructor)) {
           console.warn(`Component ${ComponentConstructor} already initialized`); // tslint:disable-line no-console
           return;
         }
-        const { $root } = this;
-        const instances = qsa<HTMLElement>(selector, $root).reduce(
-          (acc: Component[], el) => {
-            if (
+        const { $el } = this;
+        const instances = qsa<HTMLElement>(selector, $el)
+          .filter((el) => {
+            return (
               !el.dataset.skip &&
               !el.closest('[data-skip]') &&
-              el.closest(sbSelector) === this.$root
-            ) {
-              const instance = this.createInstance(
-                ComponentConstructor,
-                options,
-                el,
-              );
+              el.closest(sbSelector) === $el
+            );
+          })
+          .map((el) => {
+            return this.createInstance(ComponentConstructor, options, el);
+          });
 
-              acc.push(instance);
-            }
-            return acc;
-          },
-          [],
-        );
-
-        this.$instances.set(ComponentConstructor, instances);
+        this.$instances.set(ComponentConstructor, await Promise.all(instances));
+        return true;
       },
     );
-    this.emit('start');
+    Promise.all(ret).then(() => this.emit('start'));
 
     return this;
   }
@@ -222,16 +214,14 @@ export class Sandbox extends Events {
     el: HTMLElement,
   ) {
     const inlineOptions = datasetParser(el);
-    const instance = new ComponentConstructor({
+
+    return this.setRef({
+      id: `_sbx-c${++childIdx}`,
       ...options,
       ...inlineOptions,
+      component: ComponentConstructor,
+      el,
     });
-
-    if (this.$context) {
-      this.$context.inject(instance);
-    }
-
-    return instance.mount(el);
   }
 
   /**
@@ -249,17 +239,14 @@ export class Sandbox extends Events {
    */
   public async stop() {
     this.emit('beforeStop');
-
+    await this.beforeDestroy();
+    this.removeListeners();
     try {
-      const maps: Array<Promise<void>> = [];
-      const groups = Array.from(this.$instances.values());
-      for (let i = 0, l = groups.length; i < l; i += 1) {
-        const instances = groups[i];
-        instances.forEach((instance) => {
-          maps.push(instance.destroy());
-        });
+      if (this.$el) {
+        this.$el.removeAttribute(Component.UID_DATA_ATTR);
       }
-      await Promise.all(maps);
+      await this.destroyRefs();
+      this.$active = false;
     } catch (e) {
       this.emit('error', e);
       return Promise.reject(e);
@@ -279,7 +266,7 @@ export class Sandbox extends Events {
    * @private
    */
   public clear() {
-    this.$context = undefined; // release the context
+    this.$ctx = undefined; // release the context
     this.off('beforeStart');
     this.off('start');
     this.off('error');

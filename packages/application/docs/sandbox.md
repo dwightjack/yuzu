@@ -1,6 +1,6 @@
 # Sandbox
 
-Sandbox creates a hub that groups a set of components within a container DOM element and manages their initialization and lifecyle.
+Sandbox is a special component that creates a hub to group a set of components within a container DOM element and manage their initialization and lifecyle.
 
 An example scenario might be a panel of your interface where you place multiple instances of your components, start and stop them while keeping everything separated from other parts of the application.
 
@@ -154,14 +154,14 @@ Here below is a table with all available events.
 | `stop`        | `stop()`     | stopped <sup>(3)</sup> |
 | `error`       | `stop()`     | error <sup>(4)</sup>   |
 
-1.  Just before initializing registered components and after `$context` initialization.
+1.  Just before initializing registered components and after `$ctx` initialization.
 1.  Instances has been initialized. Since `ready` state can be async there's no guarantee that components' instances are completely initialized at this stage.
 1.  Instances have been cleared and completely destroyed.
 1.  When something fails while shutting down the sandbox an `error` event will be triggered with the error as argument.
 
 ## Instance Context
 
-The Sandbox `start` method accepts an object that will be used as data for a shared [context](/packages/application/context) instance attached to the sandbox `$context` property.
+The Sandbox `start` method accepts an object that will be used as data for a shared [context](/packages/application/context) instance attached to the sandbox `$ctx` property.
 
 ?> The sandbox context will be automatically injected into every component instance inside the sandbox. See [context](/packages/application/context) for details.
 
@@ -174,7 +174,7 @@ const sandbox = new Sandbox({
 
 sandbox.start({ theme: 'dark' });
 
-sandbox.$context.getData().theme === 'dark';
+sandbox.$ctx.getData().theme === 'dark';
 
 // inside a component use this.$context.theme
 ```
