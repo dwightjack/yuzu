@@ -23,7 +23,8 @@ if (process.env.NODE_ENV !== 'production') {
 
     return {
       subscribe(instance, event = 'change:*') {
-        const listener = this.log.bind(this, 'change');
+        const key = event === 'change:*' ? 'change' : event;
+        const listener = this.log.bind(this, key);
         if ($listeners.has(event)) {
           /* tslint:disable no-console */
           console.warn(`Already listening for "${event}" on ${instance.$uid}`);
