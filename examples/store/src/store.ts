@@ -1,4 +1,4 @@
-import { DetachedComponent } from '@packages/yuzu/src';
+import { DetachedComponent } from 'yuzu';
 
 export default class Store extends DetachedComponent {
   public static defaultOptions = () => ({

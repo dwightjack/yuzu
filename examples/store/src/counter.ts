@@ -1,4 +1,4 @@
-import { Component } from '@packages/yuzu/src';
+import { Component } from 'yuzu';
 
 export class Counter extends Component {
   public state = {

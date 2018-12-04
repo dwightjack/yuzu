@@ -1,4 +1,4 @@
-import { Component } from '@packages/yuzu/src';
+import { Component } from 'yuzu';
 
 export class Todo extends Component {
   public static defaultOptions = () => ({ template: '' });

@@ -1,4 +1,4 @@
-import { Component, devtools, mount } from '@packages/yuzu/src';
+import { Component, devtools, mount } from 'yuzu';
 import { Form } from './form';
 import { App } from './app';
 import { TodoList } from './list';

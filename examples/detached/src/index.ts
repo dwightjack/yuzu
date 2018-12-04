@@ -1,4 +1,4 @@
-import { Component, devtools, mount } from '@packages/yuzu/src';
+import { Component, devtools, mount } from 'yuzu';
 import { Output } from './output';
 
 devtools(Component);

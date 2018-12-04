@@ -1,5 +1,5 @@
-import { Component, mount, devtools } from '@packages/yuzu/src';
-import { createContext, Sandbox } from '@packages/application/src';
+import { Component, mount, devtools } from 'yuzu';
+import { createContext, Sandbox } from 'yuzu-application';
 import { List } from './list';
 import { Counter } from './counter';
 import { createStore } from './store';

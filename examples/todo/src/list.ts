@@ -1,4 +1,4 @@
-import { Component } from '@packages/yuzu/src';
+import { Component } from 'yuzu';
 import { Todo } from './todo';
 
 export class TodoList extends Component {
