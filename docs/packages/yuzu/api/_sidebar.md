@@ -10,11 +10,11 @@
 **API**
 
 - [yuzu](packages/yuzu/api/)
-  - [component](packages/yuzu/api/component)
- - [children](packages/yuzu/api/children)
+  - [children](packages/yuzu/api/children)
+ - [component](packages/yuzu/api/component)
+ - [detached](packages/yuzu/api/detached)
  - [devtools](packages/yuzu/api/devtools)
  - [extend](packages/yuzu/api/extend)
- - [detached](packages/yuzu/api/detached)
  - [mount](packages/yuzu/api/mount)
 - [yuzu-application](packages/application/api/)
   <!-- yuzu-application -->
