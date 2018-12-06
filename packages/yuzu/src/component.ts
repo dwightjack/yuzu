@@ -142,7 +142,7 @@ export class Component extends Events {
   public $$logStart?: fn;
   public $$logEnd?: fn;
   public $$logger?: IStateLogger<Component>;
-  public $$getTree?: IObject;
+  // public $$getTree?: IObject;
   /**
    * ```js
    * this.readyState(state, prevState)
