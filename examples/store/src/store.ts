@@ -18,7 +18,7 @@ export default class Store extends DetachedComponent {
 
   public initialize() {
     if (this.options.debug && this.$$logStart) {
-      this.$$logStart(this.options.name, 'change:*', false);
+      this.$$logStart(this.options.name, false);
     }
     this.actions = this.options.effects;
   }

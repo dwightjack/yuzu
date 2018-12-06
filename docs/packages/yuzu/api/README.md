@@ -2,8 +2,8 @@
 
 ### Exposed modules
 
- - [children](packages/yuzu/api/children)
  - [component](packages/yuzu/api/component)
+ - [children](packages/yuzu/api/children)
  - [devtools](packages/yuzu/api/devtools)
  - [extend](packages/yuzu/api/extend)
  - [detached](packages/yuzu/api/detached)

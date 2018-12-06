@@ -3,7 +3,9 @@ import { IObject, IStateLogger } from '../types';
 /**
  * `devtools` is an helper function that will expose the instance of a Component in a `$yuzu` property attached to its root DOM element.
  *
- * !> To improve performance in production, this property will be available just when `process.env.NODE_ENV !== 'production'`.
+ * It will also extend every Component instance with some useful methods.
+ *
+ * !> To improve performance in production, this property and its methods will be available just when `process.env.NODE_ENV !== 'production'`.
  *
  * To initialize the devtools copy the following code into your entry point:
  *
@@ -18,10 +20,28 @@ let devtools: (c: typeof Component) => void;
 export type YuzuRoot = Element & { $yuzu: Component };
 
 if (process.env.NODE_ENV !== 'production') {
+  /**
+   *
+   * @private
+   * @param {string} label Logger name
+   */
   const createStateLogger = (label: string): IStateLogger<Component> => {
     const $listeners = new Map<string, any>();
 
+    /**
+     * @namespace logger
+     * @private
+     */
     return {
+      /**
+       * Subscribes to a specific event and logs its arguments when emitted. Returns an unsubscribe function.
+       *
+       * @private
+       * @see logger#log
+       * @param {Component} instance Target instance
+       * @param {string} [event='change:*'] Event to subscribe to
+       * @returns {function}
+       */
       subscribe(instance, event = 'change:*') {
         const key = event === 'change:*' ? 'change' : event;
         const listener = this.log.bind(this, key);
@@ -36,18 +56,43 @@ if (process.env.NODE_ENV !== 'production') {
           this.unsubscribe(instance, event);
         };
       },
+
+      /**
+       * Unsubscribes the logger from a specific event.
+       *
+       * @private
+       * @param {Component} instance Target instance
+       * @param {string} [event='change:*'] Event to subscribe to
+       */
       unsubscribe(instance, event = 'change:*') {
         if ($listeners.has(event)) {
           instance.off(event, $listeners.get(event));
           $listeners.delete(event);
         }
       },
+
+      /**
+       * Unsubscribes the logger from every event.
+       *
+       * @private
+       * @param {Component} instance Target instance
+       */
       unsubscribeAll(instance) {
         $listeners.forEach((listener, event) => {
           instance.off(event, listener);
         });
         $listeners.clear();
       },
+
+      /**
+       * Logs formatted data.
+       *
+       * @private
+       * @param {string} msg Log message
+       * @param {*} next The current value
+       * @param {*} [prev] An optional previous value
+       * @param {*[]} args Additional arguments
+       */
       log(msg, next, prev, args) {
         if (process.env.NODE_ENV !== 'production') {
           /* tslint:disable no-console */
@@ -89,52 +134,76 @@ if (process.env.NODE_ENV !== 'production') {
 
   /* eslint-disable no-param-reassign */
   devtools = (ComponentClass) => {
+    /**
+     * Methods and properties added by devtools
+     *
+     * @name Component
+     */
     const proto = ComponentClass.prototype;
     const { mount, init } = proto;
 
-    function refTree(root: Component, tree: IObject) {
-      if (root.$refsStore.size > 0) {
-        root.$refsStore.forEach((ref, name) => {
-          tree[name] = Object.create(null);
-          refTree(ref, tree[name]);
-        });
-      }
-      Object.defineProperty(tree, '$self', {
-        enumerable: false,
-        value: Object.assign(Object.create(null), {
-          $raw: root,
-          state: Object.assign(Object.create(null), root.state),
-        }),
-      });
-      return tree;
-    }
+    // function refTree(root: Component, tree: IObject) {
+    //   if (root.$refsStore.size > 0) {
+    //     root.$refsStore.forEach((ref, name) => {
+    //       tree[name] = Object.create(null);
+    //       refTree(ref, tree[name]);
+    //     });
+    //   }
+    //   Object.defineProperty(tree, '$self', {
+    //     enumerable: false,
+    //     value: Object.assign(Object.create(null), {
+    //       $raw: root,
+    //       state: Object.assign(Object.create(null), root.state),
+    //     }),
+    //   });
+    //   return tree;
+    // }
 
     proto.mount = function mountDev(...args) {
       mount.call(this, ...args);
+      /**
+       * A reference to a Component instance attached to its root element.
+       *
+       * @name $el.$yuzu
+       * @memberof Component
+       */
       Object.defineProperty(this.$el as YuzuRoot, '$yuzu', {
         enumerable: false,
         writable: false,
         value: this,
       });
 
-      Object.defineProperty(this, '$$getTree', {
-        enumerable: false,
-        writable: false,
-        value() {
-          const tree = Object.create(null);
-          return refTree(this, tree);
-        },
-      });
+      // Object.defineProperty(this, '$$getTree', {
+      //   enumerable: false,
+      //   writable: false,
+      //   value() {
+      //     const tree = Object.create(null);
+      //     return refTree(this, tree);
+      //   },
+      // });
 
       return this;
     };
 
     proto.init = function mountDev(state) {
       Object.defineProperties(this, {
+        /**
+         * ```js
+         * $$logStart([label], [event])
+         * ```
+         *
+         * Will initialize an event logger with a custom label. By default will automatically log any change to the instance `state` property.
+         *
+         * ?> Note that event loggers will be not available until the instance is initialized
+         *
+         * @memberof Component
+         * @param {string} [label] Log label. If not defined will fallback to: A `debugLabel` option, a static `displayName` property defined on the constructor, the component name
+         * @param {string|boolean} [listen="change:*"] Event to listen for or `false`.
+         */
         $$logStart: {
           enumerable: false,
           writable: false,
-          value(label = null, event = 'change:*', listen = true) {
+          value(label = null, listen = 'change:*') {
             const name =
               label ||
               this.options.debugLabel ||
@@ -146,10 +215,20 @@ if (process.env.NODE_ENV !== 'production') {
               this.$$logger = createStateLogger(name);
             }
             if (listen) {
-              this.$$logger.subscribe(this, event);
+              this.$$logger.subscribe(this, listen);
             }
           },
         },
+        /**
+         * ```js
+         * $$logEnd([event])
+         * ```
+         *
+         * Will stop an event logger either for a specific event or for every event.
+         *
+         * @memberof Component
+         * @param {string} [event] Event to unsubscribe for. If not provided the logger will be completely stopped and removed
+         */
         $$logEnd: {
           enumerable: false,
           writable: false,

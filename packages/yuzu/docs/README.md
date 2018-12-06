@@ -990,6 +990,8 @@ devtools(Component);
 
 You will be then able to inspect any component instance on your favorite developer tools' console by selecting it and read the `.$yuzu` property.
 
+In addition, every instance will be enhanced with some useful methods upon initialization. See the [API documentation](/packages/yuzu/api/devtools) for more details.
+
 ![Inspecting the state in Chrome DevTools](images/devtools.png)
 _Inspecting the state in Chrome DevTools_
 
@@ -1001,4 +1003,4 @@ _Inspecting the state in Chrome DevTools_
 - [Children](/packages/yuzu/api/children)
 - [mount](/packages/yuzu/api/mount)
 - [extend](/packages/yuzu/api/extend)
-- [mount](/packages/yuzu/api/devtools)
+- [devtools](/packages/yuzu/api/devtools)
