@@ -33,6 +33,8 @@ if (process.env.NODE_ENV !== 'production') {
      * @private
      */
     return {
+      label,
+
       /**
        * Subscribes to a specific event and logs its arguments when emitted. Returns an unsubscribe function.
        *
