@@ -898,6 +898,24 @@ describe('`Component`', () => {
       expect(spy).toHaveBeenCalled();
     });
 
+    it('sets a "$parent" property on the child component', async () => {
+      const child = new Component();
+
+      const config = {
+        ...cfg,
+        component: child,
+      };
+      await inst.setRef(config);
+
+      const parentProp = Object.getOwnPropertyDescriptor(
+        child,
+        '$parent',
+      ) as any;
+
+      expect(parentProp.value).toBe(inst);
+      expect(parentProp.enumerable).toBe(false);
+    });
+
     it('inits the child component with passed-in state', () => {
       const child = new Component();
 
@@ -1155,6 +1173,12 @@ describe('`Component`', () => {
 
       await inst.destroy();
       expect(spy).toHaveBeenCalled();
+    });
+
+    it('should reset any "$parent" property', async () => {
+      inst.$parent = new Component();
+      await inst.destroy();
+      expect(inst.$parent).toBeUndefined();
     });
 
     it('should remove the `data-cid` attribute from the element', async () => {
