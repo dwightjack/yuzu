@@ -106,10 +106,9 @@ if (process.env.NODE_ENV !== 'production') {
           if (args && args.length > 0) {
             head.push(...args);
           }
-
           console.groupCollapsed(...head);
 
-          if (prev) {
+          if (prev !== undefined) {
             console.log(
               '%cprev state',
               'color: gray; font-weight: bolder',
