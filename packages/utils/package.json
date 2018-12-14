@@ -36,6 +36,6 @@
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5",
   "dependencies": {
-    "dush": "^3.0.5"
+    "dush": "superguigui/dush#reference-based-offing"
   }
 }

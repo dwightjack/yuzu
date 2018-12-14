@@ -2870,9 +2870,9 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
-dush@^3.0.0, dush@^3.0.5:
+dush@superguigui/dush#reference-based-offing:
   version "3.0.5"
-  resolved "https://registry.yarnpkg.com/dush/-/dush-3.0.5.tgz#fbc326a4c4c8a4300564abed637dd37de535a912"
+  resolved "https://codeload.github.com/superguigui/dush/tar.gz/280fe94b52f93b9d6a35d8ec45a6a6d964ccf0f1"
 
 ecc-jsbn@~0.1.1:
   version "0.1.2"

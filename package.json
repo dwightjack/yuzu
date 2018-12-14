@@ -71,6 +71,6 @@
     "typescript": "~3.0.1"
   },
   "dependencies": {
-    "dush": "^3.0.0"
+    "dush": "superguigui/dush#reference-based-offing"
   }
 }
