@@ -27,6 +27,7 @@ Manage your HTML based components in style with progressive enhancement.
   - [Remove Child Components](#remove-child-components)
 - [Detached Components](#detached-components)
 - [API Summary](#api-summary)
+  - [Configuration properties](#configuration-properties)
   - [Lifecycle Methods](#lifecycle-methods)
   - [State Management](#state-management)
   - [Lifecycle Hooks](#lifecycle-hooks)
@@ -761,6 +762,15 @@ const instance = new Detached().init(); // <-- call init instead of mount
 
 Full documentation available [here](/packages/yuzu/api/component).
 
+### Configuration properties
+
+- [`root`](#root-string) (static string)
+- [`defaultOptions`](#defaultoptions-function) (static method)
+- [`selectors`](#selectors-object) (object)
+- [`listeners`](#listeners-object) (object)
+- [`state`](#state-object) (object)
+- [`actions`](#actions-object) (object)
+
 ### Lifecycle Methods
 
 - `init` Initializes the component with state
@@ -806,7 +816,7 @@ See [dush](https://github.com/tunnckocore/dush) for details.
 | --------------------- | ---------------------------- | ------------------------------ | -------------------------------------------------------------- |
 | create                | `created()`                  | component instantiation        | options (`this.options`)                                       |
 | mount <sup>(1)</sup>  | `beforeMount()`, `mounted()` | `mount()`                      | event handlers (`this.listeners`) and `this.$els.*` references |
-| init <sup>(2)</sup>   | `initialize()`, `ready()`    | `ready()`                      | actions and state (`this.state`)                               |
+| init <sup>(2)</sup>   | `initialize()`, `ready()`    | `init()`                       | actions and state (`this.state`)                               |
 | update <sup>(3)</sup> | `change:` events             | `replaceState()`, `setState()` | &nbsp;                                                         |
 | destroy               | `beforeDestroy()`            | `destroy()`                    | &nbsp;                                                         |
 

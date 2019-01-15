@@ -149,7 +149,7 @@ Here below is a table with all available events.
 | name          | triggered by | lifecycle phase        |
 | ------------- | ------------ | ---------------------- |
 | `beforeStart` | `start()`    | startup <sup>(1)</sup> |
-| `startup`     | `start()`    | running <sup>(2)</sup> |
+| `start`       | `start()`    | running <sup>(2)</sup> |
 | `beforeStop`  | `stop()`     | shutdown               |
 | `stop`        | `stop()`     | stopped <sup>(3)</sup> |
 | `error`       | `stop()`     | error <sup>(4)</sup>   |
