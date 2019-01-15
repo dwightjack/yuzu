@@ -175,7 +175,7 @@ describe('`Loadable`', () => {
     });
   });
 
-  describe('mounted()', () => {
+  describe('initialize()', () => {
     let LoadableComponent: typeof Component;
     let inst: any;
     let fetchData: any;
@@ -193,21 +193,21 @@ describe('`Loadable`', () => {
     });
     it('clears the root element contents and appends a div inside the root element', () => {
       inst.$el.innerHTML = '<p>demo</p>';
-      inst.mounted();
+      inst.initialize();
       expect(inst.$el.children.length).toBe(1);
       expect(inst.$el.firstElementChild).toEqual(jasmine.any(HTMLElement));
       expect(inst.$el.firstElementChild.tagName).toBe('DIV');
     });
 
     it('creates a reference to the new child element', () => {
-      inst.mounted();
+      inst.initialize();
       expect(inst.$els.async).toEqual(jasmine.any(HTMLElement));
       expect(inst.$els.async).toBe(inst.$el.firstElementChild);
     });
 
     it('allows custom tags a reference to the new child element', () => {
       inst.options.renderRoot = 'span';
-      inst.mounted();
+      inst.initialize();
       expect(inst.$els.async.tagName).toBe('SPAN');
     });
 
@@ -215,7 +215,7 @@ describe('`Loadable`', () => {
       const async = document.createElement('div');
       const spy = jasmine.createSpy().and.returnValue(async);
       inst.options.renderRoot = spy;
-      inst.mounted();
+      inst.initialize();
       expect(inst.$els.async).toBe(async);
       expect(spy).toHaveBeenCalledWith(inst.$el);
     });
@@ -224,7 +224,7 @@ describe('`Loadable`', () => {
       inst.options.renderRoot = null as any;
       let err;
       try {
-        await inst.mounted();
+        await inst.initialize();
       } catch (e) {
         err = e;
       }
@@ -233,12 +233,12 @@ describe('`Loadable`', () => {
 
     it('calls .setLoader()', () => {
       const spy = spyOn(inst, 'setLoader');
-      inst.mounted();
+      inst.initialize();
       expect(spy).toHaveBeenCalled();
     });
 
     it('calls .options.fetchData() with the instance as first argument', async () => {
-      await inst.mounted();
+      await inst.initialize();
       expect(fetchData).toHaveBeenCalledWith(inst);
     });
 
@@ -246,7 +246,7 @@ describe('`Loadable`', () => {
       const e = new Error('MOCK');
       fetchData.and.throwError(e);
       const spy = spyOn(console, 'error');
-      const ret = await inst.mounted();
+      const ret = await inst.initialize();
       expect(spy).toHaveBeenCalledWith(e);
       expect(ret).toBe(inst);
     });
@@ -255,19 +255,19 @@ describe('`Loadable`', () => {
       const e = new Error('MOCK');
       fetchData.and.throwError(e);
       const spy = spyOn(inst, 'setComponent');
-      await inst.mounted();
+      await inst.initialize();
       expect(spy).not.toHaveBeenCalled();
     });
 
     it('sets the "props" state of the component with the returned data', async () => {
       const spy = spyOn(inst, 'setState');
-      await inst.mounted();
+      await inst.initialize();
       expect(spy).toHaveBeenCalledWith({ props: data });
     });
 
     it('calls "render()"', async () => {
       const spy = spyOn(inst, 'render');
-      await inst.mounted();
+      await inst.initialize();
       expect(spy).toHaveBeenCalled();
     });
 
@@ -275,7 +275,7 @@ describe('`Loadable`', () => {
       const el = document.createElement('div');
       spyOn(inst, 'render').and.returnValue(el);
       const spy = spyOn(inst, 'setComponent');
-      await inst.mounted();
+      await inst.initialize();
       expect(spy).toHaveBeenCalledWith(el);
     });
   });
