@@ -63,9 +63,9 @@ Async component loader
 
 Returns **[LoadableComponent][4]** 
 
-## mounted
+## initialize
 
-Mounted hook.
+Initialize hook.
 
 Will replace the current root element contents with an empty element used as root for both the optional loader (passed as `config.loader` to the constructor)
 the rendered component root.

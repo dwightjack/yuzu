@@ -1,4 +1,4 @@
-# yuzu-polyfills <sub>2.0.0-rc.8<sub>
+# yuzu-polyfills <sub>2.0.0-rc.9<sub>
 
 > legacy environments support polyfills
 
