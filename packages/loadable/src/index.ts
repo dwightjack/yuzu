@@ -89,7 +89,7 @@ export const Loadable = (opts: ILoadableOptions) => {
     };
 
     /**
-     * Mounted hook.
+     * Initialize hook.
      *
      * Will replace the current root element contents with an empty element used as root for both the optional loader (passed as `config.loader` to the constructor)
      * the rendered component root.
@@ -100,7 +100,7 @@ export const Loadable = (opts: ILoadableOptions) => {
      * @memberof LoadableComponent
      * @returns {LoadableComponent}
      */
-    public async mounted() {
+    public async initialize() {
       const { fetchData, renderRoot } = this.options as ILoadableOptions &
         IObject;
       const { $el } = this;
