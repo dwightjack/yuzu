@@ -38,5 +38,3 @@ jobs:
             ./cc-test-reporter before-build
             yarn test --browsers ChromeHeadlessCI
             ./cc-test-reporter after-build --exit-code $?
-          environment:
-            CIRCLE_CI: true
