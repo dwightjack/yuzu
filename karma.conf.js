@@ -45,6 +45,7 @@ module.exports = (config) => {
         ? {
             lcovonly: {
               directory: 'coverage',
+              subdirectory: () => '',
               filename: 'lcov.info',
             },
           }
