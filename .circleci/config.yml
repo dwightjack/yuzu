@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8-browsers
 
     working_directory: ~/repo
 
@@ -24,4 +24,4 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
 
       # run tests!
-      - run: yarn test
+      - run: yarn test --browsers ChromeHeadlessCI

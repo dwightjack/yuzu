@@ -5,6 +5,13 @@ module.exports = (config) => {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: './',
 
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '–disable-setuid-sandbox'],
+      },
+    },
+
     browsers: ['ChromeHeadless'],
 
     plugins: ['karma-*'],
