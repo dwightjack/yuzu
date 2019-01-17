@@ -5,6 +5,13 @@ module.exports = (config) => {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: './',
 
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '–disable-setuid-sandbox'],
+      },
+    },
+
     browsers: ['ChromeHeadless'],
 
     plugins: ['karma-*'],
@@ -34,9 +41,17 @@ module.exports = (config) => {
     },
 
     karmaTypescriptConfig: {
-      reports: {
-        text: '',
-      },
+      reports: process.env.CIRCLECI
+        ? {
+            lcovonly: {
+              directory: 'coverage',
+              subdirectory: () => '',
+              filename: 'lcov.info',
+            },
+          }
+        : {
+            text: '',
+          },
       tsconfig: './tsconfig.json',
       include: {
         mode: 'merge',

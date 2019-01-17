@@ -1,3 +1,0 @@
-# yuzu-loadable
-
-### Exposed modules

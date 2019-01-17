@@ -1,0 +1,95 @@
+version: 2
+defaults: &defaults
+  working_directory: ~/repo/yuzu
+  docker:
+    - image: circleci/node:8-browsers
+
+jobs:
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - yuzu-2-dependency-cache-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - yuzu-2-dependency-cache-
+
+      - run:
+          name: Setup Dependencies
+          command: yarn install
+
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: yuzu-2-dependency-cache-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - yuzu
+
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Run Tests
+          command: |
+            ./cc-test-reporter before-build
+            yarn test --browsers ChromeHeadlessCI
+            ./cc-test-reporter after-build --exit-code $?
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Lint
+          command: yarn lint
+  docs:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Generate Documentation
+          command: yarn docs
+      - run:
+          name: Documentation deploy setup
+          command: |
+            git config user.email "$GH_EMAIL"
+            git config user.name "$GH_NAME"
+      - add_ssh_keys:
+          fingerprints:
+            - '8b:06:4e:da:40:8c:24:e0:9f:d2:1e:46:4e:2f:84:26'
+      - run:
+          name: Deploy documentation to gh-pages branch
+          command: yarn gh-pages --dotfiles --message "[skip ci] Documentation for $CIRCLE_SHA1" --dist docs
+
+workflows:
+  version: 2
+  test_build:
+    jobs:
+      - install
+      - test:
+          requires:
+            - install
+      - lint:
+          requires:
+            - install
+      - docs:
+          filters:
+            branches:
+              only: master
+          requires:
+            - install
