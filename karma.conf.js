@@ -41,9 +41,13 @@ module.exports = (config) => {
     },
 
     karmaTypescriptConfig: {
-      reports: {
-        text: '',
-      },
+      reports: process.env.CIRCLE_CI
+        ? {
+            lcovonly: 'coverage',
+          }
+        : {
+            text: '',
+          },
       tsconfig: './tsconfig.json',
       include: {
         mode: 'merge',

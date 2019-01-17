@@ -24,4 +24,8 @@ jobs:
           key: yuzu-dependency-cache-{{ checksum "package.json" }}
 
       # run tests!
-      - run: yarn test --browsers ChromeHeadlessCI
+      - run:
+          name: test
+          command: yarn test --browsers ChromeHeadlessCI
+          environment:
+            CIRCLE_CI: true
