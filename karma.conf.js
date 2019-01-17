@@ -43,7 +43,10 @@ module.exports = (config) => {
     karmaTypescriptConfig: {
       reports: process.env.CIRCLECI
         ? {
-            lcovonly: 'coverage',
+            lcovonly: {
+              directory: 'coverage',
+              filename: 'lcov.info',
+            },
           }
         : {
             text: '',
@@ -85,6 +88,6 @@ module.exports = (config) => {
 
     concurrency: Infinity,
 
-    logLevel: config.LOG_DEBUG,
+    logLevel: config.LOG_INFO,
   });
 };
