@@ -758,6 +758,17 @@ const instance = new Detached().init(); // <-- call init instead of mount
 
 !> You cannot call `mount()` on a detached component. `beforeMount` and `mounted` hooks will not be available as well.
 
+Note that you cannot attach a plain `Component` instance as child of a `DetachedComponent` **unless** the `DetachedComponent` has a plain `Component` parent or grandparent.
+
+For example given the following tree:
+
+- `grandGrandParent` (plain)
+  - `grandParent` (detached)
+    - `parent` (detached)
+      - `child` (plain)
+
+attaching `child` to `parent` will not fail and `child.$el` will be appended into `grandGrandParent.$el`.
+
 ## API Summary
 
 Full documentation available [here](/packages/yuzu/api/component).

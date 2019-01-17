@@ -713,7 +713,7 @@ export class Component extends Events {
       | IRefConstructor<typeof Component>
       | IRefInstance<Component>
       | IRefFactory<Component>,
-    props?: IState,
+    props?: IState | ((ref: Component, parent: Component) => void),
   ) {
     let ref: Component;
     if (!isPlainObject(refCfg)) {
@@ -723,11 +723,11 @@ export class Component extends Events {
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
     const { detached } = this;
 
-    if (el && detached) {
-      throw new Error(
-        `setRef "${id}": you cannot define a component with DOM root as child of a detached component.`,
-      );
-    }
+    // if (el && detached) {
+    //   throw new Error(
+    //     `setRef "${id}": you cannot define a component with DOM root as child of a detached component.`,
+    //   );
+    // }
 
     if (Component.isComponent(ChildComponent)) {
       ref = new ChildComponent(options);
@@ -783,8 +783,10 @@ export class Component extends Events {
       ref.mount(el, null);
     }
 
-    if (props) {
-      Object.entries(props).forEach(([name, value]) => {
+    const stateMap = evaluate(props, ref, this);
+
+    if (stateMap) {
+      Object.entries(stateMap).forEach(([name, value]) => {
         if (typeof value === 'function') {
           let key = name;
           let src = '*';
@@ -803,7 +805,20 @@ export class Component extends Events {
         }
       });
     }
-    const { $el } = this;
+    let { $el } = this;
+    if (detached && ref.$el) {
+      let { $parent } = this;
+      while (!$el && $parent) {
+        $el = $parent.$el;
+        $parent = $parent.$parent;
+      }
+    }
+
+    if (!$el && ref.$el) {
+      throw new Error(
+        `You cannot attach a plain Component to a DetachedComponents tree. (${id})`,
+      );
+    }
 
     if (prevRef) {
       await prevRef.destroy();
@@ -820,7 +835,7 @@ export class Component extends Events {
       return ref.init(refState);
     }
 
-    if (ref.$el && !$el.contains(ref.$el)) {
+    if ($el && ref.$el && !$el.contains(ref.$el)) {
       $el.appendChild(ref.$el);
     }
     return ref.init(refState);

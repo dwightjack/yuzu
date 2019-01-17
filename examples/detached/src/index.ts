@@ -1,5 +1,6 @@
 import { Component, devtools, mount } from 'yuzu';
 import { Output } from './output';
+import { Count } from './count';
 
 devtools(Component);
 
@@ -43,6 +44,9 @@ mount(App, '#app', null, [
         }));
       },
     }),
+    state: {
+      'output>total': (output) => output.length,
+    },
   }),
 ])();
 

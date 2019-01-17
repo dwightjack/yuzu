@@ -721,17 +721,6 @@ describe('`Component`', () => {
       expect(e).toEqual(jasmine.any(TypeError));
     });
 
-    it('throws if setting a component with root as child of a detached component', async () => {
-      inst.detached = true;
-      let e: any;
-      try {
-        await inst.setRef(cfg);
-      } catch (err) {
-        e = err;
-      }
-      expect(e).toEqual(jasmine.any(Error));
-    });
-
     it('calls component constructors with options', () => {
       spyOn(Component, 'isComponent').and.returnValue(true);
       const el = document.createElement('div');

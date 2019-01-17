@@ -1,9 +1,11 @@
-import { Component, mount, devtools } from 'yuzu';
-import { createContext, Sandbox } from 'yuzu-application';
+import { Component, devtools } from 'yuzu';
+import { Sandbox } from 'yuzu-application';
 import { List } from './list';
 import { Counter } from './counter';
+import { Provider } from './provider';
 import { createStore } from './store';
 import { connect } from './connect';
+import { Count } from 'detached/src/count';
 
 devtools(Component);
 
@@ -30,7 +32,7 @@ const $store = createStore({
 // const context = createContext({ $store });
 
 const sandbox = new Sandbox({
-  root: '#app',
+  root: '#app-connect',
   components: [
     [ConnectedList, { selector: '#list' }],
     [ConnectedCounter, { selector: '#num' }],
@@ -39,4 +41,38 @@ const sandbox = new Sandbox({
 
 sandbox.start({ $store });
 
-(window as any).store = $store;
+const sandboxProdiver = new Sandbox({
+  root: '#app-provider',
+  components: [
+    Provider((mapState, mapActions, provider) => {
+      const state = mapState(({ items }) => ({ items }));
+      const options = mapActions((dispatch) => ({
+        onClick: () => dispatch(addItem),
+      }));
+
+      provider.setRef(
+        {
+          component: List,
+          el: '#list',
+          id: 'list',
+          ...options,
+        },
+        state,
+      );
+    }),
+    Provider((mapState, _, provider) => {
+      const state = mapState(({ items }) => ({ count: items.length }));
+
+      provider.setRef(
+        {
+          component: Count,
+          el: '#num',
+          id: 'num',
+        },
+        state,
+      );
+    }),
+  ],
+});
+
+sandbox.start({ $store });

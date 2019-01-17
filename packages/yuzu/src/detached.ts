@@ -12,6 +12,7 @@ export interface DetachedComponent extends Component {
   setRef: (
     refCfg:
       | IAbstractRefConstructor<typeof DetachedComponent>
+      | IAbstractRefConstructor<typeof Component>
       | IRefInstance<Component>
       | IAbstractRefFactory<Component>,
     props?: IState,
