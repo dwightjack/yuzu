@@ -68,8 +68,8 @@ jobs:
           name: Documentation deploy dependencies
           command: |
             npm install -g --silent gh-pages@2.0.1
-            git config user.email $GH_EMAIL
-            git config user.name $GH_NAME
+            git config user.email "$GH_EMAIL"
+            git config user.name "$GH_NAME"
       - add_ssh_keys:
           fingerprints:
             - '8b:06:4e:da:40:8c:24:e0:9f:d2:1e:46:4e:2f:84:26'

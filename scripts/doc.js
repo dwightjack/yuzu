@@ -13,6 +13,7 @@ const readAsync = promisify(fs.readFile);
 
 const root = path.join(__dirname, '..', 'packages');
 const docs = path.join(__dirname, '..', 'docs');
+const src = path.join(__dirname, '..', '.docs');
 const packages = fs.readdirSync(root);
 
 packages.forEach(async (package) => {
@@ -31,6 +32,11 @@ packages.forEach(async (package) => {
   await mkdir(tmp);
 
   //copy some files
+  await cpy(['**/*.*'], dest, {
+    parents: true,
+    dot: true,
+    cwd: src,
+  });
   if (!fs.existsSync(docsFolder)) {
     await cpy(['README.md', 'images/**/*.*'], dest, {
       parents: true,
