@@ -1,6 +1,6 @@
 version: 2
 defaults: &defaults
-  working_directory: ~/repo
+  working_directory: ~/repo/yuzu
   docker:
     - image: circleci/node:8-browsers
 
@@ -32,9 +32,9 @@ jobs:
             - node_modules
           key: yuzu-dependency-cache-{{ checksum "package.json" }}
       - persist_to_workspace:
-          root: /home/circleci/
+          root: ~/repo
           paths:
-            - repo
+            - yuzu
 
   test:
     <<: *defaults
