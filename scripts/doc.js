@@ -32,7 +32,7 @@ packages.forEach(async (package) => {
   await mkdir(tmp);
 
   //copy some files
-  await cpy(['**/*.*'], dest, {
+  await cpy(['**/*.*'], docs, {
     parents: true,
     dot: true,
     cwd: src,
