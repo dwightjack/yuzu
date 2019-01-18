@@ -13,9 +13,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - yuzu-dependency-cache-{{ checksum "package.json" }}
+            - yuzu-2-dependency-cache-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
-            - yuzu-dependency-cache-
+            - yuzu-2-dependency-cache-
 
       - run:
           name: Setup Dependencies
@@ -30,7 +30,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: yuzu-dependency-cache-{{ checksum "package.json" }}
+          key: yuzu-2-dependency-cache-{{ checksum "package.json" }}
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -68,8 +68,8 @@ jobs:
           name: Documentation deploy dependencies
           command: |
             npm install -g --silent gh-pages@2.0.1
-            git config user.email "marco.solazzi@gmail.com"
-            git config user.name "Marco Solazzi"
+            git config user.email "$GH_EMAIL"
+            git config user.name "$GH_NAME"
       - add_ssh_keys:
           fingerprints:
             - '8b:06:4e:da:40:8c:24:e0:9f:d2:1e:46:4e:2f:84:26'
