@@ -1,11 +1,12 @@
 version: 2
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:8-browsers
+
 jobs:
-  build:
-    docker:
-      - image: circleci/node:8-browsers
-
-    working_directory: ~/repo
-
+  install:
+    <<: *defaults
     steps:
       - checkout
 
@@ -30,11 +31,66 @@ jobs:
           paths:
             - node_modules
           key: yuzu-dependency-cache-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - repo
 
-      # run tests!
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
       - run:
           name: Run Tests
           command: |
             ./cc-test-reporter before-build
             yarn test --browsers ChromeHeadlessCI
             ./cc-test-reporter after-build --exit-code $?
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Lint
+          command: yarn lint
+  docs:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Generate Documentation
+          command: yarn docs
+      - run:
+          name: Documentation deploy dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email $GH_EMAIL
+            git config user.name $GH_NAME
+      - add_ssh_keys:
+          fingerprints:
+            - '8b:06:4e:da:40:8c:24:e0:9f:d2:1e:46:4e:2f:84:26'
+      - run:
+          name: Deploy documentation to gh-pages branch
+          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs
+
+workflows:
+  version: 2
+  test_build:
+    jobs:
+      - install
+      - test:
+          requires:
+            - install
+      - lint:
+          requires:
+            - install
+      - docs:
+          filters:
+            branches:
+              only: master
+          requires:
+            - install
