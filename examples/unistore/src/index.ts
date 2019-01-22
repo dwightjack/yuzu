@@ -1,10 +1,12 @@
-import { Component, mount } from '@packages/yuzu/src';
-import { createContext } from '@packages/application/src';
-import { List } from './list';
-import { Counter } from './counter';
+import { Component, mount, devtools } from 'yuzu';
+import { createContext } from 'yuzu-application';
+import { List } from '../../store/src/list';
+import { Counter } from '../../store/src/counter';
 import { connect } from './connect';
 
 declare const unistore: any;
+
+devtools(Component);
 
 const addItem = ({ items }) => ({
   items: [...items, items.length],

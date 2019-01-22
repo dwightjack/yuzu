@@ -2,7 +2,7 @@ import { Component } from 'yuzu';
 
 const bindActions = (actions, store) => {
   if (typeof actions === 'function') {
-    return actions(store.dispatch);
+    return actions(store.dispatch, store);
   }
   const mapped = {};
   Object.keys(actions).forEach((i) => {

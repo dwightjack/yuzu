@@ -18,9 +18,15 @@ const setTotal = ({ items }) => ({
 const ConnectedList = connect(
   ({ items }) => ({ items }),
   (dispatch) => ({
-    onClick: async () => {
-      await dispatch(addItem);
-      dispatch(setTotal);
+    onClick: () => {
+      dispatch((state) => {
+        const { items } = addItem(state);
+
+        return {
+          items,
+          ...setTotal({ ...state, items }),
+        };
+      });
     },
   }),
 )(List);

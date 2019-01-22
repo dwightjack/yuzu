@@ -1,4 +1,4 @@
-import { Component } from '@packages/yuzu/src';
+import { Component } from 'yuzu';
 
 const bindActions = (actions, store) => {
   const src = typeof actions === 'function' ? actions(store) : actions;
