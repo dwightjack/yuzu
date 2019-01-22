@@ -65,7 +65,7 @@ jobs:
           name: Generate Documentation
           command: yarn docs
       - run:
-          name: Documentation deploy dependencies
+          name: Documentation deploy setup
           command: |
             git config user.email "$GH_EMAIL"
             git config user.name "$GH_NAME"
@@ -74,7 +74,7 @@ jobs:
             - '8b:06:4e:da:40:8c:24:e0:9f:d2:1e:46:4e:2f:84:26'
       - run:
           name: Deploy documentation to gh-pages branch
-          command: yarn gh-pages --dotfiles --message "[skip ci] Updates" --dist docs
+          command: yarn gh-pages --dotfiles --message "[skip ci] Documentation for $CIRCLE_SHA1" --dist docs
 
 workflows:
   version: 2
