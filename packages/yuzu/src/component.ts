@@ -96,7 +96,7 @@ export class Component extends Events {
    * @static
    * @returns {object}
    */
-  public static defaultOptions = (): IObject => ({});
+  public static defaultOptions = (self?: Component): IObject => ({});
 
   /**
    * ```js
