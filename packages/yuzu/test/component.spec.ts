@@ -67,10 +67,13 @@ describe('`Component`', () => {
 
     it('should set default options from static `defaultOptions` method', () => {
       const options = { demo: true };
+      const spy = jasmine.createSpy().and.returnValue(options);
       class Child extends Component {
-        public static defaultOptions = () => options;
+        public static defaultOptions = spy;
       }
       const child = new Child();
+      expect(spy).toHaveBeenCalledWith(child);
+      expect(spy.calls.mostRecent().object).toBe(child);
       expect(child.options).toEqual(options);
     });
 
