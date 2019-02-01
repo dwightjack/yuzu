@@ -17,6 +17,7 @@ The `yuzu-polyfills` package provides support for Yuzu in legacy environments li
   - `Number.isNaN`
 - [element-closest](https://www.npmjs.com/package/element-closest)
   - `Element.closest()`
+- [`ChildNode.remove()`](https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove)
 
 ## Installation
 

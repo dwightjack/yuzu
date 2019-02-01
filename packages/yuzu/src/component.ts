@@ -845,8 +845,8 @@ export class Component extends Events {
       return ref.destroy();
     }
     return ref.destroy().then(() => {
-      if (ref.$el && ref.$el.parentElement) {
-        ref.$el.parentElement.removeChild(ref.$el);
+      if (ref.$el) {
+        ref.$el.remove();
       }
     });
   }

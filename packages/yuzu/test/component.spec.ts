@@ -1094,12 +1094,10 @@ describe('`Component`', () => {
 
     it('should detach the child root element as well', async () => {
       child.$el = document.createElement('div');
-      inst.$el = document.createElement('div');
-      inst.$el.appendChild(child.$el);
-      const spy = spyOn(inst.$el, 'removeChild');
+      const spy = spyOn(child.$el, 'remove');
 
       await inst.destroyRef('child', true);
-      expect(spy).toHaveBeenCalledWith(child.$el);
+      expect(spy).toHaveBeenCalled();
     });
   });
 
