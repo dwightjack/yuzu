@@ -1,13 +1,14 @@
-import { Component, devtools } from 'yuzu';
-import { Sandbox } from 'yuzu-application';
+import { Component, devtools, mount, DetachedComponent } from 'yuzu';
+import { Sandbox, createContext } from 'yuzu-application';
 import { List } from './list';
 import { Counter } from './counter';
 import { Provider } from './provider';
 import { createStore } from './store';
 import { connect } from './connect';
 import { Count } from 'detached/src/count';
+import { isContext } from 'vm';
 
-devtools(Component);
+// devtools(Component);
 
 const addItem = ({ items }) => ({
   items: [...items, items.length],
@@ -41,38 +42,16 @@ const sandbox = new Sandbox({
 
 sandbox.start({ $store });
 
-const sandboxProdiver = new Sandbox({
-  root: '#app-provider',
-  components: [
-    Provider((mapState, mapActions, provider) => {
-      const state = mapState(({ items }) => ({ items }));
-      const options = mapActions((dispatch) => ({
-        onClick: () => dispatch(addItem),
-      }));
-
-      provider.setRef(
-        {
-          component: List,
-          el: '#list',
-          id: 'list',
-          ...options,
-        },
-        state,
-      );
+mount(DetachedComponent, null, {}, [
+  mount(Provider, null, {
+    selector: ({ items }) => ({ items }),
+    actions: (dispatch) => ({
+      onClick: () => dispatch(addItem),
     }),
-    Provider((mapState, _, provider) => {
-      const state = mapState(({ items }) => ({ count: items.length }));
-
-      provider.setRef(
-        {
-          component: Count,
-          el: '#num',
-          id: 'num',
-        },
-        state,
-      );
-    }),
-  ],
-});
-
-sandbox.start({ $store });
+    mount: (h, props) => h(List, '#list-provider', props),
+  }),
+  mount(Provider, null, {
+    selector: ({ items }) => ({ count: items.length }),
+    mount: (h, props) => h(Count, '#num-provider', props),
+  }),
+])(createContext({ $store }).inject(new Component().mount('#app-provider')));

@@ -1,68 +1,60 @@
-import { DetachedComponent } from 'yuzu';
+import { DetachedComponent, mount } from 'yuzu';
 
-let idx = -1;
-
-const bindActions = (actions, store) => {
-  if (typeof actions === 'function') {
-    return actions(store.dispatch);
-  }
-  const mapped = {};
-  Object.keys(actions).forEach((i) => {
-    mapped[i] = (...args) => store.dispatch(actions[i], ...args);
+export class Provider extends DetachedComponent {
+  public static defaultOptions = () => ({
+    actions: {},
+    selector: () => ({}),
+    mount: () => {},
   });
 
-  return mapped;
-};
+  public static bindActions(actions, store) {
+    if (typeof actions === 'function') {
+      return actions(store.dispatch);
+    }
+    const mapped = {};
+    Object.keys(actions).forEach((i) => {
+      mapped[i] = (...args) => store.dispatch(actions[i], ...args);
+    });
 
-export const Provider = (fn) => {
-  return class StoreProvider extends DetachedComponent {
-    public static attachTo(parent) {
-      idx += 1;
-      return parent.setRef({
-        component: this,
-        id: `provider_${idx}`,
-      });
+    return mapped;
+  }
+
+  public static bindState(selector, store) {
+    if (!selector) {
+      return {};
     }
 
-    public subscribers: any[];
+    return (child, parent) => {
+      const update = (newState) => {
+        child.setState(selector(newState));
+      };
+      const unsubscribe = store.subscribe(update);
 
-    public created() {
-      this.subscribers = [];
-    }
-
-    public initialize() {
-      const { mapState, mapActions } = this.createMaps();
-      fn(mapState, mapActions, this);
-    }
-
-    public beforeDestroy() {
-      this.subscribers.forEach((unsubscribe) => {
+      parent.beforeDestroy = function beforeDestroy() {
         unsubscribe();
-      });
-      this.subscribers = [];
+      };
+
+      return selector(store.state);
+    };
+  }
+
+  public initialize() {
+    const { actions, selector, mount: mounter } = this.options;
+
+    if (!this.$context) {
+      throw new Error('Provider is not supplied with a $context');
     }
+    const { $store } = this.$context;
 
-    public createMaps() {
-      const mapState = (selector) => (ref) => {
-        const { $store } = this.$context;
+    const state = Provider.bindState(selector, $store);
+    mounter(mount, {
+      state,
+      ...Provider.bindActions(actions, $store),
+    })(this);
+  }
+}
 
-        const update = (newState) => {
-          ref.setState(selector(newState));
-        };
-
-        update($store.state);
-        this.subscribers.push($store.subscribe(update));
-      };
-
-      const mapActions = (actions) => {
-        const { $store } = this.$context;
-        return bindActions(actions, $store);
-      };
-
-      return {
-        mapState,
-        mapActions,
-      };
-    }
-  };
-};
+// new Provider({
+//   selector: () => ({}),
+//   mount: (h, props) => h(Navigation, '#nav', props),
+// }).init();

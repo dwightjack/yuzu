@@ -9,7 +9,7 @@ export class List extends Component {
   };
 
   public listeners = {
-    'click #button': () => this.options.onClick(),
+    'click .button': () => this.options.onClick(),
   };
   public state = {
     items: [],
