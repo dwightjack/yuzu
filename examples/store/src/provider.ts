@@ -1,10 +1,8 @@
-import { DetachedComponent, mount } from 'yuzu';
+import { DetachedComponent } from 'yuzu';
 
 export class Provider extends DetachedComponent {
   public static defaultOptions = () => ({
-    actions: {},
-    selector: () => ({}),
-    mount: () => {},
+    selector: (v: any) => v,
   });
 
   public static bindActions(actions, store) {
@@ -19,42 +17,49 @@ export class Provider extends DetachedComponent {
     return mapped;
   }
 
-  public static bindState(selector, store) {
-    if (!selector) {
-      return {};
-    }
+  public subscribers = [];
 
-    return (child, parent) => {
-      const update = (newState) => {
-        child.setState(selector(newState));
-      };
-      const unsubscribe = store.subscribe(update);
-
-      parent.beforeDestroy = function beforeDestroy() {
-        unsubscribe();
-      };
-
-      return selector(store.state);
-    };
-  }
-
-  public initialize() {
-    const { actions, selector, mount: mounter } = this.options;
-
+  public getStore() {
     if (!this.$context) {
       throw new Error('Provider is not supplied with a $context');
     }
-    const { $store } = this.$context;
+    return this.$context.$store;
+  }
 
-    const state = Provider.bindState(selector, $store);
-    mounter(mount, {
+  public mapState(selector) {
+    const $store = this.getStore();
+    const update = (newState) => {
+      this.setState(selector(newState));
+    };
+
+    this.subscribers.push($store.subscribe(update));
+
+    return selector($store.state);
+  }
+
+  public mapActions(actions = {}) {
+    const $store = this.getStore();
+    return Provider.bindActions(actions, $store);
+  }
+
+  public toProps(selector, actions) {
+    const state = this.mapState(selector);
+
+    return {
+      ...this.mapActions(actions),
       state,
-      ...Provider.bindActions(actions, $store),
-    })(this);
+    };
+  }
+
+  public beforeDestroy() {
+    this.subscribers.forEach((unsubscribe) => unsubscribe());
+    this.subscribers.length = 0;
+  }
+
+  public initialize() {
+    const { selector } = this.options;
+    if (typeof selector === 'function') {
+      this.state = this.mapState(selector);
+    }
   }
 }
-
-// new Provider({
-//   selector: () => ({}),
-//   mount: (h, props) => h(Navigation, '#nav', props),
-// }).init();

@@ -1,4 +1,4 @@
-import { Component, devtools, mount, DetachedComponent } from 'yuzu';
+import { Component, devtools, mount } from 'yuzu';
 import { Sandbox, createContext } from 'yuzu-application';
 import { List } from './list';
 import { Counter } from './counter';
@@ -6,9 +6,8 @@ import { Provider } from './provider';
 import { createStore } from './store';
 import { connect } from './connect';
 import { Count } from 'detached/src/count';
-import { isContext } from 'vm';
 
-// devtools(Component);
+devtools(Component);
 
 const addItem = ({ items }) => ({
   items: [...items, items.length],
@@ -42,16 +41,28 @@ const sandbox = new Sandbox({
 
 sandbox.start({ $store });
 
-mount(DetachedComponent, null, {}, [
-  mount(Provider, null, {
-    selector: ({ items }) => ({ items }),
-    actions: (dispatch) => ({
-      onClick: () => dispatch(addItem),
+mount(Component, '#app-provider', {}, (component) => {
+  createContext({ $store }).inject(component);
+
+  return [
+    mount(Provider, null, {}, (provider: Provider) => {
+      const options = provider.mapActions((dispatch) => ({
+        onClick: () => dispatch(addItem),
+      }));
+
+      return [
+        mount(List, '#list-provider', {
+          ...options,
+          state: {
+            'items>items': (items) => items,
+          },
+        }),
+        mount(Count, '#num-provider', {
+          state: {
+            'items>count': (items) => items.length,
+          },
+        }),
+      ];
     }),
-    mount: (h, props) => h(List, '#list-provider', props),
-  }),
-  mount(Provider, null, {
-    selector: ({ items }) => ({ count: items.length }),
-    mount: (h, props) => h(Count, '#num-provider', props),
-  }),
-])(createContext({ $store }).inject(new Component().mount('#app-provider')));
+  ];
+})();
