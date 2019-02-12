@@ -1,4 +1,4 @@
-# yuzu-application <sub>2.0.0-rc.9<sub>
+# yuzu-application <sub>2.0.0-rc.10<sub>
 
 > components management for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 

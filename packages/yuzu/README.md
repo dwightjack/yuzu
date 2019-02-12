@@ -1,4 +1,4 @@
-# yuzu <sub>2.0.0-rc.9<sub>
+# yuzu <sub>2.0.0-rc.10<sub>
 
 > old school component management
 
@@ -758,6 +758,17 @@ const instance = new Detached().init(); // <-- call init instead of mount
 
 !> You cannot call `mount()` on a detached component. `beforeMount` and `mounted` hooks will not be available as well.
 
+Note that you cannot attach a plain `Component` instance as child of a `DetachedComponent` **unless** the `DetachedComponent` has a plain `Component` parent or grandparent.
+
+For example given the following tree:
+
+- `grandGrandParent` (plain)
+  - `grandParent` (detached)
+    - `parent` (detached)
+      - `child` (plain)
+
+attaching `child` to `parent` will not fail and `child.$el` will be appended into `grandGrandParent.$el`.
+
 ## API Summary
 
 Full documentation available [here](/packages/yuzu/api/component).
@@ -943,20 +954,15 @@ class Link extends Component {
   // ...
 }
 
-const menuTree = mount(
-  Menu,
-  '#menu',
-  {},
-  (ctx) => {
-    // ^--- ctx is the instance of Menu
-    const links = Array.from(ctx.$el.querySelectorAll('.menu__link'))
-    const children = []
-    for (let i = 0; i < links.length: i += 1) {
-      children.push(mount(Link, el))
-    }
-    return children // <-- returns an array of mount functions
+const menuTree = mount(Menu, '#menu', {}, (ctx) => {
+  // ctx is the instance of Menu
+  const links = Array.from(ctx.$el.querySelectorAll('.menu__link'));
+  const children = [];
+  for (let i = 0; i < links.length; i += 1) {
+    children.push(mount(Link, el));
   }
-);
+  return children; // <-- returns an array of mount functions
+});
 
 //mount it onto the DOM
 const menu = menuTree();

@@ -432,6 +432,10 @@ Component.defaultOptions()
 
 Returns an object with default options.
 
+### Parameters
+
+-   `self`  
+
 Returns **[object][1]** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
