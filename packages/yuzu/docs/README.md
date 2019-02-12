@@ -954,20 +954,15 @@ class Link extends Component {
   // ...
 }
 
-const menuTree = mount(
-  Menu,
-  '#menu',
-  {},
-  (ctx) => {
-    // ^--- ctx is the instance of Menu
-    const links = Array.from(ctx.$el.querySelectorAll('.menu__link'))
-    const children = []
-    for (let i = 0; i < links.length: i += 1) {
-      children.push(mount(Link, el))
-    }
-    return children // <-- returns an array of mount functions
+const menuTree = mount(Menu, '#menu', {}, (ctx) => {
+  // ctx is the instance of Menu
+  const links = Array.from(ctx.$el.querySelectorAll('.menu__link'));
+  const children = [];
+  for (let i = 0; i < links.length; i += 1) {
+    children.push(mount(Link, el));
   }
-);
+  return children; // <-- returns an array of mount functions
+});
 
 //mount it onto the DOM
 const menu = menuTree();
