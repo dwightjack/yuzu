@@ -23,7 +23,7 @@ describe('`devtools`', () => {
     inst = new Child().mount(el, null);
   });
 
-  it('attaches a $yuzu property at mount', () => {
+  it('attaches a $yuzu property at init', () => {
     expect((inst.$el as YuzuRoot).$yuzu).toBe(inst);
   });
 
@@ -92,6 +92,38 @@ describe('`devtools`', () => {
       (inst.$$logEnd as fn)();
       expect(spy).toHaveBeenCalledWith(inst);
     });
+  });
+
+  it('removes $yuzu on destroy', async () => {
+    await inst.destroy();
+    expect((inst.$el as YuzuRoot).$yuzu).toBeUndefined();
+  });
+
+  it('does not throw if $yuzu is not defined', async () => {
+    let e: any;
+    Object.defineProperty(inst.$el, '$yuzu', {
+      configurable: true,
+      value: undefined,
+    });
+
+    try {
+      await inst.destroy();
+    } catch (err) {
+      e = err;
+    }
+    expect(e).toBeUndefined();
+  });
+
+  it('does not throw if $el is not defined', async () => {
+    let e: any;
+    (inst.$el as any) = undefined;
+
+    try {
+      await inst.destroy();
+    } catch (err) {
+      e = err;
+    }
+    expect(e).toBeUndefined();
   });
 
   afterAll(() => {

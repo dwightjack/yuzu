@@ -1,5 +1,5 @@
 import { Component } from './component';
-import { IObject, IStateLogger } from '../types';
+import { IObject, IStateLogger, IState } from '../types';
 /**
  * `devtools` is an helper function that will expose the instance of a Component in a `$yuzu` property attached to its root DOM element.
  *
@@ -141,7 +141,7 @@ if (process.env.NODE_ENV !== 'production') {
      * @name Component
      */
     const proto = ComponentClass.prototype;
-    const { mount, init } = proto;
+    const { mount, init, destroy } = proto;
 
     // function refTree(root: Component, tree: IObject) {
     //   if (root.$refsStore.size > 0) {
@@ -166,12 +166,12 @@ if (process.env.NODE_ENV !== 'production') {
        * A reference to a Component instance attached to its root element.
        *
        * @name $el.$yuzu
+       * @type Component
        * @memberof Component
        */
       Object.defineProperty(this.$el as YuzuRoot, '$yuzu', {
-        enumerable: false,
-        writable: false,
         value: this,
+        configurable: true,
       });
 
       // Object.defineProperty(this, '$$getTree', {
@@ -186,7 +186,15 @@ if (process.env.NODE_ENV !== 'production') {
       return this;
     };
 
-    proto.init = function mountDev(state) {
+    proto.destroy = function destroyDev() {
+      const $el = this.$el as YuzuRoot | undefined;
+      if ($el && $el.$yuzu) {
+        delete $el.$yuzu;
+      }
+      return destroy.call(this);
+    };
+
+    proto.init = function initDev(state?: IState) {
       Object.defineProperties(this, {
         /**
          * ```js
