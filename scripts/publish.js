@@ -12,7 +12,7 @@ const execa = require('execa');
   packages.forEach(async (package) => {
     console.log(`publishing ${package}`);
     try {
-      await execa.shell(`npm publish ${package}`);
+      await execa.shell(`npm publish ${package} --tag=next`);
     } catch (err) {
       if (err) {
         console.log(err);
