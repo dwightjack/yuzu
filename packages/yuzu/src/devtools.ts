@@ -191,6 +191,9 @@ if (process.env.NODE_ENV !== 'production') {
       if ($el && $el.$yuzu) {
         delete $el.$yuzu;
       }
+      delete this.$$logStart;
+      delete this.$$logEnd;
+
       return destroy.call(this);
     };
 
@@ -211,7 +214,7 @@ if (process.env.NODE_ENV !== 'production') {
          */
         $$logStart: {
           enumerable: false,
-          writable: false,
+          configurable: true,
           value(label = null, listen = 'change:*') {
             const name =
               label ||
@@ -240,7 +243,7 @@ if (process.env.NODE_ENV !== 'production') {
          */
         $$logEnd: {
           enumerable: false,
-          writable: false,
+          configurable: true,
           value(event?: string) {
             if (this.$$logger) {
               if (event) {

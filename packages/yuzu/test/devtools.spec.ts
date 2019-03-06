@@ -94,6 +94,16 @@ describe('`devtools`', () => {
     });
   });
 
+  it('removes $$logStart on destroy', async () => {
+    await inst.destroy();
+    expect(inst.$$logStart).toBeUndefined();
+  });
+
+  it('removes $$logEnd on destroy', async () => {
+    await inst.destroy();
+    expect(inst.$$logEnd).toBeUndefined();
+  });
+
   it('removes $yuzu on destroy', async () => {
     await inst.destroy();
     expect((inst.$el as YuzuRoot).$yuzu).toBeUndefined();
