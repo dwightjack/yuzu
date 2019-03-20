@@ -9,6 +9,9 @@ An example scenario might be a panel of your interface where you place multiple 
 - [Example](#example)
 - [Custom Options](#custom-options)
 - [Inline Options](#inline-options)
+  - [Dynamic selector](#dynamic-selector)
+  - [Registering detached component](#registering-detached-component)
+  - [Registering mount functions](#registering-mount-functions)
 - [Lifecycle Event Hooks](#lifecycle-event-hooks)
 - [Instance Context](#instance-context)
 - [API Summary](#api-summary)
@@ -129,6 +132,77 @@ Starting from the example above let's change the HTML to:
 On `sandbox.start()` the first Counter will be initialized with the `dark` theme, but the second will pick the `light` one.
 
 [![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Fsandbox-custom&module=%2Fexamples%2Fsandbox%2Fwithoptions%2Findex.js)
+
+### Dynamic selector
+
+Custom selector options can be either a string or a function. In the latter case the function will receive the sandbox instance as first argument and must return a new selector string or a list of DOM elements:
+
+```js
+const sandbox = new Sandbox({
+  root: '#app',
+  components: [
+    [Counter, { selector: (sbx) => sbx.findNodes('.myCustomCounter') }],
+  ],
+});
+```
+
+### Registering detached component
+
+To register a detached component you must provide a selector function. The sandbox will initialize an instance of the component if the selector function returns `true`:
+
+```js
+const sandbox = new Sandbox({
+  root: '#app',
+  // always initialize an instance of MyDetachedComponent
+  components: [[MyDetachedComponent, { selector: () => true }]],
+});
+```
+
+### Registering mount functions
+
+By design components trees created with [`mount`](packages/yuzu/api/mount) cannot be registered on a sandbox because they serve different purposes: `Sandbox` matches a list a components against an unknown HTML document while `mount` describes a pre-determined tree of components.
+
+Anyway, there are scenarios when you'd want to use a mount tree inside a sandbox.
+For example let's say you have a site-wide header described by a `mount` function and want to use it in a sandbox attached to `document.body`.
+
+In this case you can use a [`DetachedComponent`](/packages/yuzu/#detached-components) as _connector_ between the two.
+
+```js
+import { DetachedComponent, mount } from 'yuzu';
+import { Sandbox } from 'yuzu';
+import { MobileNavigation } from './MobileNavigation';
+import { MegaMenu } from './MegaMenu';
+import { Header } from './Header';
+
+const headerTree = mount(Header, '.header', {}, [
+  mount(MegaMenu, '.header__menu'),
+  mount(MobileNavigation, '.header__mobile-nav'),
+]);
+
+class HeaderConnector extends DetachedComponent {
+  initialize() {
+    headerTree(this);
+  }
+}
+
+const sandbox = new Sandbox({
+  root: document.body,
+  components: [[HeaderConnector, { selector: () => true }]],
+}).start();
+```
+
+The resulting component tree will be:
+
+```
+<Sandbox>
+  <HeaderConnector>
+    <Header>
+      <MegaMenu />
+      <MobileNavigation />
+    </Header>
+  </HeaderConnector>
+</Sandbox>
+```
 
 ## Lifecycle Event Hooks
 

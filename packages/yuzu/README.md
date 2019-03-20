@@ -1,4 +1,4 @@
-# yuzu <sub>2.0.0-rc.12<sub>
+# yuzu <sub>2.0.0-rc.13<sub>
 
 > old school component management
 
@@ -26,6 +26,7 @@ Manage your HTML based components in style with progressive enhancement.
   - [Child Component Replacement](#child-component-replacement)
   - [Remove Child Components](#remove-child-components)
 - [Detached Components](#detached-components)
+  - [Parent element inheritance](#parent-element-inheritance)
 - [API Summary](#api-summary)
   - [Configuration properties](#configuration-properties)
   - [Lifecycle Methods](#lifecycle-methods)
@@ -758,16 +759,25 @@ const instance = new Detached().init(); // <-- call init instead of mount
 
 !> You cannot call `mount()` on a detached component. `beforeMount` and `mounted` hooks will not be available as well.
 
-Note that you cannot attach a plain `Component` instance as child of a `DetachedComponent` **unless** the `DetachedComponent` has a plain `Component` parent or grandparent.
+### Parent element inheritance
+
+By default you cannot attach a plain `Component` instance as child of a `DetachedComponent`.
+
+Anyway if the `DetachedComponent` has a plain `Component` parent or grandparent the child component will use the closest `$el` as its parent element.
 
 For example given the following tree:
 
-- `grandGrandParent` (plain)
-  - `grandParent` (detached)
-    - `parent` (detached)
-      - `child` (plain)
+```
+<GrandGrandParent $el>
+  <GrandParent detached>
+    <Parent detached>
+      <Child $el />
+    </Parent>
+  </GrandParent>
+</GrandGrandParent>
+```
 
-attaching `child` to `parent` will not fail and `child.$el` will be appended into `grandGrandParent.$el`.
+attaching `Child` to `Parent` will not fail and `Child.$el` will be appended into `GrandGrandParent.$el`.
 
 ## API Summary
 
@@ -956,7 +966,8 @@ class Link extends Component {
 
 const menuTree = mount(Menu, '#menu', {}, (ctx) => {
   // ctx is the instance of Menu
-  const links = Array.from(ctx.$el.querySelectorAll('.menu__link'));
+  // ctx.findNodes is the same as Array.from(ctx.$el.querySelectorAll)
+  const links = ctx.findNodes('.menu__link');
   const children = [];
   for (let i = 0; i < links.length; i += 1) {
     children.push(mount(Link, el));

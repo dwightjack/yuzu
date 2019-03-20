@@ -137,6 +137,26 @@ Overwrite this method with custom logic in your components.
 
 !> This is an async method. Return a promise in order to suspend the destroy process.
 
+## findNodes
+
+Returns an array of elements matching a CSS selector in the context of the component's root element
+
+### Parameters
+
+-   `selector`  {string} CSS selector to match
+
+Returns **[Array][13]&lt;[Element][5]>** 
+
+## findNode
+
+Returns the first element matching a CSS selector in the context of the component's root element
+
+### Parameters
+
+-   `selector`  {string} CSS selector to match
+
+Returns **[Element][5]** 
+
 ## getState
 
 ```js
@@ -145,7 +165,7 @@ getState(key)
 
 Returns a property of the state or a default value if the property is not set.
 
-?> In ES6 environments you can use a [destructuring assignment][13] instead: `const { name = 'John'} = this.state`
+?> In ES6 environments you can use a [destructuring assignment][14] instead: `const { name = 'John'} = this.state`
 
 ### Parameters
 
@@ -171,7 +191,7 @@ shouldUpdateState(string, currentValue, newValue)
 
 Executes a strict inequality comparison (`!==`) on the passed-in values and returns the result.
 
-!> This method is executed on every [`setState`][14] call.
+!> This method is executed on every [`setState`][15] call.
 
 You can overwrite this method with your own validation logic.
 
@@ -225,7 +245,7 @@ replaceState(newState, [silent])
 
 Replaces the current state of the instance with a completely new state.
 
-!> Note that this methods is un-affected by [`shouldUpdateState`][15].
+!> Note that this methods is un-affected by [`shouldUpdateState`][16].
 
 ### Parameters
 
@@ -253,7 +273,7 @@ Emits a `broadcast:<eventname>` event on every child component listed in `$refs`
 ### Parameters
 
 -   `event` **[string][7]** Event name
--   `params` **[Array][16]&lt;any>?** Additional arguments to pass to the handler
+-   `params` **[Array][13]&lt;any>?** Additional arguments to pass to the handler
 
 ### Examples
 
@@ -462,13 +482,13 @@ Returns **[object][1]**
 
 [12]: packages/yuzu/#async-ready-state
 
-[13]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[14]: #setstate
+[14]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
-[15]: #shouldupdatestate
+[15]: #setstate
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[16]: #shouldupdatestate
 
 [17]: https://developer.mozilla.org/docs/Web/HTML/Element
 
