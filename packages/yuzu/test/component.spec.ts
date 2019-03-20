@@ -434,6 +434,34 @@ describe('`Component`', () => {
       expect(inst.beforeDestroy).toEqual(jasmine.any(Function));
     });
   });
+  describe('`findNodes()`', () => {
+    let inst: Component;
+    let root: HTMLElement;
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Component().mount(root);
+    });
+    it('should delegate to utils.qsa', () => {
+      const result: any[] = [];
+      const spy = spyOn(utils, 'qsa').and.returnValue(result);
+      expect(inst.findNodes('.selector')).toBe(result);
+      expect(spy).toHaveBeenCalledWith('.selector', inst.$el);
+    });
+  });
+  describe('`findNode()`', () => {
+    let inst: Component;
+    let root: HTMLElement;
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Component().mount(root);
+    });
+    it('should delegate to utils.qs', () => {
+      const result = document.createElement('div');
+      const spy = spyOn(utils, 'qs').and.returnValue(result);
+      expect(inst.findNode('.selector')).toBe(result);
+      expect(spy).toHaveBeenCalledWith('.selector', inst.$el);
+    });
+  });
   describe('`getState()`', () => {
     let inst: Component;
     beforeEach(() => {

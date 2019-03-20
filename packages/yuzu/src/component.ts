@@ -419,6 +419,26 @@ export class Component extends Events {
   public beforeDestroy() {} // tslint:disable-line: no-empty
 
   /**
+   * Returns an array of elements matching a CSS selector in the context of the component's root element
+   *
+   * @param selector {string} CSS selector to match
+   * @return {Element[]}
+   */
+  public findNodes(selector: string) {
+    return qsa(selector, this.$el);
+  }
+
+  /**
+   * Returns the first element matching a CSS selector in the context of the component's root element
+   *
+   * @param selector {string} CSS selector to match
+   * @return {Element}
+   */
+  public findNode(selector: string) {
+    return qs(selector, this.$el);
+  }
+
+  /**
    * ```js
    * getState(key)
    * ```
