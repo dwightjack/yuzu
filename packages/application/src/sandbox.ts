@@ -1,7 +1,9 @@
-import { qsa, datasetParser, isElement } from 'yuzu-utils';
+import { qsa, datasetParser, isElement, evaluate } from 'yuzu-utils';
 import { IObject } from 'yuzu/types';
-import { Component } from 'yuzu';
+import { Component, DetachedComponent } from 'yuzu';
 import { createContext, IContext } from './context';
+
+export type entrySelectorFn = (sbx: Sandbox) => boolean | HTMLElement[];
 
 export type sandboxComponentOptions = [
   typeof Component,
@@ -10,7 +12,7 @@ export type sandboxComponentOptions = [
 
 export interface ISandboxRegistryEntry {
   component: typeof Component;
-  selector: string;
+  selector: string | entrySelectorFn;
   [key: string]: any;
 }
 
@@ -81,7 +83,7 @@ export class Sandbox extends Component {
 
   public $registry: ISandboxRegistryEntry[] = [];
 
-  public $instances = new Map<typeof Component, Component[]>();
+  public $instances = new Map<string | entrySelectorFn, Component[]>();
 
   /**
    * Creates a sandbox instance.
@@ -127,14 +129,17 @@ export class Sandbox extends Component {
   public register(
     params: {
       component?: typeof Component;
-      selector?: string;
+      selector?: string | entrySelectorFn;
       [key: string]: any;
     } = {},
   ) {
     if (!Component.isComponent(params.component)) {
       throw new TypeError('Missing or invalid `component` property');
     }
-    if (typeof params.selector !== 'string') {
+    if (
+      typeof params.selector !== 'string' &&
+      typeof params.selector !== 'function'
+    ) {
       throw new TypeError('Missing `selector` property');
     }
     this.$registry.push(params as ISandboxRegistryEntry);
@@ -173,24 +178,36 @@ export class Sandbox extends Component {
 
     const ret = this.$registry.map(
       async ({ component: ComponentConstructor, selector, ...options }) => {
-        if (this.$instances.has(ComponentConstructor)) {
-          console.warn(`Component ${ComponentConstructor} already initialized`); // tslint:disable-line no-console
+        if (this.$instances.has(selector)) {
+          // tslint:disable-next-line no-console
+          console.warn(
+            `Component ${ComponentConstructor} already initialized on ${selector}`,
+          );
           return;
         }
-        const { $el } = this;
-        const instances = qsa<HTMLElement>(selector, $el)
-          .filter((el) => {
-            return (
-              !el.dataset.skip &&
-              !el.closest('[data-skip]') &&
-              el.closest(sbSelector) === $el
-            );
-          })
-          .map((el) => {
-            return this.createInstance(ComponentConstructor, options, el);
-          });
+        const targets = this.resolveSelector(selector);
+        let instances: Array<Promise<Component>> | undefined;
+        if (targets === true) {
+          instances = [this.createInstance(ComponentConstructor, options)];
+        } else if (Array.isArray(targets)) {
+          const { $el } = this;
+          instances = targets
+            .filter((el) => {
+              return (
+                isElement(el) &&
+                !el.dataset.skip &&
+                !el.closest('[data-skip]') &&
+                el.closest(sbSelector) === $el
+              );
+            })
+            .map((el) => {
+              return this.createInstance(ComponentConstructor, options, el);
+            });
+        }
 
-        this.$instances.set(ComponentConstructor, await Promise.all(instances));
+        if (instances) {
+          this.$instances.set(selector, await Promise.all(instances));
+        }
         return true;
       },
     );
@@ -199,21 +216,31 @@ export class Sandbox extends Component {
     return this;
   }
 
+  public resolveSelector(
+    selector: string | entrySelectorFn,
+  ): HTMLElement[] | boolean {
+    let targets = evaluate(selector, this);
+    if (typeof targets === 'string') {
+      targets = this.findNodes(targets) as HTMLElement[];
+    }
+    return targets;
+  }
+
   /**
    * Creates a component instance.
    * Reads inline components from the passed-in root DOM element.
    *
    * @private
    * @param {object} options instance options
-   * @param {Element} el Root element
+   * @param {HTMLElement} [el] Root element
    * @returns {Component}
    */
   public createInstance(
     ComponentConstructor: typeof Component,
     options: IObject,
-    el: HTMLElement,
+    el?: HTMLElement,
   ) {
-    const inlineOptions = datasetParser(el);
+    const inlineOptions = el ? datasetParser(el) : {};
 
     return this.setRef({
       id: `_sbx-c${++childIdx}`,

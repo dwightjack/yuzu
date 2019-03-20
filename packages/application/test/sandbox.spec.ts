@@ -106,16 +106,49 @@ describe('`Sandbox`', () => {
       }).toThrowError(TypeError);
     });
 
-    it('throws if "selector" is not a string', () => {
+    it('throws if "selector" is nor a string or a function', () => {
       expect(() => {
         inst.register({ component: Component, selector: null as any });
       }).toThrowError(TypeError);
+    });
+
+    it('DOES NOT throw if "selector" is a string or a function', () => {
+      expect(() => {
+        inst.register({ component: Component, selector: 'selector' });
+        inst.register({ component: Component, selector: () => true });
+      }).not.toThrowError(TypeError);
     });
 
     it('pushes the passed-in params to the internal registry', () => {
       const params = { component: Component, selector: 'demo' };
       inst.register(params);
       expect(inst.$registry[0]).toBe(params);
+    });
+  });
+  describe('.resolveSelector()', () => {
+    let inst: Sandbox;
+    let root: HTMLElement;
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Sandbox({ root });
+    });
+    it('should call utils.evaluate on the passed-in selector', () => {
+      const spy = spyOn(utils, 'evaluate').and.returnValue(false);
+      const selector = 'selector';
+      inst.resolveSelector(selector);
+      expect(spy).toHaveBeenCalledWith(selector, inst);
+    });
+    it('should return utils.evaluate returned value', () => {
+      const selector = 'selector';
+      spyOn(utils, 'evaluate').and.returnValue(false);
+      expect(inst.resolveSelector(selector)).toBe(false);
+    });
+    it('should call Sandbox#findNodes if the resolved selector is a string', () => {
+      const selector = 'selector';
+      const results: any[] = [];
+      const spy = spyOn(inst, 'findNodes').and.returnValue(results);
+      expect(inst.resolveSelector(selector)).toBe(results);
+      expect(spy).toHaveBeenCalledWith(selector);
     });
   });
   describe('.start()', () => {
@@ -162,18 +195,40 @@ describe('`Sandbox`', () => {
       const spy = spyOn(inst.$instances, 'has').and.returnValue(true);
       const spyWarn = spyOn(console, 'warn');
       inst.start();
-      expect(spy).toHaveBeenCalledWith(Component);
+      expect(spy).toHaveBeenCalledWith(params.selector);
       expect(spyWarn).toHaveBeenCalled();
       expect(inst.$instances.size).toBe(0);
     });
 
-    it('should query the root DOM tree', () => {
-      const spy = spyOn(utils, 'qsa').and.returnValue([]);
+    it('should call Sandbox#resolveSelector', () => {
+      const spy = spyOn(inst, 'resolveSelector').and.returnValue(false);
       inst.start();
-      expect(spy).toHaveBeenCalledWith(params.selector, inst.$el);
+      expect(spy).toHaveBeenCalledWith(params.selector);
     });
 
-    it('should call "createInstance" for each matched element', () => {
+    it('should NOT call Sandbox#createInstance if selector DOES NOT resolve to true', () => {
+      spyOn(inst, 'resolveSelector').and.returnValue(false);
+      const spy = spyOn(inst, 'createInstance');
+      inst.start();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call Sandbox#createInstance if selector DOES NOT resolve to an array', () => {
+      spyOn(inst, 'resolveSelector').and.returnValue({});
+      const spy = spyOn(inst, 'createInstance');
+      inst.start();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should call Sandbox#createInstance once if selector resolves to true', () => {
+      const child = new Component();
+      const spy = spyOn(inst, 'createInstance').and.returnValue(child);
+      inst.$registry[0].selector = () => true;
+      inst.start();
+      expect(spy.calls.count()).toBe(1);
+    });
+
+    it('should call Sandbox#createInstance for each matched element when the selector resolves to DOM elements', () => {
       const children = [
         document.createElement('div'),
         document.createElement('div'),
@@ -181,7 +236,7 @@ describe('`Sandbox`', () => {
 
       children.forEach((el) => root.appendChild(el));
 
-      spyOn(utils, 'qsa').and.returnValue(children);
+      spyOn(inst, 'resolveSelector').and.returnValue(children);
       const spy = spyOn(inst, 'createInstance').and.callThrough();
       inst.$registry[0].demo = true;
       inst.start();
@@ -196,7 +251,7 @@ describe('`Sandbox`', () => {
       const child = document.createElement('div');
       root.appendChild(child);
       child.setAttribute('data-skip', '');
-      spyOn(utils, 'qsa').and.returnValue([child]);
+      spyOn(inst, 'resolveSelector').and.returnValue([child]);
       const spy = spyOn(inst, 'createInstance').and.callThrough();
       inst.start();
       expect(spy).not.toHaveBeenCalled();
@@ -205,7 +260,7 @@ describe('`Sandbox`', () => {
     it('skips if the element is not a child of the root sandbox', () => {
       const child = document.createElement('div');
       const spy = spyOn(inst, 'createInstance').and.callThrough();
-      spyOn(utils, 'qsa').and.returnValue([child]);
+      spyOn(inst, 'resolveSelector').and.returnValue([child]);
       inst.start();
       expect(spy).not.toHaveBeenCalled();
 
@@ -223,7 +278,7 @@ describe('`Sandbox`', () => {
       const spy = spyOn(inst, 'createInstance').and.callThrough();
       const mid = document.createElement('div');
 
-      spyOn(utils, 'qsa').and.returnValue([child]);
+      spyOn(inst, 'resolveSelector').and.returnValue([child]);
 
       // child is nested inside a [data-skip] element
       mid.setAttribute('data-skip', '');
@@ -239,25 +294,31 @@ describe('`Sandbox`', () => {
       const child = document.createElement('div');
       root.appendChild(child);
 
-      spyOn(utils, 'qsa').and.returnValue([child]);
+      spyOn(inst, 'resolveSelector').and.returnValue([child]);
       const childInstance = new Component();
       spyOn(inst, 'createInstance').and.returnValue(childInstance);
       const spy = spyOn(inst.$instances, 'set');
       inst.start();
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledWith(Component, [childInstance]);
+        expect(spy).toHaveBeenCalledWith(params.selector, [childInstance]);
         done();
       }, 0);
     });
 
-    it('emits a "start" event', (done) => {
-      const spy = spyOn(inst, 'emit');
-      inst.start();
-      setTimeout(() => {
+    it('emits a "start" event when instance creation has ended', (done) => {
+      const spy = spyOn(inst, 'emit').and.callThrough();
+      let runner: any;
+      const promise = new Promise((resolve) => (runner = resolve));
+      spyOn(inst, 'resolveSelector').and.returnValue(true);
+      spyOn(inst, 'createInstance').and.returnValue(promise);
+      inst.on('start', () => {
         expect(spy).toHaveBeenCalledWith('start');
         done();
       });
+      inst.start();
+      expect(spy).not.toHaveBeenCalledWith('start');
+      setTimeout(runner, 300);
     });
   });
 
@@ -310,7 +371,7 @@ describe('`Sandbox`', () => {
       expect(ret).toEqual(jasmine.any(Component));
     });
 
-    it('extracts inline options and passes it to the constructor', () => {
+    it('extracts inline options and passes it to the constructor IF el parameter is defined', () => {
       const spy = jasmine.createSpy('created');
       const options = { demo: true };
       class Child extends Component {
@@ -324,6 +385,10 @@ describe('`Sandbox`', () => {
       });
       inst.createInstance(Child, options, el);
       expect(spy).toHaveBeenCalledWith({ demo: true, inline: true });
+
+      spy.calls.reset();
+      inst.createInstance(Child, options);
+      expect(spy).toHaveBeenCalledWith({ demo: true });
     });
 
     // it('injects the context', () => {
@@ -361,10 +426,10 @@ describe('`Sandbox`', () => {
       GrandChild.prototype.destroy = spy;
 
       inst = new Sandbox({ root: document.createElement('div') });
-      inst.$instances.set(Child, [
+      inst.$instances.set('.childSelector', [
         new Child().mount(document.createElement('div')),
       ]);
-      inst.$instances.set(GrandChild, [
+      inst.$instances.set('.grandChildSelector', [
         new GrandChild().mount(document.createElement('div')),
       ]);
     });
