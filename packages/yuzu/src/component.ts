@@ -26,14 +26,15 @@ import {
 
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 
-let objDiff: any = noop;
+export type objDiffType = (
+  match: IObject,
+  obj: IObject,
+  msg: (k: string, keys: string) => string,
+) => void;
+let objDiff: objDiffType = noop;
 
 if (process.env.NODE_ENV !== 'production') {
-  objDiff = (
-    match: IObject,
-    obj: IObject,
-    msg: (k: string, keys: string) => string,
-  ): void => {
+  objDiff = (match, obj, msg) => {
     const keys = Object.keys(match);
     const keyStr = keys.length > 0 ? keys.join(', ') : 'no keys';
     Object.keys(obj).forEach((k) => {
@@ -73,7 +74,7 @@ if (process.env.NODE_ENV !== 'production') {
  * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
  */
-export class Component extends Events {
+export class Component<ComponentState = IState> extends Events {
   public static root?: string;
 
   /**
@@ -94,9 +95,10 @@ export class Component extends Events {
    * Returns an object with default options.
    *
    * @static
+   * @param {Component} self The component instance itself
    * @returns {object}
    */
-  public static defaultOptions = (self?: Component): IObject => ({});
+  public static defaultOptions: (self?: Component<any>) => IObject = () => ({});
 
   /**
    * ```js
@@ -126,7 +128,7 @@ export class Component extends Events {
   public $uid!: string;
   public $els: { [key: string]: Element | Element[] | null };
   public $refs: { [key: string]: Component };
-  public state: IState;
+  public state: ComponentState;
   public $context?: IObject;
   public $parent?: Component;
 
@@ -162,7 +164,7 @@ export class Component extends Events {
   /**
    * Component constructor
    */
-  constructor(options: IObject = {}) {
+  public constructor(options: IObject = {}) {
     super();
     const defaultOptionsFn = (this.constructor as typeof Component)
       .defaultOptions;
@@ -172,7 +174,7 @@ export class Component extends Events {
         ? defaultOptionsFn.call(this, this)
         : {};
 
-    this.state = {};
+    this.state = {} as any;
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -230,7 +232,10 @@ export class Component extends Events {
    * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
-  public mount(el: string | Element, state: IState | null = {}) {
+  public mount(
+    el: string | Element,
+    state: Partial<ComponentState> | null = {},
+  ): Component<any> {
     if (this.$el) {
       throw new Error('Component is already mounted');
     }
@@ -297,7 +302,7 @@ export class Component extends Events {
    * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
-  public init(state: IState = {}) {
+  public init(state: Partial<ComponentState> = {}): Component<ComponentState> {
     if (!this.detached && !isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
@@ -339,7 +344,7 @@ export class Component extends Events {
 
     if (this.readyState) {
       // is it a promise ?
-      const watcher = (current: IState, prev: IState) => {
+      const watcher = (current: IState, prev: IState): void => {
         if ((this.readyState as ReadyStateFn)(current, prev)) {
           this.off('change:*', watcher);
           this.ready();
@@ -363,7 +368,7 @@ export class Component extends Events {
    *
    * ?> Use this hook to tap as early as possible into the component's properties. For example to set a dynamic initial state.
    */
-  public created() {} // tslint:disable-line: no-empty
+  public created(): void {} // tslint:disable-line: no-empty
 
   /**
    * Lifecycle hook called just before mounting the instance onto the root element.
@@ -372,7 +377,7 @@ export class Component extends Events {
    *
    * Overwrite this method with custom logic in your components.
    */
-  public beforeMount() {} // tslint:disable-line: no-empty
+  public beforeMount(): void {} // tslint:disable-line: no-empty
 
   /**
    * Lifecycle hook called when the instance gets mounted onto a DOM element.
@@ -383,7 +388,7 @@ export class Component extends Events {
    *
    * ?> Use this method when you need to work with the DOM or manage any side-effect that requires the component to be into the DOM.
    */
-  public mounted() {} // tslint:disable-line: no-empty
+  public mounted(): void {} // tslint:disable-line: no-empty
 
   /**
    * Lifecycle hook called before instance initialization.
@@ -394,7 +399,7 @@ export class Component extends Events {
    *
    * ?> Use this method to set child components by [setRef](#setRef) and run any preparatory work on the instance.
    */
-  public initialize() {} // tslint:disable-line: no-empty
+  public initialize(): void {} // tslint:disable-line: no-empty
 
   /**
    * Lifecycle hook called after instance initialization.
@@ -405,7 +410,7 @@ export class Component extends Events {
    *
    * ?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`](packages/yuzu/#async-ready-state) method.
    */
-  public ready() {} // tslint:disable-line: no-empty
+  public ready(): void {} // tslint:disable-line: no-empty
 
   /**
    * Lifecycle hook called just before closing child refs.
@@ -416,7 +421,7 @@ export class Component extends Events {
    *
    * !> This is an async method. Return a promise in order to suspend the destroy process.
    */
-  public beforeDestroy() {} // tslint:disable-line: no-empty
+  public beforeDestroy(): void {} // tslint:disable-line: no-empty
 
   /**
    * Returns an array of elements matching a CSS selector in the context of the component's root element
@@ -424,7 +429,7 @@ export class Component extends Events {
    * @param selector {string} CSS selector to match
    * @return {Element[]}
    */
-  public findNodes(selector: string) {
+  public findNodes(selector: string): Element[] {
     return qsa(selector, this.$el);
   }
 
@@ -434,7 +439,7 @@ export class Component extends Events {
    * @param selector {string} CSS selector to match
    * @return {Element}
    */
-  public findNode(selector: string) {
+  public findNode(selector: string): Element | null {
     return qs(selector, this.$el);
   }
 
@@ -457,7 +462,7 @@ export class Component extends Events {
    *
    * // instance.getState('b', false) === false
    */
-  public getState(key: string, def?: any) {
+  public getState(key: keyof ComponentState, def?: any): any {
     return this.state.hasOwnProperty(key) ? this.state[key] : def;
   }
 
@@ -477,7 +482,11 @@ export class Component extends Events {
    * @param {*} newValue New value
    * @returns {boolean}
    */
-  public shouldUpdateState(key: string, currentValue: any, newValue: any) {
+  public shouldUpdateState(
+    key: keyof ComponentState,
+    currentValue: any,
+    newValue: any,
+  ): boolean {
     return currentValue !== newValue;
   }
   /* eslint-enable class-methods-use-this */
@@ -509,14 +518,17 @@ export class Component extends Events {
    * // use the current state to calculate its next value
    * instance.setState(({ a }) => ({a + 1}));
    */
-  public setState<T extends IState = IState>(
-    updater: Partial<T> | stateUpdaterFn<T>,
+  public setState(
+    updater: Partial<ComponentState> | stateUpdaterFn<ComponentState>,
     silent = false,
-  ) {
-    const changed: string[] = [];
+  ): void {
+    const changed: (keyof ComponentState)[] = [];
     const { state: prevState } = this;
 
-    const changeSet = evaluate(updater as stateUpdaterFn<T>, this.state);
+    const changeSet = evaluate(
+      updater as stateUpdaterFn<ComponentState>,
+      this.state,
+    );
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -526,9 +538,9 @@ export class Component extends Events {
           `setState: key "${k}" has been discarded because it is not defined in the component's initial state. Accepted keys are: ${keys}`,
       );
     }
-
-    this.state = Object.entries(this.state).reduce(
-      (newState: IState, [k, prevValue]) => {
+    const entries = Object.entries(this.state) as [keyof ComponentState, any][];
+    this.state = entries.reduce(
+      (newState: ComponentState, [k, prevValue]) => {
         const value = changeSet[k];
         if (
           value === undefined ||
@@ -537,16 +549,16 @@ export class Component extends Events {
           newState[k] = prevValue; // eslint-disable-line no-param-reassign
         } else {
           changed.push(k);
-          newState[k] = value; // eslint-disable-line no-param-reassign
+          newState[k] = value as any; // eslint-disable-line no-param-reassign
         }
         return newState;
       },
-      {},
+      {} as any,
     );
 
     if (!silent && changed.length > 0) {
-      while (changed.length !== 0) {
-        const k = changed.pop() as string;
+      while (changed.length > 0) {
+        const k = changed.pop() as keyof ComponentState;
         this.emit(`change:${k}`, this.state[k], prevState[k]);
       }
       this.emit('change:*', this.state, prevState);
@@ -571,10 +583,11 @@ export class Component extends Events {
    * // instance.state.b === 2
    * // instance.state.a === undefined
    */
-  public replaceState(newState: IState, silent = false) {
+  public replaceState(newState: ComponentState, silent = false): void {
     const { state: prevState } = this;
     this.state = Object.assign({}, newState);
-    Object.entries(this.state).forEach(([key, value]) => {
+    const entries = Object.entries(this.state) as [keyof ComponentState, any][];
+    entries.forEach(([key, value]) => {
       if (!silent) {
         this.emit(`change:${key}`, value, prevState[key]);
       }
@@ -600,7 +613,7 @@ export class Component extends Events {
    * instance.setRef({ id: 'child', component: child });
    * instance.broadcast('log', 'test') // child component logs 'test'
    */
-  public broadcast(event: string, ...params: any[]) {
+  public broadcast(event: string, ...params: any[]): void {
     this.$refsStore.forEach((instance) => {
       instance.emit(`broadcast:${event}`, ...params);
     });
@@ -632,7 +645,7 @@ export class Component extends Events {
    * // attach a click handler to this.$el
    * instance.setListener('click', () => ...)
    */
-  public setListener(def: string, handler: eventHandlerFn) {
+  public setListener(def: string, handler: eventHandlerFn): void {
     let event: string;
     let selector;
     const match = def && def.match(LISTENER_REGEXP);
@@ -652,7 +665,9 @@ export class Component extends Events {
       if (element) {
         if (Array.isArray(element)) {
           element.forEach((el, i) => {
-            const h = (e: Event) => handler.call(this, e, i);
+            const h = (e: Event): void => {
+              handler.call(this, e, i);
+            };
             el.addEventListener(event, h);
             this.$listeners.set(h, { event, element: el });
           });
@@ -672,7 +687,7 @@ export class Component extends Events {
    * Removes all DOM event listeners attached with `.setListener`.
    *
    */
-  public removeListeners() {
+  public removeListeners(): void {
     this.$listeners.forEach(({ event, element }, handler) => {
       element.removeEventListener(event, handler);
     });
@@ -728,13 +743,15 @@ export class Component extends Events {
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef(
+  public async setRef<C extends Component = Component<any>>(
     refCfg:
       | IRefConstructor<typeof Component>
-      | IRefInstance<Component>
-      | IRefFactory<Component>,
-    props?: IState | ((ref: Component, parent: Component) => void),
-  ) {
+      | IRefInstance<C>
+      | IRefFactory<C>,
+    props?:
+      | Partial<IState>
+      | ((ref: C, parent: Component<ComponentState>) => void | Partial<IState>),
+  ): Promise<C> {
     let ref: Component;
     if (!isPlainObject(refCfg)) {
       throw new TypeError('Invalid reference configuration');
@@ -814,7 +831,7 @@ export class Component extends Events {
             [src = '*', key] = name.split('>');
           }
           refState[key] = value(
-            src !== '*' ? this.state[src] : this.state,
+            src !== '*' ? this.state[src as keyof ComponentState] : this.state,
             ref,
           );
           this.on(`change:${src}`, (state) => {
@@ -868,7 +885,7 @@ export class Component extends Events {
    * @param {boolean} [detach=false] Remove the child component root element from the DOM
    * @returns {Promise}
    */
-  public async destroyRef(id: string, detach: boolean = false) {
+  public async destroyRef(id: string, detach: boolean = false): Promise<void> {
     const { $refsStore } = this;
     const ref = $refsStore.get(id);
     if (!ref) {
@@ -893,7 +910,7 @@ export class Component extends Events {
    *
    * @returns {Promise}
    */
-  public async destroyRefs() {
+  public async destroyRefs(): Promise<void | void[]> {
     const { $refsStore } = this;
 
     if ($refsStore.size === 0) {
@@ -936,7 +953,7 @@ export class Component extends Events {
    *
    * @returns {Promise}
    */
-  public async destroy() {
+  public async destroy(): Promise<void> {
     await this.beforeDestroy();
     this.removeListeners();
     if (this.$parent) {

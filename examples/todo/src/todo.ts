@@ -1,6 +1,7 @@
 import { Component } from 'yuzu';
+import { ITodo } from './types';
 
-export class Todo extends Component {
+export class Todo extends Component<ITodo> {
   public static defaultOptions = () => ({ template: '' });
   public $els: {
     text: HTMLElement;
@@ -20,18 +21,18 @@ export class Todo extends Component {
   };
 
   public state = {
-    id: '',
+    id: null,
     text: '',
     completed: false,
   };
 
   public actions = {
-    text: (str) => (this.$els.text.textContent = str),
-    completed: (completed) =>
+    text: (str: string) => (this.$els.text.textContent = str),
+    completed: (completed: boolean) =>
       this.$el.classList[completed ? 'add' : 'remove']('is-completed'),
   };
 
-  public beforeMount() {
+  public beforeMount(): void {
     this.$el.className = 'list-group-item';
     this.$el.innerHTML = this.options.template;
   }

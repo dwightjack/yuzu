@@ -13,7 +13,7 @@ export class Form extends Component {
     submit: 'onSubmit',
   };
 
-  public onSubmit(e) {
+  public onSubmit(e: Event): void {
     e.preventDefault();
     const str = this.$els.input.value.trim();
     if (str) {

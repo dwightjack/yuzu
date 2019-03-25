@@ -1,13 +1,20 @@
 import { Component } from 'yuzu';
 import { Todo } from './todo';
+import { ITodo } from './types';
 
-export class TodoList extends Component {
+interface ITodoListState {
+  todos: ITodo[];
+  todoIds: string[];
+}
+
+export class TodoList extends Component<ITodoListState> {
   public static defaultOptions = () => ({
     itemTemplate: '',
   });
+
   public todoIdx: number;
 
-  public state = {
+  public state: ITodoListState = {
     todos: [],
     todoIds: [],
   };
@@ -16,7 +23,7 @@ export class TodoList extends Component {
     todos: 'renderList',
   };
 
-  public renderList() {
+  public renderList(): void {
     const { todos, todoIds } = this.state;
     let newTodoIds = todoIds;
     // first compute removed todos
@@ -42,7 +49,7 @@ export class TodoList extends Component {
       const id = `todo-${(this.todoIdx += 1)}`;
       todo.id = id;
       newTodoIds.push(id);
-      this.setRef(
+      this.setRef<Todo>(
         {
           id,
           el: document.createElement('li'),
@@ -59,7 +66,7 @@ export class TodoList extends Component {
     this.setState({ todoIds: newTodoIds });
   }
 
-  public created() {
+  public created(): void {
     this.todoIdx = 0;
   }
 }

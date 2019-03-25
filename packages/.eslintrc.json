@@ -1,0 +1,19 @@
+{
+  "root": true,
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    "prettier/prettier": ["error"],
+    "@typescript-eslint/interface-name-prefix": [1, "always"],
+    "@typescript-eslint/no-explicit-any": 0
+  }
+}

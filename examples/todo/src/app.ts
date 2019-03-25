@@ -1,6 +1,7 @@
 import { Component } from 'yuzu';
+import { IAppState } from './types';
 
-export class App extends Component {
+export class App extends Component<IAppState> {
   public $els: {
     list: HTMLUListElement;
     form: HTMLFormElement;
@@ -23,12 +24,12 @@ export class App extends Component {
     count: 'updateCountText',
   };
 
-  public addTodo(text) {
+  public addTodo(text: string): void {
     const todo = { text, completed: false, id: null };
     this.setState(({ todos }) => ({ todos: [...todos, todo] }));
   }
 
-  public removeTodo(todoId) {
+  public removeTodo(todoId: number): void {
     const todoIdx = this.getTodoIdxById(todoId);
     if (todoIdx !== false) {
       const { todos } = this.state;
@@ -38,23 +39,23 @@ export class App extends Component {
     }
   }
 
-  public getTodoIdxById(todoId) {
+  public getTodoIdxById(todoId: number): number | false {
     const { todos } = this.state;
     const todoIdx = todos.findIndex(({ id }) => id === todoId);
     return todoIdx !== -1 ? todoIdx : false;
   }
 
-  public setCount() {
+  public setCount(): void {
     this.setState({
       count: this.state.todos.filter(({ completed }) => !completed).length,
     });
   }
 
-  public updateCountText() {
+  public updateCountText(): void {
     this.$els.count.textContent = `${this.state.count} items left`;
   }
 
-  public toggleComplete(todoId) {
+  public toggleComplete(todoId: number): void {
     const todoIdx = this.getTodoIdxById(todoId);
     if (todoIdx !== false) {
       const { todos } = this.state;

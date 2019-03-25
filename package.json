@@ -25,7 +25,7 @@
   "scripts": {
     "prepublishOnly": "npm run release",
     "release": "yarn lint && yarn test && yarn docs && yarn bundle",
-    "lint": "tslint ./packages/*/src/**/*.ts ./packages/*/test/**/*.ts",
+    "lint": "eslint ./packages/*/src/**/*.ts ./{config,scripts}/**/*.js ./examples/*/src/**/*.ts",
     "bundle": "lerna run bundle",
     "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",
@@ -35,13 +35,15 @@
   "devDependencies": {
     "@types/jasmine": "~3.3.12",
     "@types/node": "^11.11.6",
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "@typescript-eslint/parser": "^1.4.2",
     "core-js": "^3.0.0",
-    "cpy": "^7.0.1",
+    "cpy": "^7.1.0",
     "documentation": "^8.1.2",
-    "eslint": "~5.3.0",
-    "eslint-config-prettier": "~3.0.1",
-    "eslint-plugin-node": "~7.0.1",
-    "eslint-plugin-prettier": "~2.6.2",
+    "eslint": "~5.15.3",
+    "eslint-config-prettier": "~4.1.0",
+    "eslint-plugin-node": "~8.0.1",
+    "eslint-plugin-prettier": "~3.0.1",
     "execa": "^1.0.0",
     "fast-glob": "^2.2.2",
     "gh-pages": "^2.0.1",
@@ -54,7 +56,7 @@
     "karma-typescript-es6-transform": "~1.0.4",
     "lerna": "^3.13.1",
     "make-dir": "^1.3.0",
-    "prettier": "~1.13.5",
+    "prettier": "~1.16.4",
     "puppeteer": "~1.7.0",
     "rimraf": "~2.6.2",
     "rollup": "~0.64.1",
@@ -68,9 +70,7 @@
     "rollup-plugin-typescript2": "~0.16.1",
     "rollup-plugin-uglify": "~4.0.0",
     "serve": "^10.0.0",
-    "tslint": "~5.11.0",
-    "tslint-config-prettier": "~1.14.0",
-    "typescript": "~3.0.1"
+    "typescript": "~3.3.4000"
   },
   "dependencies": {
     "dush": "superguigui/dush#reference-based-offing"
