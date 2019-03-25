@@ -297,7 +297,9 @@ export const qsa = <E extends Element = Element>(
 ): E[] => Array.from(ctx.querySelectorAll(selector));
 
 // tslint:disable-next-line: interface-name no-empty-interface
-export interface Events extends Idush {}
+export interface Events extends Idush {
+  new (): this;
+}
 
 /**
  * Creates an event hub object.
@@ -316,7 +318,7 @@ export interface Events extends Idush {}
  * events.emit('log', 'Hello world!') // logs 'Hello world!'
  */
 export class Events implements Idush {
-  constructor() {
+  public constructor() {
     Object.assign(this, dush());
   }
 }

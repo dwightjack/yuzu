@@ -46,6 +46,10 @@ if (process.env.NODE_ENV !== 'production') {
   };
 }
 
+export interface IComponent extends Events {
+  new (options: IObject): this;
+}
+
 // tslint:disable-next-line: interface-name no-empty-interface
 
 /**
@@ -74,7 +78,8 @@ if (process.env.NODE_ENV !== 'production') {
  * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
  */
-export class Component<ComponentState = IState> extends Events {
+export class Component<ComponentState = IState> extends Events
+  implements IComponent {
   public static root?: string;
 
   /**
@@ -235,7 +240,7 @@ export class Component<ComponentState = IState> extends Events {
   public mount(
     el: string | Element,
     state: Partial<ComponentState> | null = {},
-  ): Component<any> {
+  ): this {
     if (this.$el) {
       throw new Error('Component is already mounted');
     }
@@ -302,7 +307,7 @@ export class Component<ComponentState = IState> extends Events {
    * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
-  public init(state: Partial<ComponentState> = {}): Component<ComponentState> {
+  public init(state: Partial<ComponentState> = {}): this {
     if (!this.detached && !isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
@@ -743,16 +748,16 @@ export class Component<ComponentState = IState> extends Events {
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef<C extends Component = Component<any>>(
-    refCfg:
-      | IRefConstructor<typeof Component>
-      | IRefInstance<C>
-      | IRefFactory<C>,
+  public async setRef<
+    C extends Component = Component<IState>,
+    T = typeof Component
+  >(
+    refCfg: IRefConstructor<T> | IRefInstance<C> | IRefFactory<C>,
     props?:
       | Partial<IState>
-      | ((ref: C, parent: Component<ComponentState>) => void | Partial<IState>),
+      | ((ref: C, parent: this) => void | Partial<IState>),
   ): Promise<C> {
-    let ref: Component;
+    let ref: C;
     if (!isPlainObject(refCfg)) {
       throw new TypeError('Invalid reference configuration');
     }
@@ -767,14 +772,11 @@ export class Component<ComponentState = IState> extends Events {
     // }
 
     if (Component.isComponent(ChildComponent)) {
-      ref = new ChildComponent(options);
+      ref = new ChildComponent(options) as C;
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
     } else if (typeof ChildComponent === 'function') {
-      ref = (ChildComponent as IRefFactory<Component>['component'])(
-        el,
-        this.state,
-      );
+      ref = (ChildComponent as IRefFactory<C>['component'])(el, this.state);
     } else {
       throw new TypeError('Invalid reference configuration');
     }
