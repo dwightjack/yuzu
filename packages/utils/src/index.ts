@@ -30,7 +30,7 @@ let uid: number = -1;
  *
  * noop() === undefined
  */
-export const noop = (): void => {}; // tslint:disable-line no-empty
+export const noop = (): void => { }; // tslint:disable-line no-empty
 
 /**
  * Returns a sequential uid with optional prefix.
@@ -298,7 +298,7 @@ export const qsa = <E extends Element = Element>(
 
 // tslint:disable-next-line: interface-name no-empty-interface
 export interface Events extends Idush {
-  new (): this;
+  new(): this;
 }
 
 /**

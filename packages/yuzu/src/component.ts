@@ -22,6 +22,7 @@ import {
   stateUpdaterFn,
   ReadyStateFn,
   IStateLogger,
+  IComponentConstructable,
 } from '../types';
 
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
@@ -44,10 +45,6 @@ if (process.env.NODE_ENV !== 'production') {
       }
     });
   };
-}
-
-export interface IComponent extends Events {
-  new (options: IObject): this;
 }
 
 // tslint:disable-next-line: interface-name no-empty-interface
@@ -78,8 +75,10 @@ export interface IComponent extends Events {
  * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
  */
-export class Component<ComponentState = IState> extends Events
-  implements IComponent {
+export class Component<
+  ComponentState = IState,
+  ComponentOptions = IObject
+> extends Events {
   public static root?: string;
 
   /**
@@ -116,14 +115,16 @@ export class Component<ComponentState = IState> extends Events
    * @param {*} value
    * @returns {boolean}
    */
-  public static isComponent(value: any): value is typeof Component {
+  public static isComponent<C = Component>(
+    value: any,
+  ): value is IComponentConstructable<C> {
     if (!value || !value.defaultOptions) {
       return false;
     }
     return typeof value.defaultOptions === 'function';
   }
 
-  public options: IObject;
+  public options: ComponentOptions;
 
   public detached?: boolean;
 
@@ -169,17 +170,16 @@ export class Component<ComponentState = IState> extends Events
   /**
    * Component constructor
    */
-  public constructor(options: IObject = {}) {
+  public constructor(options: ComponentOptions = {} as any) {
     super();
     const defaultOptionsFn = (this.constructor as typeof Component)
       .defaultOptions;
 
-    const defaultOptions =
-      typeof defaultOptionsFn === 'function'
-        ? defaultOptionsFn.call(this, this)
-        : {};
+    const defaultOptions = (typeof defaultOptionsFn === 'function'
+      ? defaultOptionsFn(this)
+      : {}) as ComponentOptions;
 
-    this.state = {} as any;
+    this.state = {} as ComponentState;
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -190,8 +190,12 @@ export class Component<ComponentState = IState> extends Events
       );
     }
 
-    this.options = Object.entries(defaultOptions).reduce(
-      (opts: IObject, [key, value]) => {
+    const entries = Object.entries(defaultOptions) as [
+      keyof ComponentOptions,
+      any
+    ][];
+    this.options = entries.reduce(
+      (opts, [key, value]) => {
         let v = options[key] !== undefined ? options[key] : value;
         if (typeof v === 'function' && !Component.isComponent(v)) {
           v = v.bind(this);
@@ -199,7 +203,7 @@ export class Component<ComponentState = IState> extends Events
         opts[key] = v; // eslint-disable-line no-param-reassign
         return opts;
       },
-      {},
+      {} as ComponentOptions,
     );
 
     this.$active = false;
@@ -748,11 +752,8 @@ export class Component<ComponentState = IState> extends Events
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef<
-    C extends Component = Component<IState>,
-    T = typeof Component
-  >(
-    refCfg: IRefConstructor<T> | IRefInstance<C> | IRefFactory<C>,
+  public async setRef<C extends Component = Component<IState>>(
+    refCfg: IRefConstructor<C> | IRefInstance<C> | IRefFactory<C>,
     props?:
       | Partial<IState>
       | ((ref: C, parent: this) => void | Partial<IState>),
@@ -771,12 +772,12 @@ export class Component<ComponentState = IState> extends Events
     //   );
     // }
 
-    if (Component.isComponent(ChildComponent)) {
-      ref = new ChildComponent(options) as C;
-    } else if (ChildComponent instanceof Component) {
-      ref = ChildComponent;
+    if (Component.isComponent<C>(ChildComponent)) {
+      ref = new ChildComponent(options);
     } else if (typeof ChildComponent === 'function') {
-      ref = (ChildComponent as IRefFactory<C>['component'])(el, this.state);
+      ref = ChildComponent(el, this.state);
+    } else if ((ChildComponent as C) instanceof Component) {
+      ref = ChildComponent;
     } else {
       throw new TypeError('Invalid reference configuration');
     }

@@ -12,6 +12,10 @@ export interface ILoadableOptions {
   props?: IObject | ((props: IObject) => IObject);
 }
 
+export interface ILoadableState {
+  props: IObject;
+}
+
 /**
  * A function that returns a configurable async component loader.
  *
@@ -67,7 +71,10 @@ export const Loadable = (opts: ILoadableOptions) => {
    * @param {object|function} [config.props] Computed state attached to the component
    * @returns {LoadableComponent}
    */
-  const LoadableComponent = class extends Component {
+  const LoadableComponent = class extends Component<
+    ILoadableState,
+    ILoadableOptions
+  > {
     public static root = `[data-loadable][data-component="${Child.name}"]`;
 
     public static defaultOptions = (): ILoadableOptions =>

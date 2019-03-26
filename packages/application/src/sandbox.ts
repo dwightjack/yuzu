@@ -1,6 +1,6 @@
-import { qsa, datasetParser, isElement, evaluate } from 'yuzu-utils';
+import { datasetParser, isElement, evaluate } from 'yuzu-utils';
 import { IObject } from 'yuzu/types';
-import { Component, DetachedComponent } from 'yuzu';
+import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
 
 export type entrySelectorFn = (sbx: Sandbox) => boolean | HTMLElement[];
@@ -17,7 +17,7 @@ export interface ISandboxRegistryEntry {
 }
 
 export interface ISandboxOptions {
-  components?: Array<(typeof Component) | sandboxComponentOptions>;
+  components?: (typeof Component | sandboxComponentOptions)[];
   root: HTMLElement | string;
   id: string;
 }
@@ -90,7 +90,7 @@ export class Sandbox extends Component {
    *
    * @constructor
    */
-  constructor(options: Partial<ISandboxOptions> = {}) {
+  public constructor(options: Partial<ISandboxOptions> = {}) {
     super(options);
     const { components = [], id } = this.options as ISandboxOptions;
 
@@ -132,7 +132,7 @@ export class Sandbox extends Component {
       selector?: string | entrySelectorFn;
       [key: string]: any;
     } = {},
-  ) {
+  ): void {
     if (!Component.isComponent(params.component)) {
       throw new TypeError('Missing or invalid `component` property');
     }
@@ -186,7 +186,7 @@ export class Sandbox extends Component {
           return;
         }
         const targets = this.resolveSelector(selector);
-        let instances: Array<Promise<Component>> | undefined;
+        let instances: Promise<Component>[] | undefined;
         if (targets === true) {
           instances = [this.createInstance(ComponentConstructor, options)];
         } else if (Array.isArray(targets)) {
@@ -239,7 +239,7 @@ export class Sandbox extends Component {
     ComponentConstructor: typeof Component,
     options: IObject,
     el?: HTMLElement,
-  ) {
+  ): Promise<Component> {
     const inlineOptions = el ? datasetParser(el) : {};
 
     return this.setRef({
@@ -264,7 +264,7 @@ export class Sandbox extends Component {
    * @example
    * sandbox.stop();
    */
-  public async stop() {
+  public async stop(): Promise<void> {
     this.emit('beforeStop');
     await this.beforeDestroy();
     this.removeListeners();
@@ -292,7 +292,7 @@ export class Sandbox extends Component {
    *
    * @private
    */
-  public clear() {
+  public clear(): void {
     this.$ctx = undefined; // release the context
     this.off('beforeStart');
     this.off('start');

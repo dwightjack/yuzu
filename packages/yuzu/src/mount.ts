@@ -1,6 +1,6 @@
 import { qs, isElement, evaluate } from 'yuzu-utils';
 import { Component } from './component';
-import { IObject, IState } from '../types';
+import { IObject, IState, IComponentConstructable } from '../types';
 
 export type mounterFn = (ctx: Component) => Component;
 
@@ -32,7 +32,7 @@ let childRefIdx = 0;
  * @return {function}
  */
 export function mount(
-  ComponentConstructor: typeof Component,
+  ComponentConstructor: IComponentConstructable<Component>,
   el: HTMLElement | string | null,
   props: IMountProps | null = {},
   children?: mountChildren,

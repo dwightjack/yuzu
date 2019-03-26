@@ -1,3 +1,5 @@
+import { Component } from 'yuzu-yuzu/src';
+
 export interface IObject<T = any> {
   [key: string]: T;
 }
@@ -11,17 +13,21 @@ export interface IListener {
   element: Element;
 }
 
-export interface IRefConstructor<T> {
+export interface IComponentConstructable<C> {
+  new (options: IObject): C;
+}
+
+export interface IRefConstructor<T = Component> {
   id: string;
   el?: Element | HTMLElement | string;
-  component: T;
+  component: IComponentConstructable<T>;
   on?: IObject<fn>;
   [key: string]: any;
 }
 
-export interface IAbstractRefConstructor<T> {
+export interface IAbstractRefConstructor<T = Component> {
   id: string;
-  component: T;
+  component: IComponentConstructable<T>;
   on?: IObject<fn>;
   [key: string]: any;
 }

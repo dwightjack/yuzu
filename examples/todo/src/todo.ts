@@ -1,8 +1,12 @@
 import { Component } from 'yuzu';
 import { ITodo } from './types';
 
-export class Todo extends Component<ITodo> {
-  public static defaultOptions = () => ({ template: '' });
+interface ITodoOptions {
+  template: string;
+}
+
+export class Todo extends Component<ITodo, ITodoOptions> {
+  public static defaultOptions = (): ITodoOptions => ({ template: '' });
   public $els: {
     text: HTMLElement;
     complete: HTMLButtonElement;

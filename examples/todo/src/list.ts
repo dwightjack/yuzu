@@ -7,8 +7,12 @@ interface ITodoListState {
   todoIds: string[];
 }
 
-export class TodoList extends Component<ITodoListState> {
-  public static defaultOptions = () => ({
+interface ITodoListOptions {
+  itemTemplate: string;
+}
+
+export class TodoList extends Component<ITodoListState, ITodoListOptions> {
+  public static defaultOptions = (): ITodoListOptions => ({
     itemTemplate: '',
   });
 
@@ -49,7 +53,7 @@ export class TodoList extends Component<ITodoListState> {
       const id = `todo-${(this.todoIdx += 1)}`;
       todo.id = id;
       newTodoIds.push(id);
-      this.setRef<Todo, typeof Todo>(
+      this.setRef(
         {
           id,
           el: document.createElement('li'),
