@@ -132,7 +132,7 @@ export class Component<
 
   public $el!: Element;
   public $uid!: string;
-  public $els: { [key: string]: Element | Element[] | null };
+  public $els: { [key: string]: Element | Element[] };
   public $refs: { [key: string]: Component };
   public state: ComponentState;
   public $context?: IObject;
@@ -274,9 +274,12 @@ export class Component<
           return;
         }
         if (!key.endsWith('[]')) {
-          this.$els[key] = qs(selector, this.$el);
+          const el = this.findNode(selector);
+          if (el) {
+            this.$els[key] = el;
+          }
         } else {
-          this.$els[key.slice(0, -2)] = qsa(selector, this.$el);
+          this.$els[key.slice(0, -2)] = this.findNodes(selector);
         }
       });
     }

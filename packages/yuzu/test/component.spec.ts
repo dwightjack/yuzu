@@ -178,25 +178,35 @@ describe('`Component`', () => {
       inst.mount(root);
       expect(spy).toHaveBeenCalled();
     });
-    it('should resolve child elements selectors', () => {
+    it('should resolve child elements selectors with Componetn#findNode', () => {
       const child = document.createElement('div');
-      const spy = spyOn(utils, 'qs').and.returnValue(child);
+      const spy = spyOn(inst, 'findNode').and.returnValue(child);
       inst.selectors = {
         child: '.child-demo',
       };
       inst.mount(root);
-      expect(spy).toHaveBeenCalledWith('.child-demo', root);
+      expect(spy).toHaveBeenCalledWith('.child-demo');
       expect(inst.$els.child).toBe(child);
     });
 
-    it('should resolve arrays of child elements selectors', () => {
+    it('should not create a key for unresolved single node selectors', () => {
+      const spy = spyOn(inst, 'findNode').and.returnValue(null);
+      inst.selectors = {
+        notfound: '.child-demo',
+      };
+      inst.mount(root);
+      expect(spy).toHaveBeenCalledWith('.child-demo');
+      expect(inst.$els.notfound).toBeUndefined();
+    });
+
+    it('should resolve arrays of child elements selectors with Componetn#findNodes', () => {
       const children = [document.createElement('div')];
-      const spy = spyOn(utils, 'qsa').and.returnValue(children);
+      const spy = spyOn(inst, 'findNodes').and.returnValue(children);
       inst.selectors = {
         'children[]': '.child-demo',
       };
       inst.mount(root);
-      expect(spy).toHaveBeenCalledWith('.child-demo', root);
+      expect(spy).toHaveBeenCalledWith('.child-demo');
       expect(inst.$els.children).toEqual(children);
     });
 
