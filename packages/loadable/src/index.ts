@@ -53,7 +53,7 @@ export interface ILoadableState {
  *
  * const message = new LoadableMessage().mount('#loadable-message');
  */
-export const Loadable = (opts: ILoadableOptions) => {
+export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
   const { component: Child, ...params } = opts;
 
   /**
@@ -111,7 +111,7 @@ export const Loadable = (opts: ILoadableOptions) => {
      * @memberof LoadableComponent
      * @returns {LoadableComponent}
      */
-    public async initialize() {
+    public async initialize(): Promise<this> {
       const { fetchData, renderRoot } = this.options as ILoadableOptions &
         IObject;
       const { $el } = this;
@@ -140,7 +140,8 @@ export const Loadable = (opts: ILoadableOptions) => {
           this.setState({ props: data });
         }
         const root = await this.render();
-        return this.setComponent(root);
+        await this.setComponent(root);
+        return this;
       } catch (e) {
         console.error(e); // tslint:disable-line no-console
         return this;
@@ -169,7 +170,7 @@ export const Loadable = (opts: ILoadableOptions) => {
      *
      * instanceof loadable.$refs.async === Message
      */
-    public setComponent(root: Element | null) {
+    public setComponent(root: Element | null): Promise<Component> {
       const { component, options, props } = this.options;
 
       return this.setRef(
@@ -209,18 +210,17 @@ export const Loadable = (opts: ILoadableOptions) => {
      *
      * instanceof loadable.$refs.async === Loader
      */
-    public setLoader() {
+    public async setLoader(): Promise<void> {
       const { loader } = this.options;
 
-      if (!loader) {
-        return Promise.resolve();
+      if (loader) {
+        await this.setRef({
+          id: 'async',
+          el: this.$els.async,
+          component: loader,
+        });
       }
-
-      return this.setRef({
-        id: 'async',
-        el: this.$els.async,
-        component: loader,
-      });
+      return Promise.resolve();
     }
 
     /**
@@ -244,7 +244,7 @@ export const Loadable = (opts: ILoadableOptions) => {
      * const html = loadable.render();
      * html === '<div>Hello World</div>';
      */
-    public render() {
+    public render(): Element | null {
       const { template } = this.options;
       const { props } = this.state;
       const wrapper = document.createElement('div');
