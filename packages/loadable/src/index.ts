@@ -91,6 +91,10 @@ export const Loadable = (opts: ILoadableOptions) => {
         params,
       );
 
+    public $els!: {
+      async: Element;
+    };
+
     public state = {
       props: {},
     };
@@ -244,7 +248,7 @@ export const Loadable = (opts: ILoadableOptions) => {
       const { template } = this.options;
       const { props } = this.state;
       const wrapper = document.createElement('div');
-      const html = template({ props, options: this.options });
+      const html = template && template({ props, options: this.options });
 
       if (html) {
         wrapper.innerHTML = html;
