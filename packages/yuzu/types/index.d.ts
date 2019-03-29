@@ -22,7 +22,7 @@ export interface IComponentConstructable<C> {
   defaultOptions: (self?: any) => IObject;
 }
 
-export interface IRefConstructor<T = Component> {
+export interface IRefConstructor<T> {
   id: string;
   el?: Element | HTMLElement | string;
   component: IComponentConstructable<T>;

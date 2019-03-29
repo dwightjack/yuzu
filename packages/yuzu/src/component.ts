@@ -773,9 +773,9 @@ export class Component<
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef<C extends Component = Component>(
+  public async setRef<C extends Component>(
     refCfg: IRef<
-      C | ((el: this['$el'], state: IState) => C) | IRefConstructor<C>
+      IComponentConstructable<C> | C | ((el: this['$el'], state: IState) => C)
     >,
     props?:
       | Partial<IState>
@@ -797,10 +797,13 @@ export class Component<
 
     if (Component.isComponent<C>(ChildComponent)) {
       ref = new ChildComponent(options);
+    } else if (
+      !(ChildComponent instanceof Component) &&
+      typeof ChildComponent === 'function'
+    ) {
+      ref = ChildComponent(this.$el, this.state);
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
-    } else if (typeof ChildComponent === 'function') {
-      ref = ChildComponent(this.$el, this.state);
     } else {
       throw new TypeError('Invalid reference configuration');
     }
