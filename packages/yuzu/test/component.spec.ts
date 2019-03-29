@@ -4,15 +4,6 @@ import * as utils from 'yuzu-utils';
 
 /* tslint:disable max-classes-per-file */
 describe('`Component`', () => {
-  describe('defaultOptions', () => {
-    it('should have a static "defaultOptions" method', () => {
-      expect(Component.defaultOptions).toEqual(jasmine.any(Function));
-    });
-    it('should return an object', () => {
-      expect(Component.defaultOptions()).toEqual({});
-    });
-  });
-
   describe('isComponent', () => {
     it('should return false if argument in falsy', () => {
       expect(Component.isComponent(null)).toBe(false);
@@ -28,6 +19,20 @@ describe('`Component`', () => {
         defaultOptions: () => ({}),
       };
       expect(Component.isComponent(value)).toBe(true);
+    });
+  });
+
+  describe('defaultOptions', () => {
+    let inst: Component;
+
+    beforeEach(() => {
+      inst = new Component();
+    });
+    it('should have a "defaultOptions" method', () => {
+      expect(inst.defaultOptions).toEqual(jasmine.any(Function));
+    });
+    it('should return an object', () => {
+      expect(inst.defaultOptions()).toEqual({});
     });
   });
 
@@ -61,11 +66,23 @@ describe('`Component`', () => {
       expect(inst.$listeners).toEqual(jasmine.any(Map));
       expect(inst.$listeners.size).toBe(0);
     });
+
     it('should set an `option` object', () => {
       expect(inst.options).toEqual({});
     });
 
-    it('should set default options from static `defaultOptions` method', () => {
+    it('should set default options from `defaultOptions` method', () => {
+      const options = { demo: true };
+      const spy = jasmine.createSpy().and.returnValue(options);
+      class Child extends Component {
+        public defaultOptions = spy;
+      }
+      const child = new Child();
+      expect(spy).toHaveBeenCalledWith(child);
+      expect(child.options).toEqual(options);
+    });
+
+    it('should work when using the deprecated static method `defaultOptions`', () => {
       const options = { demo: true };
       const spy = jasmine.createSpy().and.returnValue(options);
       class Child extends Component {
@@ -73,7 +90,6 @@ describe('`Component`', () => {
       }
       const child = new Child();
       expect(spy).toHaveBeenCalledWith(child);
-      expect(spy.calls.mostRecent().object).toBe(child);
       expect(child.options).toEqual(options);
     });
 
@@ -81,7 +97,7 @@ describe('`Component`', () => {
       const options = { demo: true };
       class Child extends Component {
         // tslint:disable-line max-classes-per-file
-        public static defaultOptions = () => options;
+        public defaultOptions = () => options;
       }
       const child = new Child({ demo: false });
       expect(child.options).toEqual({ demo: false });
@@ -91,7 +107,7 @@ describe('`Component`', () => {
       const options = { demo: true };
       class Child extends Component {
         // tslint:disable-line max-classes-per-file
-        public static defaultOptions = () => options;
+        public defaultOptions = () => options;
       }
       const child = new Child({ other: 'yes' });
       expect(child.options).not.toEqual(
@@ -104,7 +120,7 @@ describe('`Component`', () => {
       const options = { demo: spy };
       class Child extends Component {
         // tslint:disable-line max-classes-per-file
-        public static defaultOptions = () => options;
+        public defaultOptions = () => options;
       }
       const child = new Child();
       child.options.demo();

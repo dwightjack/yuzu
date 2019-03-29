@@ -6,7 +6,10 @@ interface ITodoOptions {
 }
 
 export class Todo extends Component<ITodo, ITodoOptions> {
-  public static defaultOptions = (): ITodoOptions => ({ template: '' });
+  public defaultOptions() {
+    return { template: '' };
+  }
+
   public $els: {
     text: HTMLElement;
     complete: HTMLButtonElement;

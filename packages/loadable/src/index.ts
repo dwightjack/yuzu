@@ -77,8 +77,8 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
   > {
     public static root = `[data-loadable][data-component="${Child.name}"]`;
 
-    public static defaultOptions = (): ILoadableOptions =>
-      Object.assign(
+    public defaultOptions() {
+      return Object.assign(
         {
           fetchData: noop,
           component: Child,
@@ -90,6 +90,7 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
         },
         params,
       );
+    }
 
     public $els!: {
       async: Element;

@@ -8,6 +8,7 @@ import {
   qsa,
   Events,
   noop,
+  warn,
 } from 'yuzu-utils';
 
 import {
@@ -30,18 +31,17 @@ const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 export type objDiffType = (
   match: IObject,
   obj: IObject,
-  msg: (k: string, keys: string) => string,
+  msg: (k: string, keys: string) => void,
 ) => void;
 let objDiff: objDiffType = noop;
 
 if (process.env.NODE_ENV !== 'production') {
-  objDiff = (match, obj, msg) => {
+  objDiff = function objDiff(match, obj, msg) {
     const keys = Object.keys(match);
     const keyStr = keys.length > 0 ? keys.join(', ') : 'no keys';
     Object.keys(obj).forEach((k) => {
       if (keys.indexOf(k) === -1) {
-        // tslint:disable-next-line no-console
-        console.warn(msg(k, keyStr));
+        msg(k, keyStr);
       }
     });
   };
@@ -76,10 +76,11 @@ if (process.env.NODE_ENV !== 'production') {
  * @returns {Component}
  */
 export class Component<
-  ComponentState = IState,
-  ComponentOptions = IObject
+  ComponentState extends IState = IState,
+  ComponentOptions extends IObject = IObject
 > extends Events {
   public static root?: string;
+  public static defaultOptions: (self?: any) => IObject;
 
   /**
    * ```js
@@ -93,16 +94,11 @@ export class Component<
   public static UID_DATA_ATTR = 'data-cid';
 
   /**
-   * ```js
-   * Component.defaultOptions()
-   * ```
-   * Returns an object with default options.
+   * Marks yuzu components
    *
    * @static
-   * @param {Component} self The component instance itself
-   * @returns {object}
    */
-  public static defaultOptions: (self?: Component<any>) => IObject = () => ({});
+  public static YUZU_COMPONENT = true;
 
   /**
    * ```js
@@ -118,14 +114,12 @@ export class Component<
   public static isComponent<C = Component>(
     value: any,
   ): value is IComponentConstructable<C> {
-    if (!value || !value.defaultOptions) {
-      return false;
-    }
-    return typeof value.defaultOptions === 'function';
+    return value && value.YUZU_COMPONENT;
   }
 
   public options: ComponentOptions;
 
+  public displayName?: string;
   public detached?: boolean;
 
   public $active: boolean;
@@ -146,10 +140,13 @@ export class Component<
   public $listeners: Map<eventHandlerFn, IListener>;
   public readyState?: ReadyStateFn;
 
+  public $warn: (msg: string, ...args: any[]) => void;
+
   // devtools methods
   public $$logStart?: fn;
   public $$logEnd?: fn;
   public $$logger?: IStateLogger<Component>;
+
   // public $$getTree?: IObject;
   /**
    * ```js
@@ -170,23 +167,30 @@ export class Component<
   /**
    * Component constructor
    */
-  public constructor(options: ComponentOptions = {} as any) {
+  public constructor(options: ComponentOptions = {} as ComponentOptions) {
     super();
+    this.$warn = warn(this);
+
     const defaultOptionsFn = (this.constructor as typeof Component)
       .defaultOptions;
 
-    const defaultOptions = (typeof defaultOptionsFn === 'function'
-      ? defaultOptionsFn(this)
-      : {}) as ComponentOptions;
+    let defaultOptions: ComponentOptions;
+    if (typeof defaultOptionsFn === 'function') {
+      this.$warn(
+        'the static property `defaultOptions` is deprecated. Please move the method to the instance',
+      );
+      defaultOptions = defaultOptionsFn(this) as ComponentOptions;
+    } else {
+      defaultOptions = this.defaultOptions(this) || {};
+    }
 
     this.state = {} as ComponentState;
 
     if (process.env.NODE_ENV !== 'production') {
-      objDiff(
-        defaultOptions,
-        options,
-        (k: string, keys: string) =>
+      objDiff(defaultOptions, options, (k: string, keys: string) =>
+        this.$warn(
           `Option ${k}" has been discarded because it is not defined in component's defaultOptions. Accepted keys are: ${keys}`,
+        ),
       );
     }
 
@@ -218,6 +222,19 @@ export class Component<
     this.$listeners = new Map();
 
     this.created();
+  }
+
+  /**
+   * ```js
+   * this.defaultOptions()
+   * ```
+   * Returns an object with default options.
+   *
+   * @param {Component} self The component instance itself
+   * @returns {object}
+   */
+  public defaultOptions(self?: this): ComponentOptions {
+    return {} as ComponentOptions;
   }
 
   /**

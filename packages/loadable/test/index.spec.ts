@@ -30,13 +30,13 @@ describe('`Loadable`', () => {
     });
 
     it('extends generated component defaults with passed-in options', () => {
-      const options = LoadableComponent.defaultOptions();
+      const options = LoadableComponent.prototype.defaultOptions();
       expect(options.component).toBe(Child);
       expect(options.fetchData).toBe(fetchData);
     });
 
     it('matches default options', () => {
-      expect(LoadableComponent.defaultOptions()).toEqual({
+      expect(LoadableComponent.prototype.defaultOptions()).toEqual({
         fetchData: jasmine.any(Function),
         component: Child,
         template: jasmine.any(Function),

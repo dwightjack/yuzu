@@ -71,11 +71,13 @@ let childIdx = -1;
 export class Sandbox extends Component {
   public static UID_DATA_ATTR = 'data-sandbox';
 
-  public static defaultOptions = () => ({
-    components: [],
-    id: `_sbx-${++idx}`,
-    root: document.body,
-  });
+  public defaultOptions() {
+    return {
+      components: [],
+      id: `_sbx-${++idx}`,
+      root: document.body,
+    };
+  }
 
   public $id: string;
 

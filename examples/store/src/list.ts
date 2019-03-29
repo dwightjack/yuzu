@@ -1,9 +1,12 @@
 import { Component } from 'yuzu';
 
 export class List extends Component {
-  public static defaultOptions = () => ({
-    onClick: () => undefined,
-  });
+  public defaultOptions() {
+    return {
+      onClick: () => undefined,
+    };
+  }
+
   public selectors = {
     list: 'ul',
   };

@@ -59,7 +59,7 @@ describe('`extend`', () => {
 
   it('should copy static properties and methods', () => {
     const MyComp = extend(Component);
-    expect(MyComp.defaultOptions).toBe(Component.defaultOptions);
+    expect(MyComp.YUZU_COMPONENT).toBe(Component.YUZU_COMPONENT);
   });
 
   it('should accept custom prototype methods', () => {

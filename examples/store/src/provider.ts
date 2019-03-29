@@ -1,9 +1,11 @@
 import { DetachedComponent } from 'yuzu';
 
 export class Provider extends DetachedComponent {
-  public static defaultOptions = () => ({
-    selector: (v: any) => v,
-  });
+  public defaultOptions() {
+    return {
+      selector: (v: any) => v,
+    };
+  }
 
   public static bindActions(actions, store) {
     if (typeof actions === 'function') {

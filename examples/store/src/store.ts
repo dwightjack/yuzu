@@ -1,11 +1,13 @@
 import { DetachedComponent } from 'yuzu';
 
 export default class Store extends DetachedComponent {
-  public static defaultOptions = () => ({
-    name: 'default',
-    debug: true,
-    effects: {},
-  });
+  public defaultOptions() {
+    return {
+      name: 'default',
+      debug: true,
+      effects: {},
+    };
+  }
 
   public dispatch = async (action, ...args) => {
     const { state: oldState } = this;

@@ -12,9 +12,11 @@ interface ITodoListOptions {
 }
 
 export class TodoList extends Component<ITodoListState, ITodoListOptions> {
-  public static defaultOptions = (): ITodoListOptions => ({
-    itemTemplate: '',
-  });
+  public defaultOptions() {
+    return {
+      itemTemplate: '',
+    };
+  }
 
   public todoIdx: number;
 
