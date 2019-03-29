@@ -6,7 +6,7 @@ interface ITodoOptions {
 }
 
 export class Todo extends Component<ITodo, ITodoOptions> {
-  public defaultOptions() {
+  public defaultOptions(): ITodoOptions {
     return { template: '' };
   }
 

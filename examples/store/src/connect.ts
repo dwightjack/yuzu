@@ -1,4 +1,5 @@
 import { Component } from 'yuzu';
+import { IComponentConstructable, IObject, IState } from 'yuzu/types';
 
 const bindActions = (actions, store) => {
   if (typeof actions === 'function') {
@@ -56,7 +57,9 @@ export function inject(instance, store) {
   return instance;
 }
 
-export const connect = (selector?, actions?) => (Child: typeof Component) => {
+export const connect = <C extends typeof Component>(selector?, actions?) => (
+  Child: C,
+) => {
   const Connected = class extends Child {
     constructor(options?) {
       super(options);

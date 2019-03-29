@@ -1,6 +1,7 @@
 import { Component } from 'yuzu';
 import { Todo } from './todo';
 import { ITodo } from './types';
+import { IComponentConstructable } from 'yuzu-yuzu/types';
 
 interface ITodoListState {
   todos: ITodo[];
@@ -12,7 +13,7 @@ interface ITodoListOptions {
 }
 
 export class TodoList extends Component<ITodoListState, ITodoListOptions> {
-  public defaultOptions() {
+  public defaultOptions(): ITodoListOptions {
     return {
       itemTemplate: '',
     };

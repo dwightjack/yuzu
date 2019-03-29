@@ -15,12 +15,25 @@ export interface IListener {
 
 export interface IComponentConstructable<C> {
   new (options: IObject): C;
+  root?: string;
+  isComponent: (value: any) => value is IComponentConstructable<C>;
+  UID_DATA_ATTR: string;
+  YUZU_COMPONENT: true;
+  defaultOptions: (self?: any) => IObject;
 }
 
 export interface IRefConstructor<T = Component> {
   id: string;
   el?: Element | HTMLElement | string;
   component: IComponentConstructable<T>;
+  on?: IObject<fn>;
+  [key: string]: any;
+}
+
+export interface IRef<T> {
+  id: string;
+  el?: T extends Component ? never : Element | HTMLElement | string;
+  component: T;
   on?: IObject<fn>;
   [key: string]: any;
 }

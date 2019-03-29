@@ -1,5 +1,5 @@
 import { datasetParser, isElement, evaluate } from 'yuzu-utils';
-import { IObject } from 'yuzu/types';
+import { IObject, IState } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
 
@@ -68,10 +68,10 @@ let childIdx = -1;
  * @property {Map} $instances Running instances storage
  * @returns {Sandbox}
  */
-export class Sandbox extends Component {
+export class Sandbox extends Component<IState, ISandboxOptions> {
   public static UID_DATA_ATTR = 'data-sandbox';
 
-  public defaultOptions() {
+  public defaultOptions(): ISandboxOptions {
     return {
       components: [],
       id: `_sbx-${++idx}`,

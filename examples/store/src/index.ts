@@ -9,7 +9,7 @@ import { Count } from 'detached/src/count';
 
 devtools(Component);
 
-const addItem = ({ items }) => ({
+const addItem = ({ items }): { items: string[] } => ({
   items: [...items, items.length],
 });
 

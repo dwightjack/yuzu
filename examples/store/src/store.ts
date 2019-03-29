@@ -1,7 +1,16 @@
 import { DetachedComponent } from 'yuzu';
+import { IState } from 'yuzu/types';
 
-export default class Store extends DetachedComponent {
-  public defaultOptions() {
+export interface IStoreOptions {
+  name: string;
+  debug: boolean;
+  effects: { [key: string]: any };
+}
+
+export type StateChangeFn = (state: IState, prev?: IState) => void;
+
+export default class Store extends DetachedComponent<IState, IStoreOptions> {
+  public defaultOptions(): IStoreOptions {
     return {
       name: 'default',
       debug: true,
@@ -9,7 +18,7 @@ export default class Store extends DetachedComponent {
     };
   }
 
-  public dispatch = async (action, ...args) => {
+  public dispatch = async (action: (...args: any[]) => any, ...args: any[]) => {
     const { state: oldState } = this;
     const state = await action(this.state, ...args);
     if (state) {
@@ -18,33 +27,40 @@ export default class Store extends DetachedComponent {
     this.logAction(`${action.name || ''}`, this.state, oldState, args);
   };
 
-  public initialize() {
+  public initialize(): void {
     if (this.options.debug && this.$$logStart) {
       this.$$logStart(this.options.name, false);
     }
     this.actions = this.options.effects;
   }
 
-  public ready() {
+  public ready(): void {
     this.logAction(`@@INIT`, this.state, null);
   }
 
-  public logAction(msg, prev, next, args?) {
+  public logAction(
+    msg: string,
+    prev: IState,
+    next: IState,
+    args?: any[],
+  ): void {
     if (this.options.debug && this.$$logger) {
       this.$$logger.log(msg, prev, next, args);
     }
   }
 
-  public subscribe(fn) {
-    const listener = (state) => fn(state);
+  public subscribe(fn: StateChangeFn): () => void {
+    const listener = (state: IState): void => fn(state);
     this.on('change:*', listener);
     return () => this.unsubscribe(listener);
   }
 
-  public unsubscribe(fn) {
+  public unsubscribe(fn: StateChangeFn): void {
     this.off('change:*', fn);
   }
 }
 
-export const createStore = (initialState, options?) =>
-  new Store(options).init(initialState);
+export const createStore = <S = IState>(
+  initialState: S,
+  options?: Partial<IStoreOptions>,
+): Store => new Store(options).init(initialState);

@@ -18,6 +18,7 @@ import {
   IListener,
   IRefConstructor,
   IRefInstance,
+  IRef,
   IRefFactory,
   eventHandlerFn,
   stateUpdaterFn,
@@ -76,8 +77,8 @@ if (process.env.NODE_ENV !== 'production') {
  * @returns {Component}
  */
 export class Component<
-  ComponentState extends IState = IState,
-  ComponentOptions extends IObject = IObject
+  ComponentState = {},
+  ComponentOptions = {}
 > extends Events {
   public static root?: string;
   public static defaultOptions: (self?: any) => IObject;
@@ -167,7 +168,7 @@ export class Component<
   /**
    * Component constructor
    */
-  public constructor(options: ComponentOptions = {} as ComponentOptions) {
+  public constructor(options: Partial<ComponentOptions> = {}) {
     super();
     this.$warn = warn(this);
 
@@ -181,7 +182,7 @@ export class Component<
       );
       defaultOptions = defaultOptionsFn(this) as ComponentOptions;
     } else {
-      defaultOptions = this.defaultOptions(this) || {};
+      defaultOptions = this.defaultOptions(this) || ({} as ComponentOptions);
     }
 
     this.state = {} as ComponentState;
@@ -612,9 +613,9 @@ export class Component<
    * // instance.state.b === 2
    * // instance.state.a === undefined
    */
-  public replaceState(newState: ComponentState, silent = false): void {
+  public replaceState(newState: IState, silent = false): void {
     const { state: prevState } = this;
-    this.state = Object.assign({}, newState);
+    this.state = Object.assign({}, newState) as ComponentState;
     const entries = Object.entries(this.state) as [keyof ComponentState, any][];
     entries.forEach(([key, value]) => {
       if (!silent) {
@@ -737,8 +738,8 @@ export class Component<
    * @param {object} config A child component configuration object
    * @param {string} config.id Reference id. Will be used to set a reference to the child component onto `this.$refs`
    * @param {component} config.component Component constructor or component instance
-   * @param {string|HTMLElement} config.el Child component root element. Ignored if `config.component` is a component instance
-   * @param {Object} config.on Child component event listeners. Format `{ 'eventname': handler }`
+   * @param {string|HTMLElement} [config.el] Child component root element. This property is ignored if `config.component` is a component instance or a detached component constructor
+   * @param {Object} [config.on] Child component event listeners. Format `{ 'eventname': handler }`
    * @param {*} config.* Any other property listed here will be passed to the constructor as option
    * @param {object} [props] Child component initial state
    * @returns {Promise}
@@ -772,8 +773,10 @@ export class Component<
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef<C extends Component = Component<IState>>(
-    refCfg: IRefConstructor<C> | IRefInstance<C> | IRefFactory<C>,
+  public async setRef<C extends Component = Component>(
+    refCfg: IRef<
+      C | ((el: this['$el'], state: IState) => C) | IRefConstructor<C>
+    >,
     props?:
       | Partial<IState>
       | ((ref: C, parent: this) => void | Partial<IState>),
@@ -794,10 +797,10 @@ export class Component<
 
     if (Component.isComponent<C>(ChildComponent)) {
       ref = new ChildComponent(options);
-    } else if (typeof ChildComponent === 'function') {
-      ref = ChildComponent(el, this.state);
-    } else if ((ChildComponent as C) instanceof Component) {
+    } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
+    } else if (typeof ChildComponent === 'function') {
+      ref = ChildComponent(this.$el, this.state);
     } else {
       throw new TypeError('Invalid reference configuration');
     }

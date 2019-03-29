@@ -1,7 +1,19 @@
 import { Component } from 'yuzu';
 
-export class List extends Component {
-  public defaultOptions() {
+export interface IListState {
+  items: string[];
+}
+
+export interface IListOptions {
+  onClick: () => any;
+}
+
+export class List extends Component<IListState, IListOptions> {
+  public $els!: {
+    list: HTMLElement;
+  };
+
+  public defaultOptions(): IListOptions {
     return {
       onClick: () => undefined,
     };
@@ -19,12 +31,12 @@ export class List extends Component {
   };
 
   public actions = {
-    items: (items) => {
+    items: (items: IListState['items']) => {
       if (items.length > 0) {
         const item = document.createElement('li');
 
         item.innerText = items[items.length - 1];
-        (this.$els.list as Element).appendChild(item);
+        this.$els.list.appendChild(item);
       }
     },
   };
