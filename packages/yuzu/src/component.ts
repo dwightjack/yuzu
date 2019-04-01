@@ -20,6 +20,7 @@ import {
   IRefInstance,
   IRef,
   IRefFactory,
+  setRefProps,
   eventHandlerFn,
   stateUpdaterFn,
   ReadyStateFn,
@@ -133,13 +134,15 @@ export class Component<
   public $context?: IObject;
   public $parent?: Component;
 
-  public selectors?: IObject<string | ((el: Element) => Element | Element[])>;
+  public selectors?: IObject<
+    string | ((el: Element, options: ComponentOptions) => Element | Element[])
+  >;
   public listeners?: IObject<string | eventHandlerFn>;
   public actions?: IObject<string | fn>;
 
   public $refsStore: Map<string, Component>;
   public $listeners: Map<eventHandlerFn, IListener>;
-  public readyState?: ReadyStateFn;
+  public readyState?: ReadyStateFn<ComponentState>;
 
   public $warn: (msg: string, ...args: any[]) => void;
 
@@ -288,7 +291,7 @@ export class Component<
     if (this.selectors) {
       Object.entries(this.selectors).forEach(([key, selector]) => {
         if (typeof selector === 'function') {
-          this.$els[key.replace('[]', '')] = selector(this.$el);
+          this.$els[key.replace('[]', '')] = selector(this.$el, this.options);
           return;
         }
         if (!key.endsWith('[]')) {
@@ -374,8 +377,8 @@ export class Component<
 
     if (this.readyState) {
       // is it a promise ?
-      const watcher = (current: IState, prev: IState): void => {
-        if ((this.readyState as ReadyStateFn)(current, prev)) {
+      const watcher = (current: ComponentState, prev: ComponentState): void => {
+        if ((this.readyState as ReadyStateFn<ComponentState>)(current, prev)) {
           this.off('change:*', watcher);
           this.ready();
         }
@@ -555,10 +558,7 @@ export class Component<
     const changed: (keyof ComponentState)[] = [];
     const { state: prevState } = this;
 
-    const changeSet = evaluate(
-      updater as stateUpdaterFn<ComponentState>,
-      this.state,
-    );
+    const changeSet = evaluate(updater, this.state);
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -583,7 +583,7 @@ export class Component<
         }
         return newState;
       },
-      {} as any,
+      {} as ComponentState,
     );
 
     if (!silent && changed.length > 0) {
@@ -613,7 +613,7 @@ export class Component<
    * // instance.state.b === 2
    * // instance.state.a === undefined
    */
-  public replaceState(newState: IState, silent = false): void {
+  public replaceState(newState: IObject, silent = false): void {
     const { state: prevState } = this;
     this.state = Object.assign({}, newState) as ComponentState;
     const entries = Object.entries(this.state) as [keyof ComponentState, any][];
@@ -773,21 +773,21 @@ export class Component<
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef<C extends Component>(
+  public async setRef(
     refCfg: IRef<
-      IComponentConstructable<C> | C | ((el: this['$el'], state: IState) => C)
+      | IComponentConstructable<Component>
+      | Component
+      | ((el: Element, state: IState) => Component)
     >,
-    props?:
-      | Partial<IState>
-      | ((ref: C, parent: this) => void | Partial<IState>),
-  ): Promise<C> {
-    let ref: C;
+    props?: setRefProps<Component, this>,
+  ): Promise<Component> {
     if (!isPlainObject(refCfg)) {
       throw new TypeError('Invalid reference configuration');
     }
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
     const { detached } = this;
+    let ref: Component;
 
     // if (el && detached) {
     //   throw new Error(
@@ -795,15 +795,12 @@ export class Component<
     //   );
     // }
 
-    if (Component.isComponent<C>(ChildComponent)) {
+    if (Component.isComponent<Component>(ChildComponent)) {
       ref = new ChildComponent(options);
-    } else if (
-      !(ChildComponent instanceof Component) &&
-      typeof ChildComponent === 'function'
-    ) {
-      ref = ChildComponent(this.$el, this.state);
     } else if (ChildComponent instanceof Component) {
       ref = ChildComponent;
+    } else if (typeof ChildComponent === 'function') {
+      ref = ChildComponent(this.$el, this.state);
     } else {
       throw new TypeError('Invalid reference configuration');
     }

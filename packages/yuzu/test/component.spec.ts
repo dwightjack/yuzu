@@ -231,7 +231,7 @@ describe('`Component`', () => {
       const handler = fn;
       const def = 'click @def';
       const spy = spyOn(utils, 'bindMethod').and.returnValue(fn);
-      const spy2 = spyOn(inst, 'setListener').and.returnValue(fn);
+      const spy2 = spyOn(inst, 'setListener');
       inst.listeners = {
         [def]: handler,
       };
@@ -247,7 +247,7 @@ describe('`Component`', () => {
         'children[]': spy,
       };
       inst.mount(root);
-      expect(spy).toHaveBeenCalledWith(inst.$el);
+      expect(spy).toHaveBeenCalledWith(inst.$el, inst.options);
       expect(inst.$els.children).toEqual(children);
     });
 

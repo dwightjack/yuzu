@@ -326,11 +326,13 @@ selectors = {
 
 **Custom selector**
 
-To select elements based on a custom logic, you can use a function selector. The function will receive the component root element as first argument
+To select elements based on a custom logic, you can use a function selector. The function will receive the component root element and instance options as arguments
 
 ```js
 selectors = {
-  'children[]': (el) => Array.from(el.children),
+  // assume options.childrenClass === '.myChildren'
+  'children[]': (el, options) =>
+    Array.from(el.querySelectorAll(options.childrenClass)),
   first: (el) => el.firstElementChild,
 };
 ```

@@ -77,5 +77,6 @@ export interface IStateLogger<T> {
 
 export type fn = (...args: any[]) => any;
 export type eventHandlerFn = (e: Event, ...args: any[]) => void;
-export type stateUpdaterFn<T = IState> = (state: T) => Partial<T>;
-export type ReadyStateFn = (current: IState, prev: IState) => boolean;
+export type stateUpdaterFn<T> = (state: T) => Partial<T>;
+export type ReadyStateFn<S> = (current: S, prev: S) => boolean;
+export type setRefProps<C, P> = IState | ((ref: C, parent: P) => void | IState);
