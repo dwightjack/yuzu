@@ -22,47 +22,10 @@ export interface IComponentConstructable<C> {
   defaultOptions: (self?: any) => IObject;
 }
 
-export interface IRefConstructor<T> {
-  id: string;
-  el?: Element | HTMLElement | string;
-  component: IComponentConstructable<T>;
-  on?: IObject<fn>;
-  [key: string]: any;
-}
-
 export interface IRef<T> {
   id: string;
   el?: T extends Component ? never : Element | HTMLElement | string;
   component: T;
-  on?: IObject<fn>;
-  [key: string]: any;
-}
-
-export interface IAbstractRefConstructor<T = Component> {
-  id: string;
-  component: IComponentConstructable<T>;
-  on?: IObject<fn>;
-  [key: string]: any;
-}
-
-export interface IRefInstance<T> {
-  id: string;
-  component: T;
-  on?: IObject<fn>;
-  [key: string]: any;
-}
-
-export interface IRefFactory<T> {
-  id: string;
-  el?: Element | HTMLElement | string;
-  component: (el: Element, state: IState) => T;
-  on?: IObject<fn>;
-  [key: string]: any;
-}
-
-export interface IAbstractRefFactory<T> {
-  id: string;
-  component: (el: Element, state: IState) => T;
   on?: IObject<fn>;
   [key: string]: any;
 }

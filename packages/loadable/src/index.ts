@@ -77,7 +77,7 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
   > {
     public static root = `[data-loadable][data-component="${Child.name}"]`;
 
-    public defaultOptions() {
+    public defaultOptions(): ILoadableOptions {
       return Object.assign(
         {
           fetchData: noop,

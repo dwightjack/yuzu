@@ -23,14 +23,14 @@ export interface IExtendedComponent<P extends Component, M>
  *  }
  * });
  */
-export const extend = <P extends Component, T extends IObject>(
+export const extend = <P extends Component, T = any>(
   parent: IComponentConstructor,
-  props: T = {} as T,
+  props: T = {} as any,
 ): IExtendedComponent<P, T> => {
   const child = props.hasOwnProperty('constructor')
     ? props.constructor
-    : function ChildConstructor(this: Component): P {
-        return parent.apply(this, arguments);
+    : function ChildConstructor(this: Component, options?: IObject): P {
+        return parent.call(this, options) as any;
       };
 
   // https://github.com/mridgway/hoist-non-react-statics/blob/master/index.js#L51

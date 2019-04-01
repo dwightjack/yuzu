@@ -1,5 +1,5 @@
 import { Component } from './component';
-import { IObject, IStateLogger, IState } from '../types';
+import { IStateLogger, IState } from '../types';
 /**
  * `devtools` is an helper function that will expose the instance of a Component in a `$yuzu` property attached to its root DOM element.
  *
@@ -268,7 +268,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   /* eslint-enable no-param-reassign */
 } else {
-  devtools = (ComponentClass) => undefined;
+  devtools = () => undefined;
 }
 
 export { devtools };

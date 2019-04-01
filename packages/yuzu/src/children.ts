@@ -2,7 +2,8 @@ import { qsa } from 'yuzu-utils';
 import { Component } from './component';
 
 export type childIterator<T = any> = (el: Element, index: number) => T;
-
+export type childSelector<E> = string | E[] | ((el: Element) => E[]);
+export type childMounter<T> = (ctx: Component) => T[];
 /**
  * Element array Iterator.
  *
@@ -38,9 +39,9 @@ export const Children = <
   E extends Element = Element,
   I extends childIterator = childIterator<T>
 >(
-  selector: string | E[] | ((el: Element) => E[]),
+  selector: childSelector<E>,
   fn: I,
-) => (ctx: Component): Array<ReturnType<I>> => {
+): childMounter<ReturnType<I>> => (ctx) => {
   let els: E[];
   if (typeof selector === 'string') {
     els = qsa<E>(selector, ctx.$el);

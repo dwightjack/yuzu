@@ -16,10 +16,7 @@ import {
   IState,
   fn,
   IListener,
-  IRefConstructor,
-  IRefInstance,
   IRef,
-  IRefFactory,
   setRefProps,
   eventHandlerFn,
   stateUpdaterFn,
@@ -185,10 +182,10 @@ export class Component<
       );
       defaultOptions = defaultOptionsFn(this) as ComponentOptions;
     } else {
-      defaultOptions = this.defaultOptions(this) || ({} as ComponentOptions);
+      defaultOptions = this.defaultOptions(this) || ({} as any);
     }
 
-    this.state = {} as ComponentState;
+    this.state = {} as any;
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(defaultOptions, options, (k: string, keys: string) =>
@@ -211,7 +208,7 @@ export class Component<
         opts[key] = v; // eslint-disable-line no-param-reassign
         return opts;
       },
-      {} as ComponentOptions,
+      {} as any,
     );
 
     this.$active = false;
@@ -237,8 +234,9 @@ export class Component<
    * @param {Component} self The component instance itself
    * @returns {object}
    */
-  public defaultOptions(self?: this): ComponentOptions {
-    return {} as ComponentOptions;
+  public defaultOptions(self?: this): ComponentOptions;
+  public defaultOptions(): ComponentOptions {
+    return {} as any;
   }
 
   /**
@@ -583,7 +581,7 @@ export class Component<
         }
         return newState;
       },
-      {} as ComponentState,
+      {} as any,
     );
 
     if (!silent && changed.length > 0) {

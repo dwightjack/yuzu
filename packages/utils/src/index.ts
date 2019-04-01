@@ -1,6 +1,5 @@
 import { fn, IObject } from 'yuzu/types';
 import dush, { Idush } from 'dush';
-import { Component } from 'yuzu-yuzu/src';
 
 /**
  * !> This module is intended for usage inside the _yuzu*_ modules ecosystem and not for end-user applications.
@@ -14,7 +13,7 @@ import { Component } from 'yuzu-yuzu/src';
  * @public
  * @type {string}
  */
-export const UID_PREFIX: string = '_ui.';
+export const UID_PREFIX = '_ui.';
 
 /**
  * @private
@@ -246,7 +245,7 @@ export const datasetParser = (
   el: HTMLElement,
   matcher = INLINE_STATE_REGEXP,
   formatter = parseString,
-) => {
+): IObject => {
   return Object.entries(el.dataset).reduce((acc: IObject, [key, value]) => {
     if (matcher.test(key)) {
       const newKey = key.replace(
@@ -259,11 +258,10 @@ export const datasetParser = (
   }, {});
 };
 
-export const warn = (ctx: any) => {
+export const warn = (ctx: any): ((msg: string, ...args: any[]) => void) => {
   const name = ctx.displayName || ctx.name || 'Component';
   const { $uid = 'unmounted' } = ctx;
-  return (msg: string, ...args: any[]) =>
-    console.warn(`[yuzu:${name}#${$uid}] ${msg}`, args);
+  return (msg, ...args) => console.warn(`[yuzu:${name}#${$uid}] ${msg}`, args);
 };
 
 /**
@@ -304,7 +302,7 @@ export const qsa = <E extends Element = Element>(
   ctx: Element | Document = document,
 ): E[] => Array.from(ctx.querySelectorAll(selector));
 
-// tslint:disable-next-line: interface-name no-empty-interface
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface Events extends Idush {
   new (): this;
 }
