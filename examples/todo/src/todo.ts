@@ -35,9 +35,12 @@ export class Todo extends Component<ITodo, ITodoOptions> {
 
   public actions = {
     text: (str: string) => (this.$els.text.textContent = str),
-    completed: (completed: boolean) =>
-      this.$el.classList[completed ? 'add' : 'remove']('is-completed'),
+    completed: 'toggleComplete',
   };
+
+  public toggleComplete(completed: boolean): void {
+    this.$el.classList[completed ? 'add' : 'remove']('is-completed');
+  }
 
   public beforeMount(): void {
     this.$el.className = 'list-group-item';

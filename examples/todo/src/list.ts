@@ -1,7 +1,6 @@
 import { Component } from 'yuzu';
 import { Todo } from './todo';
 import { ITodo } from './types';
-import { IComponentConstructable } from 'yuzu-yuzu/types';
 
 interface ITodoListState {
   todos: ITodo[];
@@ -56,6 +55,7 @@ export class TodoList extends Component<ITodoListState, ITodoListOptions> {
       const id = `todo-${(this.todoIdx += 1)}`;
       todo.id = id;
       newTodoIds.push(id);
+
       this.setRef(
         {
           id,
@@ -68,7 +68,7 @@ export class TodoList extends Component<ITodoListState, ITodoListOptions> {
           template: this.options.itemTemplate,
         },
         todo,
-      ).then((item) => item);
+      );
     });
     this.setState({ todoIds: newTodoIds });
   }

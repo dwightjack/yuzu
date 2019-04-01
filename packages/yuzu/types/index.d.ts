@@ -18,7 +18,7 @@ export interface IComponentConstructable<C> {
   root?: string;
   isComponent: (value: any) => value is IComponentConstructable<C>;
   UID_DATA_ATTR: string;
-  YUZU_COMPONENT: true;
+  YUZU_COMPONENT: boolean;
   defaultOptions: (self?: any) => IObject;
 }
 

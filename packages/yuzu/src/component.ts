@@ -78,8 +78,8 @@ if (process.env.NODE_ENV !== 'production') {
  * @returns {Component}
  */
 export class Component<
-  ComponentState = {},
-  ComponentOptions = {}
+  ComponentState = any,
+  ComponentOptions = any
 > extends Events {
   public static root?: string;
   public static defaultOptions: (self?: any) => IObject;
@@ -119,7 +119,7 @@ export class Component<
     return value && value.YUZU_COMPONENT;
   }
 
-  public options: ComponentOptions;
+  public options: Readonly<ComponentOptions>;
 
   public displayName?: string;
   public detached?: boolean;
@@ -130,7 +130,7 @@ export class Component<
   public $uid!: string;
   public $els: { [key: string]: Element | Element[] };
   public $refs: { [key: string]: Component };
-  public state: ComponentState;
+  public state: Readonly<ComponentState>;
   public $context?: IObject;
   public $parent?: Component;
 
@@ -773,21 +773,21 @@ export class Component<
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef(
+  public async setRef<C extends Component>(
     refCfg: IRef<
-      | IComponentConstructable<Component>
-      | Component
-      | ((el: Element, state: IState) => Component)
+      | IComponentConstructable<C>
+      | C
+      | ((el: this['$el'], state: Readonly<ComponentState>) => C)
     >,
     props?: setRefProps<Component, this>,
-  ): Promise<Component> {
+  ): Promise<C> {
     if (!isPlainObject(refCfg)) {
       throw new TypeError('Invalid reference configuration');
     }
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
     const { detached } = this;
-    let ref: Component;
+    let ref: C;
 
     // if (el && detached) {
     //   throw new Error(
@@ -795,10 +795,10 @@ export class Component<
     //   );
     // }
 
-    if (Component.isComponent<Component>(ChildComponent)) {
+    if (Component.isComponent<C>(ChildComponent)) {
       ref = new ChildComponent(options);
     } else if (ChildComponent instanceof Component) {
-      ref = ChildComponent;
+      ref = ChildComponent as any;
     } else if (typeof ChildComponent === 'function') {
       ref = ChildComponent(this.$el, this.state);
     } else {
