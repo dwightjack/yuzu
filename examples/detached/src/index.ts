@@ -4,7 +4,15 @@ import { Count } from './count';
 
 devtools(Component);
 
-class App extends Component {
+interface IAppState {
+  output: any[];
+}
+
+class App extends Component<IAppState> {
+  public $els!: {
+    pre: HTMLPreElement;
+  };
+
   public selectors = {
     pre: 'pre',
   };
@@ -14,30 +22,16 @@ class App extends Component {
   };
 
   public actions = {
-    output(v) {
+    output(v: IAppState['output']) {
       this.$els.pre.innerText = JSON.stringify(v, null, 2);
     },
   };
-
-  // public initialize() {
-  //   this.setRef({
-  //     id: 'output',
-  //     component: Output,
-  //     on: {
-  //       append: (value) => {
-  //         this.setState(({ output }) => ({
-  //           output: [...output, value],
-  //         }));
-  //       },
-  //     },
-  //   });
-  // }
 }
 
 mount(App, '#app', null, [
   mount(Output, null, {
     id: 'output',
-    on: (app) => ({
+    on: (app: App) => ({
       append: (value) => {
         app.setState(({ output }) => ({
           output: [...output, value],
@@ -45,9 +39,7 @@ mount(App, '#app', null, [
       },
     }),
     state: {
-      'output>total': (output) => output.length,
+      'output>total': (output: IAppState['output']) => output.length,
     },
   }),
 ])();
-
-// new App().mount('#app');

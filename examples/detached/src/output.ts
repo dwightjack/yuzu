@@ -1,7 +1,10 @@
 import { DetachedComponent } from 'yuzu';
 import { Count } from './count';
 
-export class Output extends DetachedComponent {
+interface IOutputState {
+  total: number;
+}
+export class Output extends DetachedComponent<IOutputState> {
   public emitter: any;
 
   public state = {
@@ -13,12 +16,12 @@ export class Output extends DetachedComponent {
       this.emit('append', {});
     }, 1000);
 
-    const det = await this.setRef({
+    const det = await this.setRef<DetachedComponent>({
       id: 'child',
-      component: DetachedComponent,
+      component: DetachedComponent as any,
     });
 
-    const count = await det.setRef({
+    const count: Count = await det.setRef({
       component: Count,
       id: 'counter',
       el: document.createElement('p'),

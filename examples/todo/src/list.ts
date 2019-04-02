@@ -56,7 +56,7 @@ export class TodoList extends Component<ITodoListState, ITodoListOptions> {
       todo.id = id;
       newTodoIds.push(id);
 
-      this.setRef(
+      this.setRef<Todo>(
         {
           id,
           el: document.createElement('li'),
@@ -68,7 +68,7 @@ export class TodoList extends Component<ITodoListState, ITodoListOptions> {
           template: this.options.itemTemplate,
         },
         todo,
-      );
+      ).then((todo) => todo);
     });
     this.setState({ todoIds: newTodoIds });
   }

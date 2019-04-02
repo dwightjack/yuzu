@@ -8,9 +8,6 @@ import { IState, IObject } from '../types';
  * @see [Component](/packages/yuzu/api/component)
  * @returns {DetachedComponent}
  */
-export class DetachedComponent<
-  DetachedComponentState extends IState = IState,
-  DetachedComponentOptions extends IObject = IObject
-> extends Component<DetachedComponentState, DetachedComponentOptions> {
+export class DetachedComponent<S = any, O = any> extends Component<S, O> {
   public detached = true;
 }

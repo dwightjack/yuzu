@@ -2,11 +2,15 @@ import { qs, isElement, evaluate } from 'yuzu-utils';
 import { Component } from './component';
 import { IObject, IState, IComponentConstructable } from '../types';
 
-export type mounterFn = (ctx: Component) => Component;
+export type mounterFn = (ctx?: Component) => Component;
+
+export type mountEventObject = IObject<(...args: any[]) => void>;
+export type mountEventFn<C = any> = (ctx: C) => mountEventObject;
 
 export interface IMountProps extends IObject {
   state?: IState;
   id?: string;
+  on?: mountEventObject | mountEventFn;
 }
 
 export type mountChildren = mounterFn[] | ((ctx: Component) => mounterFn[]);
@@ -36,11 +40,11 @@ export function mount(
   el: HTMLElement | string | null,
   props: IMountProps | null = {},
   children?: mountChildren,
-) {
-  const { state = {}, id, on = {}, ...options } = props || ({} as IMountProps);
+): mounterFn {
+  const { state = {}, id, on = {}, ...options }: IMountProps = props || {};
   const component = new ComponentConstructor(options);
 
-  return function mounter(ctx?: Component) {
+  return function mounter(ctx) {
     if (!component.detached) {
       const root = typeof el === 'string' ? qs(el, ctx && ctx.$el) : el;
 

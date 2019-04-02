@@ -1,11 +1,14 @@
 import { Component } from 'yuzu';
 
-export class Count extends Component {
+interface ICountState {
+  count: number;
+}
+export class Count extends Component<ICountState> {
   public state = {
     count: 0,
   };
 
   public actions = {
-    count: (v) => (this.$el.textContent = v),
+    count: (v: number) => (this.$el.textContent = `${v}`),
   };
 }
