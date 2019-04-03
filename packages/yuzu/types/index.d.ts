@@ -16,7 +16,6 @@ export interface IListener {
 export interface IComponentConstructable<C> {
   new (options: any): C;
   root?: string;
-  isComponent: (value: any) => boolean;
   UID_DATA_ATTR: string;
   YUZU_COMPONENT: boolean;
 }

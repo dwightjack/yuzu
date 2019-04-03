@@ -11,7 +11,7 @@ export class Output extends DetachedComponent<IOutputState> {
     total: 0,
   };
 
-  public async initialize() {
+  public async initialize(): Promise<void> {
     this.emitter = setInterval(() => {
       this.emit('append', { id: 'output' });
     }, 1000);
@@ -32,7 +32,7 @@ export class Output extends DetachedComponent<IOutputState> {
     });
   }
 
-  public beforeDestroy() {
+  public beforeDestroy(): void {
     clearInterval(this.emitter);
   }
 }

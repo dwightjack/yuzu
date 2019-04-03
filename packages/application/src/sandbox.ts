@@ -1,23 +1,23 @@
 import { datasetParser, isElement, evaluate } from 'yuzu-utils';
-import { IObject, IState } from 'yuzu/types';
+import { IObject, IComponentConstructable } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
 
 export type entrySelectorFn = (sbx: Sandbox) => boolean | HTMLElement[];
 
 export type sandboxComponentOptions = [
-  typeof Component,
+  IComponentConstructable<Component>,
   { [key: string]: any }
 ];
 
 export interface ISandboxRegistryEntry {
-  component: typeof Component;
+  component: IComponentConstructable<Component>;
   selector: string | entrySelectorFn;
   [key: string]: any;
 }
 
 export interface ISandboxOptions {
-  components?: (typeof Component | sandboxComponentOptions)[];
+  components?: (IComponentConstructable<Component> | sandboxComponentOptions)[];
   root: HTMLElement | string;
   id: string;
 }
@@ -68,7 +68,10 @@ let childIdx = -1;
  * @property {Map} $instances Running instances storage
  * @returns {Sandbox}
  */
-export class Sandbox extends Component<IState, ISandboxOptions> {
+export class Sandbox<ISandboxState = any> extends Component<
+  ISandboxState,
+  ISandboxOptions
+> {
   public static UID_DATA_ATTR = 'data-sandbox';
 
   public defaultOptions(): ISandboxOptions {
@@ -128,13 +131,11 @@ export class Sandbox extends Component<IState, ISandboxOptions> {
    *   theme: 'dark' // <-- instance options
    * });
    */
-  public register(
-    params: {
-      component?: typeof Component;
-      selector?: string | entrySelectorFn;
-      [key: string]: any;
-    } = {},
-  ): void {
+  public register<C extends Component>(params: {
+    component: IComponentConstructable<C>;
+    selector: string | entrySelectorFn;
+    [key: string]: any;
+  }): void {
     if (!Component.isComponent(params.component)) {
       throw new TypeError('Missing or invalid `component` property');
     }
@@ -144,7 +145,7 @@ export class Sandbox extends Component<IState, ISandboxOptions> {
     ) {
       throw new TypeError('Missing `selector` property');
     }
-    this.$registry.push(params as ISandboxRegistryEntry);
+    this.$registry.push(params);
   }
 
   /**
@@ -237,11 +238,11 @@ export class Sandbox extends Component<IState, ISandboxOptions> {
    * @param {HTMLElement} [el] Root element
    * @returns {Component}
    */
-  public createInstance(
-    ComponentConstructor: typeof Component,
+  public createInstance<C extends Component>(
+    ComponentConstructor: IComponentConstructable<C>,
     options: IObject,
     el?: HTMLElement,
-  ): Promise<Component> {
+  ): Promise<C> {
     const inlineOptions = el ? datasetParser(el) : {};
 
     return this.setRef({

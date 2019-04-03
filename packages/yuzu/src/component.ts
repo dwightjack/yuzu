@@ -79,7 +79,7 @@ export class Component<
   ComponentOptions = any
 > extends Events {
   public static root?: string;
-  public static defaultOptions: (self?: any) => IObject;
+  public static defaultOptions?: (self?: any) => IObject;
 
   /**
    * ```js
@@ -110,9 +110,9 @@ export class Component<
    * @param {*} value
    * @returns {boolean}
    */
-  public static isComponent<C>(
+  public static isComponent<T>(
     value: any,
-  ): value is IComponentConstructable<C> {
+  ): value is IComponentConstructable<T> {
     return value && value.YUZU_COMPONENT;
   }
 

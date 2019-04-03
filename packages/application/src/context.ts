@@ -4,7 +4,7 @@ import { IObject } from 'yuzu/types';
 export interface IContext {
   getData(): IObject;
   update(payload: IObject): void;
-  inject(instance: Component): Component;
+  inject<C extends Component>(instance: C): C;
 }
 /**
  * ```js
@@ -39,7 +39,7 @@ export const createContext = (data: IObject = {}): IContext => {
      * const context = createContext({ theme: 'dark' });
      * context.getData().theme === 'dark';
      */
-    getData() {
+    getData(): IObject {
       return $data;
     },
 
@@ -58,7 +58,7 @@ export const createContext = (data: IObject = {}): IContext => {
      * context.update({ theme: 'light ' });
      * context.getData().theme === 'light';
      */
-    update(payload: IObject) {
+    update(payload: IObject): void {
       $data = payload;
     },
 
@@ -79,7 +79,7 @@ export const createContext = (data: IObject = {}): IContext => {
      *
      * instance.$context.theme === 'dark';
      */
-    inject(instance: Component) {
+    inject<C extends Component>(instance: C): C {
       Object.defineProperty(instance, '$context', {
         enumerable: false,
         get: () => $data,

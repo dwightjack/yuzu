@@ -1,20 +1,34 @@
 import { Component } from 'yuzu';
-import { IComponentConstructable, IObject, IState } from 'yuzu/types';
+import Store from './store';
+import { IComponentConstructable, IState, IObject } from 'yuzu/types';
 
-const bindActions = (actions, store) => {
+export type Actions = IObject<(...args: any[]) => any>;
+export type Selector = (state: IState) => IState;
+export type Connector<C extends Component> = (
+  Child: IComponentConstructable<C>,
+) => IComponentConstructable<C>;
+
+const bindActions = (
+  actions: Actions | ((dispatch: any) => Actions),
+  store: Store,
+): Actions => {
   if (typeof actions === 'function') {
     return actions(store.dispatch);
   }
-  const mapped = {};
+  const mapped: Actions = {};
   Object.keys(actions).forEach((i) => {
-    mapped[i] = (...args) => store.dispatch(actions[i], ...args);
+    mapped[i] = (...args: any[]) => store.dispatch(actions[i], ...args);
   });
 
   return mapped;
 };
 
 /* eslint-disable no-param-reassign */
-export function attachStore(instance, selector?, actions?) {
+export function attachStore(
+  instance: Component,
+  selector?: Selector,
+  actions?: Actions | ((dispatch: any) => Actions),
+): void {
   if (!instance.$context) {
     return;
   }
@@ -31,7 +45,7 @@ export function attachStore(instance, selector?, actions?) {
   const state = selector($store.state);
   Object.assign(instance.state, state);
 
-  const update = (newState) => {
+  const update = (newState: IState): void => {
     instance.setState(selector(newState));
   };
 
@@ -46,7 +60,7 @@ export function attachStore(instance, selector?, actions?) {
 }
 /* eslint-enable no-param-reassign */
 
-export function inject(instance, store) {
+export function inject<C extends Component>(instance: C, store: Store): C {
   Object.defineProperty(instance, '$context', {
     enumerable: false,
     writable: false,
@@ -57,33 +71,36 @@ export function inject(instance, store) {
   return instance;
 }
 
-export const connect = <C extends typeof Component>(selector?, actions?) => (
-  Child: C,
-) => {
-  const Connected = class extends Child {
-    constructor(options?) {
-      super(options);
+export function connect(
+  selector?: Selector,
+  actions?: Actions | ((dispatch: any) => Actions),
+): Connector<Component> {
+  return function connector(Child) {
+    const Connected = class extends Child {
+      public constructor(options?: any) {
+        super(options);
 
-      Object.defineProperty(this, '$connected', {
-        enumerable: false,
-        writable: false,
-        value: true,
-      });
-    }
+        Object.defineProperty(this, '$connected', {
+          enumerable: false,
+          writable: false,
+          value: true,
+        });
+      }
 
-    public initialize() {
-      attachStore(this, selector, actions);
-      super.initialize();
-    }
+      public initialize(): void {
+        attachStore(this, selector, actions);
+        super.initialize();
+      }
+    };
+
+    const name = Child.root
+      ? Child.root.replace(/^\./, '')
+      : Child.name || 'Component';
+
+    Object.defineProperty(Connected, 'displayName', {
+      value: `Connected${name}`,
+    });
+
+    return Connected;
   };
-
-  const name = Child.root
-    ? Child.root.replace(/^\./, '')
-    : Child.name || 'Component';
-
-  Object.defineProperty(Connected, 'displayName', {
-    value: `Connected${name}`,
-  });
-
-  return Connected;
-};
+}

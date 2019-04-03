@@ -1,6 +1,5 @@
 import { Component, devtools, mount } from 'yuzu';
 import { Output } from './output';
-import { Count } from './count';
 
 devtools(Component);
 
