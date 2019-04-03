@@ -16,16 +16,18 @@ export class Output extends DetachedComponent<IOutputState> {
       this.emit('append', { id: 'output' });
     }, 1000);
 
-    const det = await this.setRef<DetachedComponent>({
+    const det = await this.setRef({
       id: 'child',
-      component: DetachedComponent as any,
+      component: DetachedComponent,
     });
 
-    const count: Count = await det.setRef({
+    const count = await det.setRef({
       component: Count,
       id: 'counter',
       el: document.createElement('p'),
     });
+
+    this.$refs.count.setState({ xxx: false });
 
     this.on('change:total', (total) => {
       count.setState({ count: total });

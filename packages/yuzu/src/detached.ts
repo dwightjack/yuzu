@@ -1,5 +1,4 @@
 import { Component } from './component';
-import { IState, IObject } from '../types';
 
 /**
  * `DetachedComponent` is a special kind of `Component` that does not have a root element (`$el`).
