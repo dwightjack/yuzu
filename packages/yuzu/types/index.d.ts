@@ -23,7 +23,7 @@ export interface IComponentConstructable<C> {
 
 export interface IRef<T> {
   id: string;
-  el?: T extends Component ? never : Element | HTMLElement | string;
+  el?: Element | HTMLElement | string;
   component: T;
   on?: IObject<fn>;
   [key: string]: any;
