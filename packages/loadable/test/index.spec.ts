@@ -92,7 +92,6 @@ describe('`Loadable`', () => {
   describe('setLoader()', () => {
     class Loader extends Component {}
     let LoadableComponent: any;
-    let inst: any;
     beforeEach(() => {
       LoadableComponent = Loadable({
         component: Component,
