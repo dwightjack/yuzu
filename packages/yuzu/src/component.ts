@@ -110,7 +110,7 @@ export class Component<
    * @param {*} value
    * @returns {boolean}
    */
-  public static isComponent<C = Component>(
+  public static isComponent<C>(
     value: any,
   ): value is IComponentConstructable<C> {
     return value && value.YUZU_COMPONENT;
