@@ -62,7 +62,7 @@ export function mount<C extends Component, X extends Component>(
         {
           component,
           id: id || `ref__${++childRefIdx}`,
-          on: typeof on === 'function' ? on(ctx) : on,
+          on: evaluate(on, ctx),
         },
         state,
       );
