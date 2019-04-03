@@ -1,10 +1,10 @@
 import { noop, isElement, evaluate } from 'yuzu-utils';
 import { Component } from 'yuzu';
-import { IObject } from 'yuzu/types';
+import { IObject, IComponentConstructable } from 'yuzu/types';
 
 export interface ILoadableOptions {
-  component: typeof Component;
-  loader?: typeof Component | null;
+  component: IComponentConstructable<Component>;
+  loader?: IComponentConstructable<Component> | null;
   template?: (...args: any[]) => string | void;
   renderRoot?: string | (($el: Element) => Element);
   fetchData: (ctx: Component) => IObject | void;
@@ -53,8 +53,11 @@ export interface ILoadableState {
  *
  * const message = new LoadableMessage().mount('#loadable-message');
  */
-export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
+export function Loadable(
+  opts: ILoadableOptions,
+): IComponentConstructable<Component> {
   const { component: Child, ...params } = opts;
+  const childName = Child.displayName || Child.name || '';
 
   /**
    * Async component loader
@@ -75,7 +78,7 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
     ILoadableState,
     ILoadableOptions
   > {
-    public static root = `[data-loadable][data-component="${Child.name}"]`;
+    public static root = `[data-loadable="${childName}"], [data-loadable][data-component="${childName}"]`;
 
     public defaultOptions(): ILoadableOptions {
       return Object.assign(
@@ -144,7 +147,7 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
         await this.setComponent(root);
         return this;
       } catch (e) {
-        console.error(e); // tslint:disable-line no-console
+        console.error(e);
         return this;
       }
     }
@@ -211,17 +214,17 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
      *
      * instanceof loadable.$refs.async === Loader
      */
-    public async setLoader(): Promise<void> {
+    public async setLoader(): Promise<void | Component> {
       const { loader } = this.options;
 
       if (loader) {
-        await this.setRef({
+        return await this.setRef({
           id: 'async',
           el: this.$els.async,
           component: loader,
         });
       }
-      return Promise.resolve();
+      return;
     }
 
     /**
@@ -254,8 +257,7 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
       if (html) {
         wrapper.innerHTML = html;
         if (wrapper.childElementCount > 1) {
-          // tslint:disable-next-line no-console
-          console.warn(
+          this.$warn(
             'Multi-root templates are not supported. Just the first root element will be rendered.',
           );
         }
@@ -266,9 +268,9 @@ export const Loadable = (opts: ILoadableOptions): typeof LoadableComponent => {
     }
   };
 
-  Object.defineProperty(LoadableComponent, 'name', {
-    value: `Loadable${Child.name || 'Component'}`,
+  Object.defineProperty(LoadableComponent, 'displayName', {
+    value: `Loadable${childName || 'Component'}`,
   });
 
   return LoadableComponent;
-};
+}

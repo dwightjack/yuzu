@@ -3,7 +3,6 @@ import * as context from '../src/context';
 import { Component } from 'yuzu';
 import * as utils from 'yuzu-utils';
 
-/* tslint:disable max-classes-per-file */
 describe('`Sandbox`', () => {
   describe('constructor', () => {
     it('extends Component', () => {
@@ -55,7 +54,7 @@ describe('`Sandbox`', () => {
       }
       const components = [Child];
       const spy = spyOn(Sandbox.prototype, 'register');
-      const inst = new Sandbox({ components, root });
+      new Sandbox({ components, root });
       expect(spy).toHaveBeenCalledWith({ component: Child, selector: 'demo' });
     });
 
@@ -68,7 +67,7 @@ describe('`Sandbox`', () => {
         [Child, { selector: 'custom', prop: true }] as sandboxComponentOptions,
       ];
       const spy = spyOn(Sandbox.prototype, 'register');
-      const inst = new Sandbox({ components, root });
+      new Sandbox({ components, root });
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         selector: 'custom',
@@ -83,7 +82,7 @@ describe('`Sandbox`', () => {
       }
       const components = [[Child, { prop: true }] as sandboxComponentOptions];
       const spy = spyOn(Sandbox.prototype, 'register');
-      const inst = new Sandbox({ components, root });
+      new Sandbox({ components, root });
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         selector: 'demo',
@@ -173,7 +172,7 @@ describe('`Sandbox`', () => {
     it('injects the context data in the sandbox itself (for inheritance)', () => {
       const mock = {
         inject: jasmine.createSpy('inject'),
-      };
+      } as any;
       spyOn(context, 'createContext').and.returnValue(mock);
       inst.start({});
       expect(mock.inject).toHaveBeenCalledWith(inst);
@@ -214,7 +213,7 @@ describe('`Sandbox`', () => {
     });
 
     it('should NOT call Sandbox#createInstance if selector DOES NOT resolve to an array', () => {
-      spyOn(inst, 'resolveSelector').and.returnValue({});
+      spyOn(inst, 'resolveSelector').and.returnValue({} as any);
       const spy = spyOn(inst, 'createInstance');
       inst.start();
       expect(spy).not.toHaveBeenCalled();
@@ -222,7 +221,9 @@ describe('`Sandbox`', () => {
 
     it('should call Sandbox#createInstance once if selector resolves to true', () => {
       const child = new Component();
-      const spy = spyOn(inst, 'createInstance').and.returnValue(child);
+      const spy = spyOn(inst, 'createInstance').and.returnValue(
+        Promise.resolve(child),
+      );
       inst.$registry[0].selector = () => true;
       inst.start();
       expect(spy.calls.count()).toBe(1);
@@ -296,7 +297,9 @@ describe('`Sandbox`', () => {
 
       spyOn(inst, 'resolveSelector').and.returnValue([child]);
       const childInstance = new Component();
-      spyOn(inst, 'createInstance').and.returnValue(childInstance);
+      spyOn(inst, 'createInstance').and.returnValue(
+        Promise.resolve(childInstance),
+      );
       const spy = spyOn(inst.$instances, 'set');
       inst.start();
 
@@ -309,7 +312,9 @@ describe('`Sandbox`', () => {
     it('emits a "start" event when instance creation has ended', (done) => {
       const spy = spyOn(inst, 'emit').and.callThrough();
       let runner: any;
-      const promise = new Promise((resolve) => (runner = resolve));
+      const promise: Promise<Component> = new Promise((resolve) => {
+        runner = resolve.bind(null, new Component());
+      });
       spyOn(inst, 'resolveSelector').and.returnValue(true);
       spyOn(inst, 'createInstance').and.returnValue(promise);
       inst.on('start', () => {
@@ -337,7 +342,7 @@ describe('`Sandbox`', () => {
       const spy = jasmine.createSpy('created');
       const options = {};
       class Child extends Component {
-        constructor(opts: any) {
+        public constructor(opts: any) {
           super(opts);
           spy(this, opts);
         }
@@ -350,7 +355,7 @@ describe('`Sandbox`', () => {
       const spy = spyOn(inst, 'setRef');
       const options = { demo: true };
       class Child extends Component {
-        constructor(opts: any) {
+        public constructor(opts: any) {
           super(opts);
           spy(this, opts);
         }
@@ -375,7 +380,7 @@ describe('`Sandbox`', () => {
       const spy = jasmine.createSpy('created');
       const options = { demo: true };
       class Child extends Component {
-        constructor(opts: any) {
+        public constructor(opts: any) {
           super(opts);
           spy(opts);
         }
@@ -537,4 +542,3 @@ describe('`Sandbox`', () => {
     });
   });
 });
-/* tslint:enable max-classes-per-file */

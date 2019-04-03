@@ -103,10 +103,25 @@ export class Sandbox<ISandboxState = any> extends Component<
 
     components.forEach((config) => {
       if (!Array.isArray(config)) {
-        this.register({ component: config, selector: config.root });
+        if (config.root) {
+          this.register({ component: config, selector: config.root });
+        } else {
+          this.$warn(
+            `Skipping component ${config.displayName ||
+              config.name} because static "root" selector is missing`,
+          );
+        }
       } else {
         const [component, params = {}] = config;
-        this.register({ component, selector: component.root, ...params });
+        const selector = component.root || params.selector;
+        if (selector) {
+          this.register({ component, selector, ...params });
+        } else {
+          this.$warn(
+            `Skipping component ${component.displayName ||
+              component.name} because a static "root" selector is missing and no "selector" param is passed-in`,
+          );
+        }
       }
     });
 
@@ -182,7 +197,6 @@ export class Sandbox<ISandboxState = any> extends Component<
     const ret = this.$registry.map(
       async ({ component: ComponentConstructor, selector, ...options }) => {
         if (this.$instances.has(selector)) {
-          // tslint:disable-next-line no-console
           console.warn(
             `Component ${ComponentConstructor} already initialized on ${selector}`,
           );

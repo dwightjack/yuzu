@@ -14,10 +14,11 @@ export interface IListener {
 }
 
 export interface IComponentConstructable<C> {
-  new (options: any): C;
+  new (options?: any): C;
   root?: string;
   UID_DATA_ATTR: string;
   YUZU_COMPONENT: boolean;
+  displayName?: string;
 }
 
 export interface IRef<T> {

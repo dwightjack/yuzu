@@ -46,8 +46,6 @@ if (process.env.NODE_ENV !== 'production') {
   };
 }
 
-// tslint:disable-next-line: interface-name no-empty-interface
-
 /**
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
  *
@@ -113,12 +111,13 @@ export class Component<
   public static isComponent<T>(
     value: any,
   ): value is IComponentConstructable<T> {
-    return value && value.YUZU_COMPONENT;
+    return !!(value && value.YUZU_COMPONENT);
   }
+
+  public static displayName?: string;
 
   public options: Readonly<ComponentOptions>;
 
-  public displayName?: string;
   public detached?: boolean;
 
   public $active: boolean;
@@ -278,7 +277,7 @@ export class Component<
 
     if (!isElement($el)) {
       // fail silently (kinda...);
-      console.warn('Element is not a DOM element', $el); // tslint:disable-line no-console
+      this.$warn('Element is not a DOM element', $el);
       return this;
     }
 
@@ -343,7 +342,7 @@ export class Component<
     let uid = $el && $el.getAttribute(Component.UID_DATA_ATTR);
 
     if (uid) {
-      console.warn(`Element ${uid} is already initialized... skipping`, $el); // tslint:disable-line no-console
+      this.$warn(`Element ${uid} is already initialized... skipping`, $el);
       this.$uid = uid;
 
       return this;
@@ -399,7 +398,7 @@ export class Component<
    *
    * ?> Use this hook to tap as early as possible into the component's properties. For example to set a dynamic initial state.
    */
-  public created(): void {} // tslint:disable-line: no-empty
+  public created(): void {}
 
   /**
    * Lifecycle hook called just before mounting the instance onto the root element.
@@ -408,7 +407,7 @@ export class Component<
    *
    * Overwrite this method with custom logic in your components.
    */
-  public beforeMount(): void {} // tslint:disable-line: no-empty
+  public beforeMount(): void {}
 
   /**
    * Lifecycle hook called when the instance gets mounted onto a DOM element.
@@ -419,7 +418,7 @@ export class Component<
    *
    * ?> Use this method when you need to work with the DOM or manage any side-effect that requires the component to be into the DOM.
    */
-  public mounted(): void {} // tslint:disable-line: no-empty
+  public mounted(): void {}
 
   /**
    * Lifecycle hook called before instance initialization.
@@ -430,7 +429,7 @@ export class Component<
    *
    * ?> Use this method to set child components by [setRef](#setRef) and run any preparatory work on the instance.
    */
-  public initialize(): void {} // tslint:disable-line: no-empty
+  public initialize(): void {}
 
   /**
    * Lifecycle hook called after instance initialization.
@@ -441,7 +440,7 @@ export class Component<
    *
    * ?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`](packages/yuzu/#async-ready-state) method.
    */
-  public ready(): void {} // tslint:disable-line: no-empty
+  public ready(): void {}
 
   /**
    * Lifecycle hook called just before closing child refs.
@@ -452,7 +451,7 @@ export class Component<
    *
    * !> This is an async method. Return a promise in order to suspend the destroy process.
    */
-  public beforeDestroy(): void {} // tslint:disable-line: no-empty
+  public beforeDestroy(): void {}
 
   /**
    * Returns an array of elements matching a CSS selector in the context of the component's root element
@@ -556,7 +555,7 @@ export class Component<
     const changed: (keyof ComponentState)[] = [];
     const { state: prevState } = this;
 
-    const changeSet = evaluate(updater, this.state);
+    const changeSet: Partial<ComponentState> = evaluate(updater, this.state);
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -950,8 +949,7 @@ export class Component<
       $refsStore.clear();
       return result;
     } catch (e) {
-      // tslint:disable-next-line no-console
-      console.error(
+      this.$warn(
         'An error occurred while destroy the component child components',
         e,
       );
@@ -995,7 +993,7 @@ export class Component<
 
       return Promise.resolve();
     } catch (e) {
-      console.error('destroy catch: ', e); // tslint:disable-line no-console
+      this.$warn('destroy error: ', e);
       return Promise.reject(e);
     }
   }

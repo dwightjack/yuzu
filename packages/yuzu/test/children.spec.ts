@@ -5,7 +5,7 @@ import { mount } from '../../../shared/utils';
 
 describe('`Children`', () => {
   let root: Component;
-  const noop = () => {}; // tslint:disable-line no-empty
+  const noop = (): void => {};
 
   beforeEach(() => {
     mount('component.html');

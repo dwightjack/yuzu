@@ -21,14 +21,14 @@ describe('`extend`', () => {
   it('should call the parent constructor with passed-in arguments', () => {
     const spy = jasmine.createSpy();
     class Parent extends Component {
-      constructor(...args: any[]) {
+      public constructor(...args: any[]) {
         super(...args);
         spy(...args);
       }
     }
     const MyComp = extend(Parent);
     const options = { demo: true };
-    const inst = new MyComp(options);
+    new MyComp(options);
 
     expect(spy).toHaveBeenCalledWith(options);
   });
@@ -36,8 +36,7 @@ describe('`extend`', () => {
   it('should call the parent constructor with the child context', () => {
     const spy = jasmine.createSpy();
     class Parent extends Component {
-      //tslint:disable-line
-      constructor(...args: any[]) {
+      public constructor(...args: any[]) {
         super(...args);
         spy(this);
       }
@@ -53,7 +52,7 @@ describe('`extend`', () => {
       constructor: spy,
     });
     const options = {};
-    const inst = new MyComp(options);
+    new MyComp(options);
     expect(spy).toHaveBeenCalledWith(options);
   });
 

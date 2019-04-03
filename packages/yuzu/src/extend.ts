@@ -41,7 +41,7 @@ export const extend = <P extends Component, T = any>(
     try {
       // Avoid failures from read-only properties
       Object.defineProperty(child, key, descriptor as PropertyDescriptor);
-    } catch (e) {} // tslint:disable-line no-empty
+    } catch (e) {}
   }
 
   child.prototype = Object.assign(Object.create(parent.prototype), props);

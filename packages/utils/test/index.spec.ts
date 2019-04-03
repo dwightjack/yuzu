@@ -1,5 +1,5 @@
 import * as utils from '../src/index';
-import dush, { Idush } from 'dush';
+import dush from 'dush';
 import { mount } from '../../../shared/utils';
 
 describe('`Utils`', () => {
@@ -55,7 +55,7 @@ describe('`Utils`', () => {
       expect(fn('string')).toBe(false);
       expect(fn(1)).toBe(false);
 
-      const noop = () => undefined;
+      const noop = (): void => undefined;
       expect(fn(noop)).toBe(false);
 
       // works
@@ -139,7 +139,6 @@ describe('`Utils`', () => {
     });
 
     it('should return `true` for non-plain objects', () => {
-      // tslint:disable-next-line max-classes-per-file
       class Foo {
         public nodeType = 1;
       }

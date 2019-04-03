@@ -13,7 +13,7 @@ describe('`mount`', () => {
       spy = jasmine.createSpy();
       root = document.createElement('div');
       Fake = class extends Component {
-        constructor(...args: any[]) {
+        public constructor(...args: any[]) {
           super(...args);
           spy.apply(this, args);
         }
@@ -80,7 +80,7 @@ describe('`mount`', () => {
     it('should call `.mount()` on generated component', () => {
       const root = document.getElementById('app');
 
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
       const spy = spyOn(MyComponent.prototype, 'mount').and.callThrough();
 
       if (root) {
@@ -92,7 +92,7 @@ describe('`mount`', () => {
     it('should NOT call `.mount()` on generated component if root is not an element', () => {
       const root: any = null;
 
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
       const spy = spyOn(MyComponent.prototype, 'mount');
 
       mount(MyComponent, root)();
@@ -100,7 +100,7 @@ describe('`mount`', () => {
     });
 
     it('should mount generated component with provided state', () => {
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
       const spy = spyOn(MyComponent.prototype, 'mount');
       const state = {};
       const root = document.getElementById('app') as HTMLElement;
@@ -111,7 +111,7 @@ describe('`mount`', () => {
     });
 
     it('should instead initialize the component if it is a detached component', () => {
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
       const spy = spyOn(MyComponent.prototype, 'mount');
       const spyInit = spyOn(MyComponent.prototype, 'init');
       const state = {};
@@ -127,7 +127,7 @@ describe('`mount`', () => {
     });
 
     it('should return a component instance', () => {
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
 
       const component = mount(MyComponent, '#app')();
 
@@ -136,7 +136,7 @@ describe('`mount`', () => {
 
     it('should NOT pass the state if a context is provided', () => {
       const ctx = new Component().mount('#ref');
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
       const spy = spyOn(MyComponent.prototype, 'mount').and.callThrough();
       const state = {};
       mount(MyComponent, '.child', { state })(ctx);
@@ -147,7 +147,7 @@ describe('`mount`', () => {
     it('should set the generated component as a child of its context', () => {
       const ctx = new Component().mount('#ref');
       const spy = spyOn(ctx, 'setRef');
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
 
       const state = {};
       const component = mount(MyComponent, '.child', { state })(ctx);
@@ -164,11 +164,11 @@ describe('`mount`', () => {
 
     it('should evaluate the "on" property', () => {
       const ctx = new Component().mount('#ref');
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
 
       const state = {};
       const spy = jasmine.createSpy().and.returnValue({});
-      const component = mount(MyComponent, '.child', { state, on: spy })(ctx);
+      mount(MyComponent, '.child', { state, on: spy })(ctx);
 
       expect(spy).toHaveBeenCalledWith(ctx);
     });
@@ -177,7 +177,7 @@ describe('`mount`', () => {
   describe('Children management', () => {
     it('should execute child-as-a-function children argument', () => {
       const spy = jasmine.createSpy().and.returnValue([]);
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
 
       const component = mount(MyComponent, '#app', null, spy)();
 
@@ -186,7 +186,7 @@ describe('`mount`', () => {
 
     it('should iterate over children function and execute them with the component as context', () => {
       const spy = jasmine.createSpy();
-      class MyComponent extends Component {} // tslint:disable-line
+      class MyComponent extends Component {}
       const children = [spy, spy];
       const component = mount(MyComponent, '#app', null, children)();
 

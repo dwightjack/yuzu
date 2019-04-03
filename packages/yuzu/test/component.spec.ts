@@ -2,23 +2,20 @@ import { Component } from '../src/component';
 import { mount } from '../../../shared/utils';
 import * as utils from 'yuzu-utils';
 
-/* tslint:disable max-classes-per-file */
 describe('`Component`', () => {
   describe('isComponent', () => {
     it('should return false if argument in falsy', () => {
       expect(Component.isComponent(null)).toBe(false);
     });
-    it('should return false if argument has a non-function "defaultOptions" property ', () => {
+    it('should return true if argument has a "YUZU_COMPONENT" boolean property', () => {
       const value = {
-        defaultOptions: {},
-      };
-      expect(Component.isComponent(value)).toBe(false);
-    });
-    it('should return true if argument has a "defaultOptions" property  and it is a function', () => {
-      const value = {
-        defaultOptions: () => ({}),
+        YUZU_COMPONENT: true,
       };
       expect(Component.isComponent(value)).toBe(true);
+    });
+    it('should return false if argument does NOT have a "YUZU_COMPONENT" boolean property', () => {
+      const value = {};
+      expect(Component.isComponent(value)).toBe(false);
     });
   });
 
@@ -74,9 +71,10 @@ describe('`Component`', () => {
     it('should set default options from `defaultOptions` method', () => {
       const options = { demo: true };
       const spy = jasmine.createSpy().and.returnValue(options);
-      class Child extends Component {
-        public defaultOptions = spy;
-      }
+      class Child extends Component {}
+
+      Child.prototype.defaultOptions = spy;
+
       const child = new Child();
       expect(spy).toHaveBeenCalledWith(child);
       expect(child.options).toEqual(options);
@@ -96,8 +94,9 @@ describe('`Component`', () => {
     it('should merge default options with instance options', () => {
       const options = { demo: true };
       class Child extends Component {
-        // tslint:disable-line max-classes-per-file
-        public defaultOptions = () => options;
+        public defaultOptions(): any {
+          return options;
+        }
       }
       const child = new Child({ demo: false });
       expect(child.options).toEqual({ demo: false });
@@ -106,7 +105,6 @@ describe('`Component`', () => {
     it('should exclude passed-in options not defined in the defaults', () => {
       const options = { demo: true };
       class Child extends Component {
-        // tslint:disable-line max-classes-per-file
         public defaultOptions = () => options;
       }
       const child = new Child({ other: 'yes' });
@@ -119,8 +117,9 @@ describe('`Component`', () => {
       const spy = jasmine.createSpy();
       const options = { demo: spy };
       class Child extends Component {
-        // tslint:disable-line max-classes-per-file
-        public defaultOptions = () => options;
+        public defaultOptions(): any {
+          return options;
+        }
       }
       const child = new Child();
       child.options.demo();
@@ -130,12 +129,11 @@ describe('`Component`', () => {
     it('should execute the created lifecycle hook', () => {
       const spy = jasmine.createSpy();
       class Child extends Component {
-        // tslint:disable-line max-classes-per-file
-        public created() {
+        public created(): void {
           spy();
         }
       }
-      const i = new Child();
+      new Child();
       expect(spy).toHaveBeenCalled();
     });
   });
@@ -227,7 +225,7 @@ describe('`Component`', () => {
     });
 
     it('should attach event listeners. handlers are binded to the instance', () => {
-      const fn = () => undefined;
+      const fn = (): void => undefined;
       const handler = fn;
       const def = 'click @def';
       const spy = spyOn(utils, 'bindMethod').and.returnValue(fn);
@@ -294,7 +292,7 @@ describe('`Component`', () => {
       }).not.toThrow();
     });
     it('should check if a component has already been initialized on the DOM element', () => {
-      const spy = spyOn(console, 'warn');
+      const spy = spyOn(inst, '$warn');
       const uid = 'fake-uid';
       root.setAttribute(Component.UID_DATA_ATTR, uid);
       inst.init();
@@ -339,7 +337,7 @@ describe('`Component`', () => {
       inst.init(state);
     });
     it('should bind configured actions', () => {
-      const handler = () => undefined;
+      const handler = (): void => undefined;
       const spyBind = spyOn(utils, 'bindMethod').and.returnValue(handler);
       const spy = spyOn(inst, 'on');
       inst.actions = {
@@ -357,6 +355,7 @@ describe('`Component`', () => {
       const expected = { ...inst.state, ...inState };
       const spy = spyOn(inst, 'replaceState');
       inst.init(inState);
+      expect(spy).toHaveBeenCalledWith(expected);
     });
     it('should set the `$active` flag to `true`', () => {
       inst.init();
@@ -378,7 +377,7 @@ describe('`Component`', () => {
     });
     it('should call `ready` lifecycle hook after state event bindings have been set', () => {
       const state = { a: 0 };
-      const fn = () => undefined;
+      const fn = (): void => undefined;
       const spy = spyOn(inst, 'on');
       spyOn(utils, 'bindMethod').and.returnValue(fn);
       inst.actions = {
@@ -524,30 +523,32 @@ describe('`Component`', () => {
       };
     });
     it('should evaluate the passed-in argument', () => {
-      const spy = spyOn(utils, 'evaluate').and.callThrough();
-      const updater = () => ({});
+      const updater = jasmine.createSpy().and.returnValue({});
       inst.setState(updater);
-      expect(spy).toHaveBeenCalledWith(updater, inst.state);
+      expect(updater).toHaveBeenCalledWith(inst.state);
+    });
+
+    it('should execute the passed-in argument if it is a function', () => {
+      const updater = (): any => ({ a: 10 });
+      inst.setState(updater);
+      expect(inst.state).toEqual({ a: 10, b: 2 });
     });
 
     it('should cycle the current state and call shouldUpdateState on changed keys', () => {
       const spy = spyOn(inst, 'shouldUpdateState').and.callThrough();
-      const updater = () => ({});
       inst.setState({ a: 2 });
       expect(spy).toHaveBeenCalledWith('a', 1, 2);
       expect(spy.calls.count()).toBe(1);
     });
 
     it('if shouldUpdateState returns true the key is updated', () => {
-      const spy = spyOn(inst, 'shouldUpdateState').and.returnValue(true);
-      const updater = () => ({});
+      spyOn(inst, 'shouldUpdateState').and.returnValue(true);
       inst.setState({ a: 2 });
       expect(inst.state.a).toBe(2);
     });
 
     it('if shouldUpdateState returns false the key is NOT updated', () => {
-      const spy = spyOn(inst, 'shouldUpdateState').and.returnValue(false);
-      const updater = () => ({});
+      spyOn(inst, 'shouldUpdateState').and.returnValue(false);
       inst.setState({ a: 2 });
       expect(inst.state.a).not.toBe(2);
     });
@@ -644,7 +645,7 @@ describe('`Component`', () => {
   describe('`setListener()`', () => {
     let inst: Component;
     let btn: HTMLElement;
-    const handler = () => undefined;
+    const handler = (): void => undefined;
     beforeEach(() => {
       inst = new Component();
       btn = document.createElement('button');
@@ -693,10 +694,10 @@ describe('`Component`', () => {
 
     it('will keep the context', () => {
       class Custom extends Component {
-        public onClick() {
+        public onClick(): boolean {
           return true;
         }
-        public initialize() {
+        public initialize(): void {
           this.$els.btn = [btn, btn];
         }
       }
@@ -722,7 +723,7 @@ describe('`Component`', () => {
     });
 
     it('does nothing if element is not found', () => {
-      spyOn(utils, 'qs').and.returnValue(undefined);
+      spyOn(utils, 'qs').and.returnValue(undefined as any);
       inst.setListener('click .demo', handler);
       expect(inst.$listeners.get(handler)).toBe(undefined);
     });
@@ -731,7 +732,7 @@ describe('`Component`', () => {
   describe('`removeListeners()`', () => {
     let inst: Component;
     let btn: HTMLElement;
-    const handler = () => undefined;
+    const handler = (): void => undefined;
     beforeEach(() => {
       inst = new Component();
       btn = document.createElement('button');
@@ -781,7 +782,7 @@ describe('`Component`', () => {
       const spy = jasmine.createSpy();
       const childOpts = {};
       class Child extends Component {
-        constructor(opts = {}) {
+        public constructor(opts = {}) {
           super(opts);
           spy(this, options);
         }
@@ -806,7 +807,7 @@ describe('`Component`', () => {
         component: spy,
       });
 
-      expect(spy).toHaveBeenCalledWith(el, inst.state);
+      expect(spy).toHaveBeenCalledWith(inst.$el, inst.state);
     });
 
     it('accepts a child instance', async () => {
@@ -1175,10 +1176,10 @@ describe('`Component`', () => {
       expect(inst.destroyRefs()).toEqual(jasmine.any(Promise));
     });
 
-    it('should log any caught error to `console.error`', (done) => {
+    it('should log any caught error', (done) => {
       spyOn(child, 'destroy').and.throwError('MOCK');
 
-      const spy = spyOn(console, 'error');
+      const spy = spyOn(inst, '$warn');
 
       inst.destroyRefs().catch(() => {
         expect(spy).toHaveBeenCalledWith(
@@ -1245,16 +1246,18 @@ describe('`Component`', () => {
       expect(inst.destroy()).toEqual(jasmine.any(Promise));
     });
 
-    it('should log any caught error to `console.error`', (done) => {
+    it('should log any caught error', (done) => {
       spyOn(inst, 'destroyRefs').and.throwError('MOCK');
 
-      const spy = spyOn(console, 'error');
+      const spy = spyOn(inst, '$warn');
 
       inst.destroy().catch(() => {
-        expect(spy).toHaveBeenCalledWith('destroy catch: ', jasmine.any(Error));
+        expect(spy).toHaveBeenCalledWith(
+          jasmine.any(String),
+          jasmine.any(Error),
+        );
         done();
       });
     });
   });
 });
-/* tslint:enable max-classes-per-file */

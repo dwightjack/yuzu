@@ -1,14 +1,13 @@
 import { Component } from 'yuzu';
 import { Loadable } from '../src';
-// import { mount } from '../../../shared/utils';
 import * as utils from 'yuzu-utils';
+import { IComponentConstructable } from 'yuzu/types';
 
-/* tslint:disable max-classes-per-file */
 describe('`Loadable`', () => {
   describe('Factory', () => {
     class Child extends Component {}
-    let LoadableComponent: typeof Component;
-    const fetchData = () => ({});
+    let LoadableComponent: IComponentConstructable<Component>;
+    const fetchData = (): any => ({});
     beforeEach(() => {
       LoadableComponent = Loadable({
         component: Child,
@@ -21,12 +20,12 @@ describe('`Loadable`', () => {
     });
     it('sets component root selector based in the child component name', () => {
       expect(LoadableComponent.root).toBe(
-        '[data-loadable][data-component="Child"]',
+        '[data-loadable="Child"], [data-loadable][data-component="Child"]',
       );
     });
 
-    it('sets the component name', () => {
-      expect(LoadableComponent.name).toBe('LoadableChild');
+    it('sets the component displayName', () => {
+      expect(LoadableComponent.displayName).toBe('LoadableChild');
     });
 
     it('extends generated component defaults with passed-in options', () => {
@@ -50,7 +49,7 @@ describe('`Loadable`', () => {
 
   describe('render()', () => {
     class Child extends Component {}
-    let LoadableComponent: typeof Component;
+    let LoadableComponent;
     let template: any;
     let inst: any;
     beforeEach(() => {
@@ -92,7 +91,7 @@ describe('`Loadable`', () => {
 
   describe('setLoader()', () => {
     class Loader extends Component {}
-    let LoadableComponent: typeof Component;
+    let LoadableComponent: any;
     let inst: any;
     beforeEach(() => {
       LoadableComponent = Loadable({
@@ -100,23 +99,23 @@ describe('`Loadable`', () => {
         fetchData: () => ({}),
         loader: Loader,
       });
-      inst = new LoadableComponent();
     });
 
-    it('returns a resolved promise if loader is not set', () => {
+    it('returns a resolved promise if loader is not set', async () => {
+      const inst = new LoadableComponent();
       inst.options.loader = null;
-      return inst.setLoader().then(() => {
-        expect(true).toBe(true);
-      });
+      const result = await inst.setLoader();
+      expect(result).toBeUndefined();
     });
 
     it('mounts the loader as component child and returns the call to "setRef"', async () => {
+      const inst = new LoadableComponent();
       const async = document.createElement('div');
       inst.$els.async = async;
-      const ret = Promise.resolve(inst);
-      const spy = spyOn(inst, 'setRef').and.returnValue(ret);
+      const ret = new Component();
+      const spy = spyOn(inst, 'setRef').and.returnValue(Promise.resolve(ret));
       const result = await inst.setLoader();
-      expect(result).toBe(inst);
+      expect(result).toBe(ret);
       expect(spy).toHaveBeenCalledWith({
         id: 'async',
         el: async,
@@ -127,7 +126,7 @@ describe('`Loadable`', () => {
 
   describe('setComponent()', () => {
     class Child extends Component {}
-    let LoadableComponent: typeof Component;
+    let LoadableComponent;
     const options = { demo: true };
     let inst: any;
     beforeEach(() => {
@@ -170,13 +169,13 @@ describe('`Loadable`', () => {
       inst.$els.async = document.createElement('div');
       const spy = spyOn(inst, 'setRef');
       await inst.setComponent(document.createElement('div'));
-      const [arg] = spy.calls.argsFor(0);
+      const [arg]: any = spy.calls.argsFor(0);
       expect(arg.el).toBe(inst.$els.async);
     });
   });
 
   describe('initialize()', () => {
-    let LoadableComponent: typeof Component;
+    let LoadableComponent;
     let inst: any;
     let fetchData: any;
     const data = {};

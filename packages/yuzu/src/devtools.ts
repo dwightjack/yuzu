@@ -48,9 +48,11 @@ if (process.env.NODE_ENV !== 'production') {
         const key = event === 'change:*' ? 'change' : event;
         const listener = this.log.bind(this, key);
         if ($listeners.has(event)) {
-          /* tslint:disable no-console */
-          console.warn(`Already listening for "${event}" on ${instance.$uid}`);
-          /* tslint:enable no-console */
+          console.warn(
+            `[yuzu-devtools:${this.label}]Already listening for "${event}" on ${
+              instance.$uid
+            }`,
+          );
         }
         instance.on(event, listener);
         $listeners.set(event, listener);
@@ -97,7 +99,6 @@ if (process.env.NODE_ENV !== 'production') {
        */
       log(msg, next, prev, args) {
         if (process.env.NODE_ENV !== 'production') {
-          /* tslint:disable no-console */
           const head = [
             `%c${label}: %c${msg}`,
             'color: gray; font-weight: lighter',
@@ -127,7 +128,6 @@ if (process.env.NODE_ENV !== 'production') {
             );
           }
           console.groupEnd();
-          /* tslint:enable no-console */
         }
       },
     };

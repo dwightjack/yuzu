@@ -30,7 +30,7 @@ let uid: number = -1;
  *
  * noop() === undefined
  */
-export const noop = (): void => {}; // tslint:disable-line no-empty
+export const noop = (): void => {};
 
 /**
  * Returns a sequential uid with optional prefix.
@@ -259,7 +259,8 @@ export const datasetParser = (
 };
 
 export const warn = (ctx: any): ((msg: string, ...args: any[]) => void) => {
-  const name = ctx.displayName || ctx.name || 'Component';
+  const name =
+    ctx.constructor.displayName || ctx.constructor.name || 'Component';
   const { $uid = 'unmounted' } = ctx;
   return (msg, ...args) => console.warn(`[yuzu:${name}#${$uid}] ${msg}`, args);
 };
