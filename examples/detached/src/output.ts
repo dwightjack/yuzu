@@ -13,7 +13,7 @@ export class Output extends DetachedComponent<IOutputState> {
 
   public async initialize() {
     this.emitter = setInterval(() => {
-      this.emit('append', {});
+      this.emit('append', { id: 'output' });
     }, 1000);
 
     const det = await this.setRef<DetachedComponent>({

@@ -5,7 +5,7 @@ import { Count } from './count';
 devtools(Component);
 
 interface IAppState {
-  output: any[];
+  output: { id: string }[];
 }
 
 class App extends Component<IAppState> {
@@ -31,7 +31,7 @@ class App extends Component<IAppState> {
 mount(App, '#app', null, [
   mount(Output, null, {
     id: 'output',
-    on: (app: App) => ({
+    on: (app) => ({
       append: (value) => {
         app.setState(({ output }) => ({
           output: [...output, value],
