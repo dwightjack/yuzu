@@ -24,7 +24,7 @@
   "bugs": "https://github.com/dwightjack/yuzu/issues",
   "scripts": {
     "prepublishOnly": "npm run release",
-    "release": "yarn lint && yarn test && yarn docs && yarn bundle",
+    "release": "yarn lint && yarn typecheck && yarn test && yarn docs && yarn bundle",
     "lint": "eslint ./packages/*/{src,test}/**/*.ts ./{config,scripts}/**/*.js ./examples/*/src/**/*.ts",
     "typecheck": "tsc --noEmit -p .",
     "bundle": "lerna run bundle",
