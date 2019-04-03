@@ -344,8 +344,8 @@ If a reference `id` is already attached, the previous one is destroyed and repla
 -   `config` **[object][1]** A child component configuration object
     -   `config.id` **[string][7]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
     -   `config.component` **component** Component constructor or component instance
-    -   `config.el` **([string][7] \| [HTMLElement][17])** Child component root element. Ignored if `config.component` is a component instance
-    -   `config.on` **[Object][1]** Child component event listeners. Format `{ 'eventname': handler }`
+    -   `config.el` **([string][7] \| [HTMLElement][17])?** Child component root element. This property is ignored if `config.component` is a component instance or a detached component constructor
+    -   `config.on` **[Object][1]?** Child component event listeners. Format `{ 'eventname': handler }`
     -   `config.null` **any** -   Any other property listed here will be passed to the constructor as option
 
 ### Examples
@@ -444,19 +444,9 @@ Component root element attribute marker.
 
 Returns **[object][1]** 
 
-## &lt;static> defaultOptions
+## &lt;static> YUZU_COMPONENT
 
-```js
-Component.defaultOptions()
-```
-
-Returns an object with default options.
-
-### Parameters
-
--   `self`  
-
-Returns **[object][1]** 
+Marks yuzu components
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 

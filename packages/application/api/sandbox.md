@@ -63,7 +63,7 @@ will be traversed on `.start()` initializing every matching component.
 
 ### Parameters
 
--   `params` **[object][1]** Every property other than `component` and `selector` will be used as component option (optional, default `{}`)
+-   `params` **[object][1]** Every property other than `component` and `selector` will be used as component option
     -   `params.component` **Component** Component constructor
     -   `params.selector` **[string][4]** Child component root CSS selector
 

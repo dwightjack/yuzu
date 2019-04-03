@@ -128,9 +128,11 @@ Import `Component` into your project and extend it
 import { Component } from 'yuzu';
 
 class Counter extends Component {
-  static defaultOptions = () => ({
-    label: 'Count',
-  });
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 
   state = {
     count: 0,
@@ -144,7 +146,7 @@ class Counter extends Component {
 const counter = new Counter('#app');
 ```
 
-**Note:** The above example uses [stage 3](https://github.com/tc39/proposals#stage-3) syntax for instance and static public fields.
+**Note:** The above example uses [stage 3](https://github.com/tc39/proposals#stage-3) syntax for instance public fields.
 
 In order to use it you will need to use [Babel](https://babeljs.io/) with the [`transform-class-properties` plugin](https://babeljs.io/docs/en/babel-plugin-transform-class-properties/) ([@babel/plugin-proposal-class-properties](https://www.npmjs.com/package/@babel/plugin-proposal-class-properties) in Babel 7+) or [Typescript](https://www.typescriptlang.org/).
 If you prefer not to, the previous code can be rewritten like this:
@@ -153,15 +155,11 @@ If you prefer not to, the previous code can be rewritten like this:
 import { Component } from 'yuzu';
 
 class Counter extends Component {
-- static defaultOptions = () => ({
--   label: 'Count',
-- });
-
-+ static defaultOptions() {
-+   return {
-+     label: 'Count',
-+   };
-+ }
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 
 -  state = {
 -    count: 0,
@@ -187,6 +185,10 @@ In development environments that don't support ES6 [`class`](https://developer.m
 
 ```js
 var Counter = YZ.extend(YZ.Component, {
+  defaultOptions: function() {
+    return { label: 'Count' };
+  },
+
   created: function() {
     this.state = {
       count: 0,
@@ -197,10 +199,6 @@ var Counter = YZ.extend(YZ.Component, {
     //...
   },
 });
-
-Counter.defaultOptions = function() {
-  return { label: 'Count' };
-};
 
 var counter = new Counter().mount('#app');
 ```
@@ -226,9 +224,11 @@ class Counter extends Component {
   // Root element CSS selector
   static root = '.Counter';
 
-  static defaultOptions = () => ({
-    label: 'Count',
-  });
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 
   // DOM management
 
@@ -291,14 +291,14 @@ This is the root element CSS selector. It must be a static property and is requi
 #### `defaultOptions` (function)
 
 ```js
-static defaultOptions = () => ({
-  label: 'Count',
-});
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 ```
 
 Returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`).
-
-**This method must be static.**
 
 #### `selectors` (object)
 
@@ -326,11 +326,13 @@ selectors = {
 
 **Custom selector**
 
-To select elements based on a custom logic, you can use a function selector. The function will receive the component root element as first argument
+To select elements based on a custom logic, you can use a function selector. The function will receive the component root element and instance options as arguments
 
 ```js
 selectors = {
-  'children[]': (el) => Array.from(el.children),
+  // assume options.childrenClass === '.myChildren'
+  'children[]': (el, options) =>
+    Array.from(el.querySelectorAll(options.childrenClass)),
   first: (el) => el.firstElementChild,
 };
 ```
@@ -426,18 +428,20 @@ Options will be then available inside the component `this.options` object.
 
 ### Default Options
 
-You can define options default value by adding a static `defaultOptions` method to the class.
+You can define options default value by adding a `defaultOptions` method to the class.
 
 Function options will be bound to the instance itself.
 
 ```js
 class Counter extends Component {
-  static defaultOptions = () => ({
-    label: 'Count',
-    onClick() {
-      // this instanceof Counter === true
-    },
-  });
+  defaultOptions() {
+    return {
+      label: 'Count',
+      onClick() {
+        // this instanceof Counter === true
+      },
+    };
+  }
 
   // ...
 }
@@ -543,9 +547,11 @@ class Counter extends Component {
   // Root element selector (required)
   static root = '.Counter';
 
-  static defaultOptions = () => ({
-    label: 'Count',
-  });
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 
   // DOM management
 
@@ -786,7 +792,7 @@ Full documentation available [here](/packages/yuzu/api/component).
 ### Configuration properties
 
 - [`root`](#root-string) (static string)
-- [`defaultOptions`](#defaultoptions-function) (static method)
+- [`defaultOptions`](#defaultoptions-function) (instance method)
 - [`selectors`](#selectors-object) (object)
 - [`listeners`](#listeners-object) (object)
 - [`state`](#state-object) (object)

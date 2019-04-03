@@ -34,10 +34,13 @@ class Timer extends Component {
 class Counter extends Component {
   static root = '.Counter';
 
-  static defaultOptions = () => ({
-    // ...
-    theme: 'default',
-  });
+  defaultOptions() {
+    return {
+      // ...
+      theme: 'default',
+    };
+  }
+
   // ...
 }
 ```

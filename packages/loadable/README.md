@@ -129,9 +129,11 @@ Here are the HTML and component class for `UsersOnline`:
 import { Component } from 'yuzu';
 
 export class UsersOnline extends Component {
-  static defaultOptions = () => ({
-    label: 'Users online:',
-  });
+  defaultOptions() {
+    return {
+      label: 'Users online:',
+    };
+  }
 
   state = { count: 0 };
 
@@ -286,10 +288,11 @@ Let's modify the code accordingly:
 import { Component } from 'yuzu';
 
 export class UsersOnline extends Component {
-
-  static defaultOptions = () => ({
-    label: 'Users online:',
-  });
+  defaultOptions() {
+    return {
+      label: 'Users online:',
+    };
+  }
 
   state = { count: 0 };
 
