@@ -14,7 +14,9 @@ const readAsync = promisify(fs.readFile);
 const root = path.join(__dirname, '..', 'packages');
 const docs = path.join(__dirname, '..', 'docs');
 const src = path.join(__dirname, '..', '.docs');
-const packages = fs.readdirSync(root);
+const packages = fs
+  .readdirSync(root)
+  .filter((item) => fs.lstatSync(path.join(root, item)).isDirectory());
 
 packages.forEach(async (package) => {
   const baseFolder = path.join(root, package);
