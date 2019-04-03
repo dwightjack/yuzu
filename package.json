@@ -25,7 +25,8 @@
   "scripts": {
     "prepublishOnly": "npm run release",
     "release": "yarn lint && yarn test && yarn docs && yarn bundle",
-    "lint": "eslint ./packages/*/src/**/*.ts ./{config,scripts}/**/*.js ./examples/*/src/**/*.ts",
+    "lint": "eslint ./packages/*/{src,test}/**/*.ts ./{config,scripts}/**/*.js ./examples/*/src/**/*.ts",
+    "typecheck": "tsc --noEmit -p .",
     "bundle": "lerna run bundle",
     "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",
