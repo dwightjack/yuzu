@@ -27,8 +27,6 @@ export class Output extends DetachedComponent<IOutputState> {
       el: document.createElement('p'),
     });
 
-    this.$refs.count.setState({ xxx: false });
-
     this.on('change:total', (total) => {
       count.setState({ count: total });
     });
