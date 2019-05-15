@@ -1,4 +1,4 @@
-# yuzu <sub>2.0.0-rc.13<sub>
+# yuzu <sub>2.0.0-rc.15<sub>
 
 > old school component management
 
@@ -14,6 +14,7 @@ Manage your HTML based components in style with progressive enhancement.
 - [Basic Usage](#basic-usage)
   - [ES6+ Usage](#es6-usage)
   - [ES5 Usage](#es5-usage)
+  - [Working with Typescript](#working-with-typescript)
 - [Example Application](#example-application)
   - [Application Breakdown](#application-breakdown)
 - [Component Options](#component-options)
@@ -112,7 +113,7 @@ export default {
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the [**yuzu-polyfills**](/packages/polyfills/) package before any other `yuzu*` package.
 
-If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entry point:
+If you're using a package bundler without any polyfill library like [@babel/polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entry point:
 
 ```js
 import 'yuzu-polyfills';
@@ -128,39 +129,36 @@ Import `Component` into your project and extend it
 import { Component } from 'yuzu';
 
 class Counter extends Component {
+  state = {
+    count: 0,
+  };
+
   defaultOptions() {
     return {
       label: 'Count',
     };
   }
-
-  state = {
-    count: 0,
-  };
 
   initialize() {
     //...
   }
 }
 
-const counter = new Counter('#app');
+const counter = new Counter().mount('#app');
 ```
 
-**Note:** The above example uses [stage 3](https://github.com/tc39/proposals#stage-3) syntax for instance public fields.
+**Note:**
+
+The above example uses [stage 3](https://github.com/tc39/proposals#stage-3) syntax for instance public fields.
 
 In order to use it you will need to use [Babel](https://babeljs.io/) with the [`transform-class-properties` plugin](https://babeljs.io/docs/en/babel-plugin-transform-class-properties/) ([@babel/plugin-proposal-class-properties](https://www.npmjs.com/package/@babel/plugin-proposal-class-properties) in Babel 7+) or [Typescript](https://www.typescriptlang.org/).
+
 If you prefer not to, the previous code can be rewritten like this:
 
 ```diff
 import { Component } from 'yuzu';
 
 class Counter extends Component {
-  defaultOptions() {
-    return {
-      label: 'Count',
-    };
-  }
-
 -  state = {
 -    count: 0,
 -  };
@@ -170,6 +168,12 @@ class Counter extends Component {
 +     count: 0,
 +   };
 + }
+
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 
   initialize() {
     //...
@@ -203,6 +207,40 @@ var Counter = YZ.extend(YZ.Component, {
 var counter = new Counter().mount('#app');
 ```
 
+### Working with Typescript
+
+If you use Yuzu in a [Typescript](https://www.typescriptlang.org/) codebase, you can leverage types to describe your component's state and options:
+
+```ts
+import { Component } from 'yuzu';
+
+interface CounterState {
+  count: number;
+}
+
+interface CounterOptions {
+  label: string;
+}
+
+class Counter extends Component<CounterState, CounterOptions> {
+  public state = {
+    count: 0,
+  };
+
+  public defaultOptions(): CounterOptions {
+    return {
+      label: 'Count',
+    };
+  }
+
+  public initialize() {
+    //...
+  }
+}
+
+const counter = new Counter().mount('#app');
+```
+
 ## Example Application
 
 Here is a _Counter_ component example:
@@ -223,12 +261,6 @@ import { Component } from 'yuzu';
 class Counter extends Component {
   // Root element CSS selector
   static root = '.Counter';
-
-  defaultOptions() {
-    return {
-      label: 'Count',
-    };
-  }
 
   // DOM management
 
@@ -256,6 +288,12 @@ class Counter extends Component {
   actions = {
     count: 'update',
   };
+
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
 
   // lifecycle
 
@@ -288,18 +326,6 @@ static root = '.Counter';
 
 This is the root element CSS selector. It must be a static property and is required when using yuzu-application's [Sandbox](/packages/application/sandbox) module.
 
-#### `defaultOptions` (function)
-
-```js
-  defaultOptions() {
-    return {
-      label: 'Count',
-    };
-  }
-```
-
-Returns an object with default options for the component. Custom options can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`).
-
 #### `selectors` (object)
 
 ```js
@@ -310,11 +336,11 @@ selectors = {
 };
 ```
 
-This is used to set a reference to component's child DOM elements. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
+This is used to define references to DOM elements contained inside the component. Keys will be used as element identifier attached to the `this.$els` collection while values are uses as CSS selector to match an element (with [`Element.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector)) in the context of the component's root element.
 
 **Array reference**
 
-If the key ends with `[]` the attached reference will be an array of matching elements (uses [`Element.querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/querySelectorAll))
+If the key ends with `[]` the attached reference will be an array of matching elements (uses [`Element.querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/querySelectorAll) internally)
 
 ```js
 selectors = {
@@ -352,19 +378,19 @@ listeners = {
 };
 ```
 
-A shortcut syntax to set DOM event listeners on a given element. Each key has the following syntax:
+A shortcut syntax to set DOM event listeners on a given element. Keys have the following syntax:
 
 ```
 eventName [CSS selector | @elementReference]
 ```
 
-If the second part of the key starts with `@` a listener will be attached to the corresponding element referenced in `this.$els`. For example the key `click @increment` will attach a click listener to `this.$els.increment`
+If the second part of a key starts with `@` a listener will be attached to the corresponding element referenced in `this.$els`. For example the key `click @increment` will attach a click listener to `this.$els.increment`
 
-Using just the event name will attach the listener to the component's root element.
+Using just the event name will attach the listener to the component's root element (`this.$el`).
 
 Event listeners are automatically removed when the component's `.destroy()` method is invoked.
 
-?> If the `@` referenced element is an array, the event handler will receive its index inside the array as second argument.
+?> If the `@` referenced element is an array, the event handler will receive each element's array index as second argument: `(event /* DOM Event */, idx /* 0, 1, 2, etc...*/) =>`
 
 #### `state` (object)
 
@@ -375,6 +401,8 @@ state = {
 ```
 
 This is the component's internal state.
+
+?> Remember to define here an initial value for every property you're going to use inside the component, else update events and action (see below) won't be fired.
 
 #### `actions` (object)
 
@@ -389,6 +417,20 @@ This is a map listing functions to execute whenever a state property has changed
 In the example application whenever the `count` state value changes the `update` method will be fired.
 
 ?> The function is invoked with the current and previous value as arguments.
+
+#### `defaultOptions` (function)
+
+```js
+  defaultOptions() {
+    return {
+      label: 'Count',
+    };
+  }
+```
+
+Returns an object with default options for the component. Custom options values can be passed as first argument at instantiation time (ie: `new Counter({ label: 'Custom label'})`).
+
+!> For better compatibility with every environment and compiler, **avoid** defining `defaultOptions` as a public instance field (ie: `defaultOptions = () => ({})`).
 
 #### lifecycle methods
 
@@ -449,6 +491,8 @@ class Counter extends Component {
 
 !> To actually use an option you have to set a default value for it. **Options not defined in `defaultOptions` will be discarted.**
 
+!> For better compatibility with every environment and compiler, **avoid** defining `defaultOptions` as a public instance field (ie: `defaultOptions = () => ({})`).
+
 ## State and Update Tracking
 
 Every component has a `state` property that reflects the component's internal state.
@@ -480,6 +524,8 @@ class Counter extends Component {
 }
 ```
 
+!> `replaceState` will actually overwrite the current state definition and replace it with the one you are passing-in. Remember to define every needed state property in order to trigger updated events and actions on subsequent updates (see [below](#tracking-updates)).
+
 ### Tracking Updates
 
 Every call to `setState` will emit a `change:<property>` event for each updated property.
@@ -504,13 +550,15 @@ this.setState({ count: 1 });
 
 ?> If you want to prevent change events to be emitted, pass a second argument `true` to `setState` (_silent_ update).
 
+!> state change events are always invoked at component initialization (i.e. when calling `mount` or `init` ) with the state initial values.
+
 ## Child Components
 
 In some scenarios you might need to control the lifecycle and state of components nested inside another component.
 
-In this case you can use the `setRef` method to link a child component's instance to its parent.
+To address such scenarios you can use the `setRef` method to link a child component's instance to its parent.
 
-As bonus point, when the parent's `destroy` method is executed, every children's `destroy` method is called as well.
+As an added benefit, when the parent's `destroy` method is executed, every children's `destroy` method is called as well.
 
 !> Yuzu will ensure that all child components have been destroyed before tearing down the parent.
 

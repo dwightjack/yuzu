@@ -1,4 +1,4 @@
-# yuzu-loadable <sub>2.0.0-rc.13<sub>
+# yuzu-loadable <sub>2.0.0-rc.15<sub>
 
 > Async component initializer for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 
