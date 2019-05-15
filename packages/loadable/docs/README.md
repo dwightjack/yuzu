@@ -97,7 +97,7 @@ export default {
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `yuzu*` package.
 
-If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entry point:
+If you're using a package bundler add this line at the very top of your entry point:
 
 ```js
 import 'yuzu-polyfills';
@@ -121,7 +121,7 @@ Let's imagine you have a component `UsersOnline` that renders the number of onli
 Here are the HTML and component class for `UsersOnline`:
 
 ```html
-<div class="UsersOnline"></div>
+<div class="users-online"></div>
 ```
 
 ```js
@@ -165,15 +165,15 @@ const AsyncUsersOnline = Loadable({
   fetchData: getUsers,
 });
 
-const users = new AsyncUsersOnline().mount('.UsersOnline');
+const users = new AsyncUsersOnline().mount('.users-online');
 ```
 
-`AsyncUsersOnline` is an outlet component that will first execute `getUsers`. When the promise returned by `fetch` resolves it will initialize the rendered component `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.UsersOnline`.
+`AsyncUsersOnline` is an outlet component that will first execute `getUsers`. When the promise returned by `fetch` resolves it will initialize the rendered component `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.users-online`.
 
 The resulting HTML will look like:
 
 ```html
-<div class="UsersOnline">
+<div class="users-online">
   <div>Users online: 35</div>
 </div>
 ```
@@ -189,7 +189,7 @@ For example if we'd want to show another user count but with data fetched from a
 ```js
 // ...
 
-const users = new AsyncUsersOnline().mount('.UsersOnline');
+const users = new AsyncUsersOnline().mount('.users-online');
 
 const getUsersAlt = () => {
   return fetch('/api/v2/users-live').then((response) => response.json());
@@ -197,7 +197,7 @@ const getUsersAlt = () => {
 
 const altUsers = new AsyncUsersOnline({
   fetchData: getUsersAlt,
-}).mount('.UsersOnline');
+}).mount('.users-online');
 ```
 
 ## Showing a Loader
@@ -248,7 +248,7 @@ const AsyncUsersOnline = Loadable({
 The resulting HTML will look like:
 
 ```html
-<div class="UsersOnline">
+<div class="users-online">
   <p>Users online: 35</p>
 </div>
 ```
@@ -270,8 +270,8 @@ const AsyncUsersOnline = Loadable({
 Resulting in the following HTML:
 
 ```html
-<div class="UsersOnline">
-  <p class="UsersOnline__root">Users online: 35</p>
+<div class="users-online">
+  <p class="users-online__root">Users online: 35</p>
 </div>
 ```
 
@@ -301,7 +301,7 @@ export class UsersOnline extends Component {
   };
 
 + selectors = {
-+   value: '.UsersOnline__value > p'
++   value: '.users-online__value > p'
 + }
 
   update() {
@@ -316,7 +316,7 @@ export class UsersOnline extends Component {
 import Loader from './Loader';
 
 + const renderHTML = ({ props, options }) =>
-+   `<div class="UsersOnline__value">
++   `<div class="users-online__value">
 +     <p>${options.label} ${props.count}</p>
 +   </div>`;
 
@@ -331,8 +331,8 @@ const AsyncUsersOnline = Loadable({
 The HTML returned by the template will **replace the render root** resulting in something like:
 
 ```html
-<div class="UsersOnline">
-  <div class="UsersOnline__value">
+<div class="users-online">
+  <div class="users-online__value">
     <p>Users online: 35</p>
   </div>
 </div>
