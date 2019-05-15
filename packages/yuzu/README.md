@@ -93,7 +93,7 @@ import 'yuzu-polyfills';
 ## Example
 
 ```html
-<div class="Counter"></div>
+<div class="counter"></div>
 ```
 
 ```js
@@ -121,6 +121,8 @@ class Counter extends Component {
     }
   }
 }
+
+new Counter().mount('.counter');
 ```
 
 ## Documentation

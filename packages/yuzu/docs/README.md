@@ -246,11 +246,11 @@ const counter = new Counter().mount('#app');
 Here is a _Counter_ component example:
 
 ```html
-<div class="Counter">
-  <span class="Counter__value"></span>
+<div class="counter">
+  <span class="counter__value"></span>
   <div>
-    <button type="button" class="Counter__decrement">Decrement</button>
-    <button type="button" class="Counter__increment">Increment</button>
+    <button type="button" class="counter__decrement">Decrement</button>
+    <button type="button" class="counter__increment">Increment</button>
   </div>
 </div>
 ```
@@ -260,14 +260,14 @@ import { Component } from 'yuzu';
 
 class Counter extends Component {
   // Root element CSS selector
-  static root = '.Counter';
+  static root = '.counter';
 
   // DOM management
 
   selectors = {
-    increment: '.Counter__increment',
-    decrement: '.Counter__decrement',
-    value: '.Counter__value',
+    increment: '.counter__increment',
+    decrement: '.counter__decrement',
+    value: '.counter__value',
   };
 
   listeners = {
@@ -321,7 +321,7 @@ const counter = new Counter().mount(Counter.root);
 
 ```js
 // Root element CSS selector
-static root = '.Counter';
+static root = '.counter';
 ```
 
 This is the root element CSS selector. It must be a static property and is required when using yuzu-application's [Sandbox](/packages/application/sandbox) module.
@@ -330,9 +330,9 @@ This is the root element CSS selector. It must be a static property and is requi
 
 ```js
 selectors = {
-  increment: '.Counter__increment',
-  decrement: '.Counter__decrement',
-  value: '.Counter__value',
+  increment: '.counter__increment',
+  decrement: '.counter__decrement',
+  value: '.counter__value',
 };
 ```
 
@@ -565,11 +565,11 @@ As an added benefit, when the parent's `destroy` method is executed, every child
 Here is a full example:
 
 ```html
-<div class="Counter">
+<div class="counter">
   <span class="Text"></span>
   <div>
-    <button type="button" class="Counter__decrement">Decrement</button>
-    <button type="button" class="Counter__increment">Increment</button>
+    <button type="button" class="counter__decrement">Decrement</button>
+    <button type="button" class="counter__increment">Increment</button>
   </div>
 </div>
 ```
@@ -593,7 +593,7 @@ class Text extends Component {
 
 class Counter extends Component {
   // Root element selector (required)
-  static root = '.Counter';
+  static root = '.counter';
 
   defaultOptions() {
     return {
@@ -604,8 +604,8 @@ class Counter extends Component {
   // DOM management
 
   selectors = {
-    increment: '.Counter__increment',
-    decrement: '.Counter__decrement',
+    increment: '.counter__increment',
+    decrement: '.counter__decrement',
     text: '.Text',
   };
 
@@ -1050,7 +1050,7 @@ const menuTree = mount(
   Menu,
   '#menu',
   {},
-  Children('.Menu__link', (el, i) => mount(Link, el)),
+  Children('.menu__link', (el, i) => mount(Link, el)),
 );
 
 //mount it onto the DOM
