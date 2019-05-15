@@ -6,7 +6,7 @@ The `yuzu-polyfills` package provides support for Yuzu in legacy environments li
 
 ## Included Polyfills
 
-- [core-js](https://www.npmjs.com/package/core-js)
+- [core-js 3](https://www.npmjs.com/package/core-js)
   - `Array.from()`
   - `Map`
   - `Object.assign()`
