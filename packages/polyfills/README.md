@@ -46,5 +46,3 @@ If you are using a package bundler like Webpack, import this module at the very 
 ```js
 import 'yuzu-polyfills';
 ```
-
-!> **Note:** This package is not needed if you're already using polyfill libraries like [`@babel/polyfill`](https://babeljs.io/docs/en/babel-polyfill).
