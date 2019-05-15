@@ -27,12 +27,12 @@ Suppose we have the following Yuzu components:
 
 ```js
 class Timer extends Component {
-  static root = '.Timer';
+  static root = '.timer';
   // ...
 }
 
 class Counter extends Component {
-  static root = '.Counter';
+  static root = '.counter';
 
   defaultOptions() {
     return {
@@ -50,13 +50,13 @@ And the following HTML:
 ```html
 <body>
   <div id="app">
-    <div class="Timer">
+    <div class="timer">
       <!-- -->
     </div>
-    <div class="Counter">
+    <div class="counter">
       <!-- -->
     </div>
-    <div class="Counter">
+    <div class="counter">
       <!-- -->
     </div>
   </div>
@@ -95,7 +95,7 @@ In the following example `Counter` will be initialized on elements matching `'.m
 ```js
 const sandbox = new Sandbox({
   root: '#app',
-  components: [Timer, [Counter, { selector: '.myCustomCounter' }]],
+  components: [Timer, [Counter, { selector: '.my-custom-counter' }]],
 });
 ```
 
@@ -118,14 +118,14 @@ Starting from the example above let's change the HTML to:
 ```diff
 <body>
   <div id="app">
-    <div class="Timer">
+    <div class="timer">
       <!-- -->
     </div>
-    <div class="Counter">
+    <div class="counter">
       <!-- -->
     </div>
--    <div class="Counter">
-+    <div class="Counter" data-ui-theme="light">
+-    <div class="counter">
++    <div class="counter" data-ui-theme="light">
       <!-- -->
     </div>
   </div>
@@ -144,7 +144,7 @@ Custom selector options can be either a string or a function. In the latter case
 const sandbox = new Sandbox({
   root: '#app',
   components: [
-    [Counter, { selector: (sbx) => sbx.findNodes('.myCustomCounter') }],
+    [Counter, { selector: (sbx) => sbx.findNodes('.my-custom-counter') }],
   ],
 });
 ```
