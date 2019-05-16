@@ -32,6 +32,18 @@ export class Provider extends DetachedComponent<{}, IProviderOptions> {
 
   public subscribers = [];
 
+  public initialize(): void {
+    const { selector } = this.options;
+    if (typeof selector === 'function') {
+      this.state = this.mapState(selector);
+    }
+  }
+
+  public beforeDestroy(): void {
+    this.subscribers.forEach((unsubscribe) => unsubscribe());
+    this.subscribers.length = 0;
+  }
+
   public getStore(): Store {
     if (!this.$context) {
       throw new Error('Provider is not supplied with a $context');
@@ -65,17 +77,5 @@ export class Provider extends DetachedComponent<{}, IProviderOptions> {
       ...this.mapActions(actions),
       state,
     };
-  }
-
-  public beforeDestroy(): void {
-    this.subscribers.forEach((unsubscribe) => unsubscribe());
-    this.subscribers.length = 0;
-  }
-
-  public initialize(): void {
-    const { selector } = this.options;
-    if (typeof selector === 'function') {
-      this.state = this.mapState(selector);
-    }
   }
 }

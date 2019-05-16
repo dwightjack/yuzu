@@ -81,8 +81,6 @@ export function connect(
         super(options);
 
         Object.defineProperty(this, '$connected', {
-          enumerable: false,
-          writable: false,
           value: true,
         });
       }
@@ -93,9 +91,11 @@ export function connect(
       }
     };
 
-    const name = Child.root
-      ? Child.root.replace(/^\./, '')
-      : Child.name || 'Component';
+    const name =
+      Child.displayName ||
+      (Child.root && Child.root.replace(/^\./, '')) ||
+      Child.name ||
+      'Component';
 
     Object.defineProperty(Connected, 'displayName', {
       value: `Connected${name}`,
