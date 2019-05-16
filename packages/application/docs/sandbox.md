@@ -90,7 +90,7 @@ To un-mount the sandbox and its child components just run `sandbox.stop()`. This
 
 You can also pass custom properties or CSS matchers for a component in order to alter the default options and element matching selector:
 
-In the following example `Counter` will be initialized on elements matching `'.myCustomCounter'` CSS selector.
+In the following example `Counter` will be initialized on elements matching the `'.my-custom-counter'` CSS selector.
 
 ```js
 const sandbox = new Sandbox({
@@ -99,10 +99,10 @@ const sandbox = new Sandbox({
 });
 ```
 
-Every other property added to the object will be passed as instance options at initialization time.
+Every other property added to the object will be passed as instance option at initialization time.
 
 ```js
-// starts 'myCustomCounter' with the 'dark' theme
+// starts the counter with the 'dark' theme
 const sandbox = new Sandbox({
   root: '#app',
   components: [Timer, [Counter, { theme: 'dark' }]],
@@ -163,7 +163,7 @@ const sandbox = new Sandbox({
 
 ### Registering mount functions
 
-By design components trees created with [`mount`](packages/yuzu/api/mount) cannot be registered on a sandbox because they serve different purposes: `Sandbox` matches a list a components against an unknown HTML document while `mount` describes a pre-determined tree of components.
+By design components trees created with [`mount`](packages/yuzu/api/mount) cannot be registered on a sandbox because they serve different purposes: `Sandbox` matches a list of components against an unknown HTML document while `mount` describes a pre-determined tree of components within a known HTML.
 
 Anyway, there are scenarios when you'd want to use a mount tree inside a sandbox.
 For example let's say you have a site-wide header described by a `mount` function and want to use it in a sandbox attached to `document.body`.
@@ -172,7 +172,7 @@ In this case you can use a [`DetachedComponent`](/packages/yuzu/#detached-compon
 
 ```js
 import { DetachedComponent, mount } from 'yuzu';
-import { Sandbox } from 'yuzu';
+import { Sandbox } from 'yuzu-application';
 import { MobileNavigation } from './MobileNavigation';
 import { MegaMenu } from './MegaMenu';
 import { Header } from './Header';
