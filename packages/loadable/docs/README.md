@@ -4,11 +4,11 @@
 
 Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience.
 
-But in some scenarios the HTML you need is not rendered, or you have to deal with data from a remote JSON API.
+But in some scenarios the HTML you need is not rendered, or you have to wait for data coming from a remote API before you can initialize a component.
 
 This is where **Yuzu Loadable** comes in hand.
 
-Yuzu Loadable lets you define an async function call and use its returned data to instantiate a component and its HTML template.
+Yuzu Loadable lets you define an async function and use its returned data to instantiate a component and its HTML template.
 
 <!-- TOC depthTo:3 -->
 
@@ -19,7 +19,7 @@ Yuzu Loadable lets you define an async function call and use its returned data t
 - [Browser Support](#browser-support)
 - [Key Concepts](#key-concepts)
 - [Basic Usage](#basic-usage)
-- [Option Override](#option-override)
+- [Options Override](#options-override)
 - [Showing a Loader](#showing-a-loader)
 - [Custom Render Root](#custom-render-root)
 - [Component Template](#component-template)
@@ -109,14 +109,14 @@ import 'yuzu-polyfills';
 
 - The **`Loadable` factory** function itself
 - An **outlet component** returned by the factory function
-- A **rendered component** defined in a `component` options of the factory
+- A **rendered component** assigned to the `component` option of the factory
 - An optional **loader component**
 
 Let's start getting this concepts sorted.
 
 ## Basic Usage
 
-Let's imagine you have a component `UsersOnline` that renders the number of online users reading that data from a remove API endpoint.
+Let's imagine you have a component called `UsersOnline` that renders the number of online users reading that data from a remove API endpoint.
 
 Here are the HTML and component class for `UsersOnline`:
 
@@ -148,7 +148,7 @@ export class UsersOnline extends Component {
 }
 ```
 
-To use `UsersOnline` asynchronously we'll defined it as the `component` option of a `Loadable` configuration object. We need to define a function to load the remote data as well:
+To use `UsersOnline` asynchronously we assign it to the `component` option of a `Loadable` configuration object. We need to define a function to load the remote data as well:
 
 ```js
 // AsyncUsersOnline.js
@@ -168,7 +168,12 @@ const AsyncUsersOnline = Loadable({
 const users = new AsyncUsersOnline().mount('.users-online');
 ```
 
-`AsyncUsersOnline` is an outlet component that will first execute `getUsers`. When the promise returned by `fetch` resolves it will initialize the rendered component `UsersOnline` with the returned value and mount it onto a child `div` element it created inside `.users-online`.
+`AsyncUsersOnline` is an **outlet component**. When mounted it will:
+
+1. execute `getUsers`
+1. wait for the promise returned by `fetch` to resolve or reject
+1. initialize the rendered component `UsersOnline` with the promise's returned value
+1. mount it onto a child `div` element it created inside `.users-online`.
 
 The resulting HTML will look like:
 
@@ -178,7 +183,7 @@ The resulting HTML will look like:
 </div>
 ```
 
-## Option Override
+## Options Override
 
 Each outlet component accepts the same configuration options that you can pass to `Loadable`.
 
@@ -227,7 +232,7 @@ const AsyncUsersOnline = Loadable({
 });
 ```
 
-The `Loader` component will be shown while data are loading and will then be [replaced](/packages/yuzu/#child-component-replacement) by the rendered component.
+The `Loader` component will be shown while `getUsers` is executing and will then be [replaced](/packages/yuzu/#child-component-replacement) by the rendered component.
 
 ## Custom Render Root
 
@@ -279,7 +284,7 @@ Resulting in the following HTML:
 
 In a real world application a component could have a rather complex HTML structure. Since the Loadable root does not allow inner nodes, you can use the `template` option to dynamically render you component's HTML.
 
-`template` should be a function that returns a string of HTML. It receives an object containing `state.props` and `options` from the outlet component.
+`template` should be a function that returns a string of HTML. It receives an object containing `state.props` and `options` of the outlet component.
 
 Let's modify the code accordingly:
 
@@ -380,7 +385,7 @@ const AsyncUsersOnline = Loadable({
   component: UsersOnline,
   fetchData: getUsers,
 - props: { count: (state) => state.props.count }
-+ props: (data) => { count: data.count }
++ props: (props) => ({ count: props.count })
 });
 ```
 
@@ -388,7 +393,7 @@ const AsyncUsersOnline = Loadable({
 
 To provide the rendered component with options you can:
 
-- pass them as the `options` object in the `Loadable` configuration object. It will be used as base options for every instance of the rendered component.
+- pass them as the `options` object in the `Loadable` configuration object. They will be used as base options for every instance of the rendered component.
 - pass them as the `options` object in the outlet component configuration. In this case it will be used just in that instance.
 
 In the following example `instance1` will use the label defined in the Loadable factory (`'Friends online:'`), while `instance2` will use a custom label (`'Strangers online:'`):

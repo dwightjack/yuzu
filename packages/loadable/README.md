@@ -2,11 +2,11 @@
 
 > async component initializer for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 
-Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience. But there are scenarios where the HTML you need is not rendered, or you have to deal with data from a remote JSON API.
+Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience. But in some scenarios the HTML you need is not rendered, or you have to wait for data coming from a remote API before you can initialize a component.
 
 This is where **Yuzu Loadable** comes in hand.
 
-Yuzu Loadable lets you define an async function call and use its returned data to instantiate a component and its HTML template.
+Yuzu Loadable lets you define an async function and use its returned data to instantiate a component and its HTML template.
 
 <!-- TOC depthTo:3 -->
 
