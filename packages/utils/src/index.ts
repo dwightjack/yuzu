@@ -18,7 +18,7 @@ export const UID_PREFIX = '_ui.';
 /**
  * @private
  */
-let uid: number = -1;
+let uid = -1;
 
 /**
  * Void function.
