@@ -70,7 +70,7 @@ packages.forEach(async (package) => {
 
   let moduleLinks = '';
 
-  if (files.length > 1) {
+  if (package !== 'utils' && files.length > 1) {
     files = files.filter((f) => !/index(|\.umd)\.ts$/.test(f));
     moduleLinks = files
       .map((f) => {
@@ -127,7 +127,7 @@ ${moduleLinks}
 
       let output = await documentation.formats.md(raw);
 
-      if (package === 'utils') {
+      if (package === 'utils' && !file.includes('events')) {
         output = output.replace(/^##/m, '#');
       } else {
         output = output.replace(/^##/gm, '#');

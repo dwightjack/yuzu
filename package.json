@@ -55,7 +55,7 @@
     "karma-jasmine": "~2.0.1",
     "karma-typescript": "~4.0.0",
     "karma-typescript-es6-transform": "~4.0.0",
-    "lerna": "^3.13.1",
+    "lerna": "^3.14.1",
     "make-dir": "^3.0.0",
     "prettier": "~1.17.1",
     "puppeteer": "~1.17.0",
@@ -71,8 +71,5 @@
     "rollup-plugin-typescript2": "~0.21.1",
     "rollup-plugin-uglify": "~6.0.2",
     "typescript": "~3.4.5"
-  },
-  "dependencies": {
-    "dush": "superguigui/dush#reference-based-offing"
   }
 }

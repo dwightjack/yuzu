@@ -49,6 +49,8 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * `Component` is an extensible class constructor which provides the building block of Yuzu component system.
  *
+ * It inherits methods from [**Events**](/packages/utils/api/events).
+ *
  * ```js
  * const instance = new Component({ ... })
  * ```

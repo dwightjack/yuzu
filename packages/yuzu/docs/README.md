@@ -878,7 +878,7 @@ Full documentation available [here](/packages/yuzu/api/component).
 - `off`
 - `emit`
 
-See [dush](https://github.com/tunnckocore/dush) for details.
+See [Events](/packages/utils/api/events) for details.
 
 ### Child Management Methods
 
