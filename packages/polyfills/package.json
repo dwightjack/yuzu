@@ -32,7 +32,7 @@
     "bundle": "rimraf dist && rollup -c rollup.config.js"
   },
   "dependencies": {
-    "core-js": "^3.0.0",
+    "core-js": "^3.1.2",
     "element-closest": "^3.0.1"
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
