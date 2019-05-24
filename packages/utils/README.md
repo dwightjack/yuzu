@@ -1,4 +1,4 @@
-# yuzu-utils <sub>2.0.0-rc.15<sub>
+# yuzu-utils <sub>2.0.0-rc.16<sub>
 
 > utility functions for the [yuzu](https://github.com/dwightjack/yuzu/) library ecosystem
 
@@ -8,7 +8,7 @@
   - [As NPM Package](#as-npm-package)
   - [CDN Delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-- [Browser support](#browser-support)
+- [Browser Support](#browser-support)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 
@@ -79,11 +79,11 @@ export default {
 };
 ```
 
-## Browser support
+## Browser Support
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `yuzu*` package.
 
-If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entry point:
+If you're using a package bundler add this line at the very top of your entry point:
 
 ```js
 import 'yuzu-polyfills';

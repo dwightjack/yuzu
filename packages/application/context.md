@@ -1,10 +1,10 @@
 # Context
 
-A context is an object you can inject into a component instance. You can inject the same context into multiple instances thus sharing its data.
+A context is a data storage object you can inject into a component instance. You can inject the same context into multiple instances thus sharing its data.
 
-After the injection the context's data will be available inside the component through a `$context` property.
+After the injection the context's data will be available inside the component through the `$context` property.
 
-?> Child components registered with `setRef` will inherit the parent `$context` property.
+?> Child components registered with `setRef` will inherit the parent's `$context` property.
 
 <!-- TOC depthTo:3 -->
 

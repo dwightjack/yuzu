@@ -1,4 +1,4 @@
-# yuzu-polyfills <sub>2.0.0-rc.15<sub>
+# yuzu-polyfills <sub>2.0.0-rc.16<sub>
 
 > legacy environments support polyfills
 
@@ -6,7 +6,7 @@ The `yuzu-polyfills` package provides support for Yuzu in legacy environments li
 
 ## Included Polyfills
 
-- [core-js](https://www.npmjs.com/package/core-js)
+- [core-js 3](https://www.npmjs.com/package/core-js)
   - `Array.from()`
   - `Map`
   - `Object.assign()`
@@ -46,5 +46,3 @@ If you are using a package bundler like Webpack, import this module at the very 
 ```js
 import 'yuzu-polyfills';
 ```
-
-!> **Note:** This package is not needed if you're already using polyfill libraries like [`@babel/polyfill`](https://babeljs.io/docs/en/babel-polyfill).

@@ -6,6 +6,8 @@
 
 `Component` is an extensible class constructor which provides the building block of Yuzu component system.
 
+It inherits methods from [**Events**][1].
+
 ```js
 const instance = new Component({ ... })
 ```
@@ -18,21 +20,21 @@ const instance = new Component({ ... })
 
 ### Parameters
 
--   `options` **[object][1]** Instance options (optional, default `{}`)
+-   `options` **[object][2]** Instance options (optional, default `{}`)
 
 ## Properties
 
--   `$active` **[boolean][2]** `true` if the instance is mounted and initialized
--   `options` **[object][1]** Instance options (see [defaultOptions][3])
--   `state` **[object][1]** Instance state (see [setState][4])
--   `$el` **[Element][5]** The instance root DOM element (see [mount][6])
--   `$els` **[Object][1]&lt;[string][7], [Element][5]>** Object mapping references to component's child DOM elements (see `selectors` below)
--   `$refs` **{string: [Component][8]}** Object mapping references to child components (see [setRef][9])
--   `selectors` **[object][1]** Object mapping a child element's reference name and a CSS selector or custom function
--   `listeners` **[Object][1]&lt;[string][7], ([function][10] \| [string][7])>** Object mapping DOM listeners and handlers (see [setListener][11])
--   `actions` **[Object][1]&lt;[string][7], ([function][10] \| [string][7])>** Object mapping state keys and functions to executed on state update
+-   `$active` **[boolean][3]** `true` if the instance is mounted and initialized
+-   `options` **[object][2]** Instance options (see [defaultOptions][4])
+-   `state` **[object][2]** Instance state (see [setState][5])
+-   `$el` **[Element][6]** The instance root DOM element (see [mount][7])
+-   `$els` **[Object][2]&lt;[string][8], [Element][6]>** Object mapping references to component's child DOM elements (see `selectors` below)
+-   `$refs` **{string: [Component][9]}** Object mapping references to child components (see [setRef][10])
+-   `selectors` **[object][2]** Object mapping a child element's reference name and a CSS selector or custom function
+-   `listeners` **[Object][2]&lt;[string][8], ([function][11] \| [string][8])>** Object mapping DOM listeners and handlers (see [setListener][12])
+-   `actions` **[Object][2]&lt;[string][8], ([function][11] \| [string][8])>** Object mapping state keys and functions to executed on state update
 
-Returns **[Component][8]** 
+Returns **[Component][9]** 
 
 ## mount
 
@@ -54,10 +56,10 @@ Mounts a component instance on a DOM element and initializes it.
 
 ### Parameters
 
--   `el` **([string][7] \| [Element][5])** Component's root element
--   `state` **([object][1] | null)** Initial state (optional, default `{}`)
+-   `el` **([string][8] \| [Element][6])** Component's root element
+-   `state` **([object][2] | null)** Initial state (optional, default `{}`)
 
-Returns **[Component][8]** 
+Returns **[Component][9]** 
 
 ## init
 
@@ -75,9 +77,9 @@ Initializes the component instance.
 
 ### Parameters
 
--   `state` **([object][1] | null)** Initial state (optional, default `{}`)
+-   `state` **([object][2] | null)** Initial state (optional, default `{}`)
 
-Returns **[Component][8]** 
+Returns **[Component][9]** 
 
 ## created
 
@@ -115,7 +117,7 @@ At this stage the state and state listeners are not yet been initialized.
 
 Overwrite this method with custom logic in your components.
 
-?> Use this method to set child components by [setRef][9] and run any preparatory work on the instance.
+?> Use this method to set child components by [setRef][10] and run any preparatory work on the instance.
 
 ## ready
 
@@ -125,7 +127,7 @@ At this stage State and event binding are already in place.
 
 Overwrite this method with custom logic in your components.
 
-?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`][12] method.
+?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`][13] method.
 
 ## beforeDestroy
 
@@ -145,7 +147,7 @@ Returns an array of elements matching a CSS selector in the context of the compo
 
 -   `selector`  {string} CSS selector to match
 
-Returns **[Array][13]&lt;[Element][5]>** 
+Returns **[Array][14]&lt;[Element][6]>** 
 
 ## findNode
 
@@ -155,7 +157,7 @@ Returns the first element matching a CSS selector in the context of the componen
 
 -   `selector`  {string} CSS selector to match
 
-Returns **[Element][5]** 
+Returns **[Element][6]** 
 
 ## getState
 
@@ -165,11 +167,11 @@ getState(key)
 
 Returns a property of the state or a default value if the property is not set.
 
-?> In ES6 environments you can use a [destructuring assignment][14] instead: `const { name = 'John'} = this.state`
+?> In ES6 environments you can use a [destructuring assignment][15] instead: `const { name = 'John'} = this.state`
 
 ### Parameters
 
--   `key` **[string][7]** Property to return
+-   `key` **[string][8]** Property to return
 -   `def` **any** Default value
 
 ### Examples
@@ -191,17 +193,17 @@ shouldUpdateState(string, currentValue, newValue)
 
 Executes a strict inequality comparison (`!==`) on the passed-in values and returns the result.
 
-!> This method is executed on every [`setState`][15] call.
+!> This method is executed on every [`setState`][16] call.
 
 You can overwrite this method with your own validation logic.
 
 ### Parameters
 
--   `key` **[string][7]** State property name
+-   `key` **[string][8]** State property name
 -   `currentValue` **any** Value stored in the current state
 -   `newValue` **any** New value
 
-Returns **[boolean][2]** 
+Returns **[boolean][3]** 
 
 ## setState
 
@@ -221,8 +223,8 @@ The returned value will be used to update the state.
 
 ### Parameters
 
--   `updater` **([object][1] \| [function][10])** Defines which part of the state must be updated
--   `silent` **[boolean][2]** Update the state without emitting change events (optional, default `false`)
+-   `updater` **([object][2] \| [function][11])** Defines which part of the state must be updated
+-   `silent` **[boolean][3]** Update the state without emitting change events (optional, default `false`)
 
 ### Examples
 
@@ -245,12 +247,12 @@ replaceState(newState, [silent])
 
 Replaces the current state of the instance with a completely new state.
 
-!> Note that this methods is un-affected by [`shouldUpdateState`][16].
+!> Note that this methods is un-affected by [`shouldUpdateState`][17].
 
 ### Parameters
 
--   `newState` **[object][1]** The new state object
--   `silent` **[boolean][2]** Replace the state without emitting change events (optional, default `false`)
+-   `newState` **[object][2]** The new state object
+-   `silent` **[boolean][3]** Replace the state without emitting change events (optional, default `false`)
 
 ### Examples
 
@@ -272,8 +274,8 @@ Emits a `broadcast:<eventname>` event on every child component listed in `$refs`
 
 ### Parameters
 
--   `event` **[string][7]** Event name
--   `params` **[Array][13]&lt;any>?** Additional arguments to pass to the handler
+-   `event` **[string][8]** Event name
+-   `params` **[Array][14]&lt;any>?** Additional arguments to pass to the handler
 
 ### Examples
 
@@ -301,8 +303,8 @@ corresponding reference child element (`this.$els.<element>`), if any.
 
 ### Parameters
 
--   `def` **[string][7]** Event and target element definition. Format `eventName [target]`
--   `handler` **[function][10]** Event handler
+-   `def` **[string][8]** Event and target element definition. Format `eventName [target]`
+-   `handler` **[function][11]** Event handler
 
 ### Examples
 
@@ -340,12 +342,12 @@ If a reference `id` is already attached, the previous one is destroyed and repla
 ### Parameters
 
 -   `refCfg`  
--   `props` **[object][1]?** Child component initial state
--   `config` **[object][1]** A child component configuration object
-    -   `config.id` **[string][7]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
+-   `props` **[object][2]?** Child component initial state
+-   `config` **[object][2]** A child component configuration object
+    -   `config.id` **[string][8]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
     -   `config.component` **component** Component constructor or component instance
-    -   `config.el` **([string][7] \| [HTMLElement][17])?** Child component root element. This property is ignored if `config.component` is a component instance or a detached component constructor
-    -   `config.on` **[Object][1]?** Child component event listeners. Format `{ 'eventname': handler }`
+    -   `config.el` **([string][8] \| [HTMLElement][18])?** Child component root element. This property is ignored if `config.component` is a component instance or a detached component constructor
+    -   `config.on` **[Object][2]?** Child component event listeners. Format `{ 'eventname': handler }`
     -   `config.null` **any** -   Any other property listed here will be passed to the constructor as option
 
 ### Examples
@@ -381,7 +383,7 @@ parent.setRef({
 });
 ```
 
-Returns **[Promise][18]** 
+Returns **[Promise][19]** 
 
 ## destroyRef
 
@@ -389,10 +391,10 @@ Destroys and detaches a specific child component by its reference `id` (as set i
 
 ### Parameters
 
--   `id` **[string][7]** Child component reference id
--   `detach` **[boolean][2]** Remove the child component root element from the DOM (optional, default `false`)
+-   `id` **[string][8]** Child component reference id
+-   `detach` **[boolean][3]** Remove the child component root element from the DOM (optional, default `false`)
 
-Returns **[Promise][18]** 
+Returns **[Promise][19]** 
 
 ## destroyRefs
 
@@ -400,7 +402,7 @@ Calls `.destroy()` on every child references and detaches them from the parent c
 
 !> This is an async method returning a promise
 
-Returns **[Promise][18]** 
+Returns **[Promise][19]** 
 
 ## destroy
 
@@ -418,7 +420,7 @@ Detaches DOM events, instance's events and destroys all references as well.
 
 !> This is an async method returning a promise
 
-Returns **[Promise][18]** 
+Returns **[Promise][19]** 
 
 ## &lt;static> isComponent
 
@@ -432,7 +434,7 @@ Checks whether the passed-in value is a Component constructor.
 
 -   `value` **any** 
 
-Returns **[boolean][2]** 
+Returns **[boolean][3]** 
 
 ## &lt;static> UID_DATA_ATTR
 
@@ -442,44 +444,46 @@ Component.UID_DATA_ATTR
 
 Component root element attribute marker.
 
-Returns **[object][1]** 
+Returns **[object][2]** 
 
 ## &lt;static> YUZU_COMPONENT
 
 Marks yuzu components
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[1]: /packages/utils/api/events
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[3]: #defaultOptions
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[4]: #setState
+[4]: #defaultOptions
 
-[5]: https://developer.mozilla.org/docs/Web/API/Element
+[5]: #setState
 
-[6]: #mount
+[6]: https://developer.mozilla.org/docs/Web/API/Element
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[7]: #mount
 
-[8]: #component
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[9]: #setRef
+[9]: #component
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[10]: #setRef
 
-[11]: #setListener
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[12]: packages/yuzu/#async-ready-state
+[12]: #setListener
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[13]: packages/yuzu/#async-ready-state
 
-[14]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[15]: #setstate
+[15]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
-[16]: #shouldupdatestate
+[16]: #setstate
 
-[17]: https://developer.mozilla.org/docs/Web/HTML/Element
+[17]: #shouldupdatestate
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[18]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
