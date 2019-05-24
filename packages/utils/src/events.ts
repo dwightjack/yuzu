@@ -3,6 +3,8 @@ export type listenerFn = (...args: any[]) => void;
 /**
  * Creates an event hub object.
  *
+ * This is a port to ES6 of the [dush](https://github.com/tunnckoCoreLabs/dush) library.
+ *
  * @class
  * @example
  * import { Events } from 'yuzu-utils';
