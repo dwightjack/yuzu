@@ -1,7 +1,7 @@
 {
   "name": "yuzu",
   "description": "Yuzu Core Component",
-  "version": "2.0.0-rc.16",
+  "version": "2.0.0-rc.18",
   "license": "MIT",
   "homepage": "https://github.com/dwightjack/yuzu/packages/yuzu",
   "author": "Marco Solazzi",
@@ -35,7 +35,7 @@
     "bundle": "rimraf dist && rollup -c rollup.config.js"
   },
   "dependencies": {
-    "yuzu-utils": "^2.0.0-rc.16"
+    "yuzu-utils": "^2.0.0-rc.18"
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
 }
