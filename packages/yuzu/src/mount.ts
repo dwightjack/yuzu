@@ -1,4 +1,4 @@
-import { qs, isElement, evaluate } from 'yuzu-utils';
+import { qs, isElement, evaluate, createSequence } from 'yuzu-utils';
 import { Component } from './component';
 import { IObject, IState, IComponentConstructable } from '../types';
 
@@ -17,7 +17,7 @@ export type mountChildren<C extends Component> =
   | mounterFn<C>[]
   | ((ctx: C) => mounterFn<C>[]);
 
-let childRefIdx = 0;
+const childRefIdx = createSequence();
 
 /**
  * `mount` is an helper function to setup trees of components in a functional way.
@@ -61,7 +61,7 @@ export function mount<C extends Component, X extends Component>(
       ctx.setRef(
         {
           component,
-          id: id || `ref__${++childRefIdx}`,
+          id: id || childRefIdx(ctx.$uid + '-r.'),
           on: evaluate(on, ctx),
         },
         state,

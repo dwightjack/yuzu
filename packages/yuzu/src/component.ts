@@ -83,14 +83,14 @@ export class Component<
 
   /**
    * ```js
-   * Component.UID_DATA_ATTR
+   * Component.YUZU_DATA_ATTR
    * ```
    * Component root element attribute marker.
    *
    * @static
    * @returns {object}
    */
-  public static UID_DATA_ATTR = 'data-cid';
+  public static YUZU_DATA_ATTR = 'data-yuzu';
 
   /**
    * Marks yuzu components
@@ -341,24 +341,15 @@ export class Component<
     const { $el } = this;
 
     // initialization placeholder
-    let uid = $el && $el.getAttribute(Component.UID_DATA_ATTR);
-
-    if (uid) {
-      this.$warn(`Element ${uid} is already initialized... skipping`, $el);
-      this.$uid = uid;
-
+    if ($el && $el.hasAttribute(Component.YUZU_DATA_ATTR)) {
+      this.$warn(`Element is already initialized... skipping`, $el);
       return this;
     }
 
-    uid = nextUid();
-    this.$uid = uid;
+    this.$uid = nextUid();
 
     if ($el) {
-      $el.setAttribute(Component.UID_DATA_ATTR, uid);
-
-      if (!$el.id) {
-        $el.id = `c_${uid}`;
-      }
+      $el.setAttribute(Component.YUZU_DATA_ATTR, '');
     }
 
     this.initialize();
@@ -986,7 +977,7 @@ export class Component<
     }
     this.off();
     if (this.$el) {
-      this.$el.removeAttribute(Component.UID_DATA_ATTR); // eslint-disable-line no-console
+      this.$el.removeAttribute(Component.YUZU_DATA_ATTR); // eslint-disable-line no-console
     }
 
     try {

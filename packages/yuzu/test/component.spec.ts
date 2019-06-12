@@ -293,30 +293,19 @@ describe('`Component`', () => {
     });
     it('should check if a component has already been initialized on the DOM element', () => {
       const spy = spyOn(inst, '$warn');
-      const uid = 'fake-uid';
-      root.setAttribute(Component.UID_DATA_ATTR, uid);
+      root.setAttribute(Component.YUZU_DATA_ATTR, '');
       inst.init();
       expect(spy).toHaveBeenCalled();
-      const [msg, ref] = spy.calls.mostRecent().args;
-      expect(msg).toContain(uid);
+      const [, ref] = spy.calls.mostRecent().args;
       expect(ref).toBe(inst.$el);
     });
     it('should set a unique `_uid` property', () => {
       inst.init();
       expect(inst.$uid).toEqual(jasmine.any(String));
     });
-    it('should set `$uid` as `data-cid ` attribute on the root DOM element', () => {
+    it('should set a data-* attribute on the root DOM element', () => {
       inst.init();
-      expect(root.getAttribute(Component.UID_DATA_ATTR)).toBe(inst.$uid);
-    });
-    it('should set a generated `id` DOM attribute onto the root element if not present', () => {
-      inst.init();
-      expect(root.id).toBe(`c_${inst.$uid}`);
-    });
-    it('should keep the original id DOM attribute if already set', () => {
-      root.id = 'myId';
-      inst.init();
-      expect(root.id).toBe('myId');
+      expect(root.hasAttribute(Component.YUZU_DATA_ATTR)).toBe(true);
     });
     it('should call `.initialize()` lifecycle hook', () => {
       const spy = spyOn(inst, 'initialize');
@@ -325,7 +314,7 @@ describe('`Component`', () => {
     });
     it('should NOT call `.initialize()` lifecycle hook if component is already initialized', () => {
       const spy = spyOn(inst, 'initialize');
-      root.setAttribute(Component.UID_DATA_ATTR, 'fake-id');
+      root.setAttribute(Component.YUZU_DATA_ATTR, '');
       inst.init();
       expect(spy).not.toHaveBeenCalled();
     });
@@ -1230,7 +1219,7 @@ describe('`Component`', () => {
       const spy = spyOn(inst.$el, 'removeAttribute');
 
       await inst.destroy();
-      expect(spy).toHaveBeenCalledWith(Component.UID_DATA_ATTR);
+      expect(spy).toHaveBeenCalledWith(Component.YUZU_DATA_ATTR);
     });
 
     it('should call `destroyRefs()` and deactivate the instance', async () => {

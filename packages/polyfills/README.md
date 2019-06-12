@@ -12,12 +12,13 @@ The `yuzu-polyfills` package provides support for Yuzu in legacy environments li
   - `Object.assign()`
   - `Object.entries()`
   - `Promise`
-  - `String.prototype.includes`
-  - `String.prototype.startsWith`
-  - `Number.isNaN`
+  - `String.prototype.includes()`
+  - `String.prototype.startsWith()`
+  - `Number.isNaN()`
 - [element-closest](https://www.npmjs.com/package/element-closest)
   - `Element.closest()`
 - [`ChildNode.remove()`](https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove)
+- [`Number.MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER#Polyfill)
 
 ## Installation
 

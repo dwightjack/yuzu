@@ -28,11 +28,11 @@ describe('`Sandbox`', () => {
       expect(spy).toHaveBeenCalledWith(root);
     });
 
-    it('sets a data-sandbox attribute on the root element', () => {
+    it('sets a data-* attribute on the root element', () => {
       const root = document.createElement('div');
       const inst = new Sandbox({ root, id: 'demo' });
       inst.start();
-      expect(root.getAttribute('data-sandbox')).toBe('demo');
+      expect(root.hasAttribute(Sandbox.SB_DATA_ATTR)).toBe(true);
     });
 
     it('creates an internal array to keep track of registered components', () => {

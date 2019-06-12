@@ -11,6 +11,22 @@ describe('`Utils`', () => {
     });
   });
 
+  describe('`createSequence`', () => {
+    it('should return a function', () => {
+      expect(utils.createSequence()).toEqual(jasmine.any(Function));
+    });
+
+    it('should start from -1', () => {
+      const seq = utils.createSequence();
+      expect(seq()).toMatch(/0$/);
+    });
+
+    it('should take an optional start number', () => {
+      const seq = utils.createSequence(9);
+      expect(seq()).toMatch(/10$/);
+    });
+  });
+
   describe('`nextUid`', () => {
     const extract = (str: string): number =>
       parseInt((str.match(/[0-9]+?$/) || [])[0], 10);

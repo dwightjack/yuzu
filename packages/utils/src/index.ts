@@ -25,11 +25,6 @@ export { Events } from './events';
 export const UID_PREFIX = '_ui.';
 
 /**
- * @private
- */
-let uid = -1;
-
-/**
  * Void function.
  *
  * @example
@@ -42,9 +37,39 @@ let uid = -1;
 export const noop = (): void => {};
 
 /**
+ * Creates a function that outputs sequential uid starting from a given number
+ *
+ * @example
+ * import { createSequence } from 'yuzu-utils';
+ *
+ * const seq = createSequence()
+ * const seq10 = createSequence(10)
+ *
+ * seq() === '_ui.0'
+ * seq10() === '_ui.11'
+ *
+ * @param {number} [start=-1] Initial value
+ * @return {function}
+ */
+export const createSequence = (start: number = -1) => {
+  let uid = start;
+  let uidNs = '';
+
+  return (prefix: string = UID_PREFIX): string => {
+    uid += 1;
+    if (uid === Number.MAX_SAFE_INTEGER) {
+      uid = 0;
+      uidNs += '0';
+    }
+    return prefix + uidNs + uid;
+  };
+};
+
+/**
  * Returns a sequential uid with optional prefix.
  *
  * @param {string} [prefix=UID_PREFIX] uid prefix. Defaults to the value of `UID_PREFIX`
+ * @param {string} [seq] Numeric variable to use. Defaults to an internal sequence
  * @returns {string}
  * @example
  * import { nextUid } from 'yuzu-utils';
@@ -52,8 +77,9 @@ export const noop = (): void => {};
  * nextUid() === '_ui.0'
  * nextUid() === '_ui.1'
  * nextUid('custom.') === 'custom.2'
+ * nextUid(UID_PREFIX, 10) === '_ui.1'
  */
-export const nextUid = (prefix: string = UID_PREFIX): string => prefix + ++uid;
+export const nextUid = createSequence();
 
 const funcToString = Function.prototype.toString;
 const objProto = Object.prototype;

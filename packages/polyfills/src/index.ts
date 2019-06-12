@@ -5,8 +5,11 @@ import 'core-js/es/object/entries';
 import 'core-js/es/promise';
 import 'core-js/es/string/includes';
 import 'core-js/es/string/starts-with';
-import 'core-js/es/number/is-nan';
 import 'element-closest';
+
+if (!Number.MAX_SAFE_INTEGER) {
+  (Number as any).MAX_SAFE_INTEGER = 0x1fffffffffffff;
+}
 
 // from: https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
 (function removePolyfill(arr) {

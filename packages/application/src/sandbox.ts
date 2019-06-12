@@ -1,4 +1,4 @@
-import { datasetParser, isElement, evaluate } from 'yuzu-utils';
+import { datasetParser, isElement, evaluate, createSequence } from 'yuzu-utils';
 import { IObject, IComponentConstructable } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
@@ -22,8 +22,8 @@ export interface ISandboxOptions {
   id: string;
 }
 
-let idx = -1;
-let childIdx = -1;
+const nextSbUid = createSequence();
+const nextChildUid = createSequence();
 
 /**
  * A sandbox can be used to initialize a set of components based on an element's innerHTML.
@@ -72,18 +72,16 @@ export class Sandbox<ISandboxState = any> extends Component<
   ISandboxState,
   ISandboxOptions
 > {
-  public static UID_DATA_ATTR = 'data-sandbox';
+  public static SB_DATA_ATTR = 'data-yuzu-sb';
 
   public defaultOptions(): ISandboxOptions {
     return {
       components: [],
-      id: `_sbx-${++idx}`,
+      id: '',
       root: document.body,
     };
   }
-
   public $id: string;
-
   public $ctx?: IContext;
 
   public $registry: ISandboxRegistryEntry[] = [];
@@ -99,7 +97,7 @@ export class Sandbox<ISandboxState = any> extends Component<
     super(options);
     const { components = [], id } = this.options as ISandboxOptions;
 
-    this.$id = id as string;
+    this.$id = id || nextSbUid('_sbx-');
 
     components.forEach((config) => {
       if (!Array.isArray(config)) {
@@ -187,12 +185,12 @@ export class Sandbox<ISandboxState = any> extends Component<
     if (!isElement(this.$el)) {
       throw new TypeError('this.$el is not a DOM element');
     }
-    this.$el.setAttribute(Sandbox.UID_DATA_ATTR, this.$id);
+    this.$el.setAttribute(Sandbox.SB_DATA_ATTR, '');
     this.$ctx = createContext(data);
     this.$ctx.inject(this);
     this.emit('beforeStart');
 
-    const sbSelector = `[${Sandbox.UID_DATA_ATTR}]`;
+    const sbSelector = `[${Sandbox.SB_DATA_ATTR}]`;
 
     const ret = this.$registry.map(
       async ({ component: ComponentConstructor, selector, ...options }) => {
@@ -260,7 +258,7 @@ export class Sandbox<ISandboxState = any> extends Component<
     const inlineOptions = el ? datasetParser(el) : {};
 
     return this.setRef({
-      id: `_sbx-c${++childIdx}`,
+      id: nextChildUid(this.$id + '-c.'),
       ...options,
       ...inlineOptions,
       component: ComponentConstructor,
@@ -273,7 +271,7 @@ export class Sandbox<ISandboxState = any> extends Component<
    * stop()
    * ```
    *
-   * Stops every running component and clears sandbox events.
+   * Stops every running component, clears sandbox events and destroys the instance.
    *
    * @fires Sandbox#beforeStop
    * @fires Sandbox#stop
@@ -287,7 +285,7 @@ export class Sandbox<ISandboxState = any> extends Component<
     this.removeListeners();
     try {
       if (this.$el) {
-        this.$el.removeAttribute(Component.UID_DATA_ATTR);
+        this.$el.removeAttribute(Sandbox.SB_DATA_ATTR);
       }
       await this.destroyRefs();
       this.$active = false;
@@ -301,7 +299,7 @@ export class Sandbox<ISandboxState = any> extends Component<
     this.emit('stop');
     this.clear();
 
-    return Promise.resolve();
+    return this.destroy();
   }
 
   /**
