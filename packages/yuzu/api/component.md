@@ -436,10 +436,10 @@ Checks whether the passed-in value is a Component constructor.
 
 Returns **[boolean][3]** 
 
-## &lt;static> UID_DATA_ATTR
+## &lt;static> YUZU_DATA_ATTR
 
 ```js
-Component.UID_DATA_ATTR
+Component.YUZU_DATA_ATTR
 ```
 
 Component root element attribute marker.

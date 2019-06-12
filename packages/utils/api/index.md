@@ -30,6 +30,28 @@ import { noop } from 'yuzu-utils';
 noop() === undefined
 ```
 
+## createSequence
+
+Creates a function that outputs sequential uid starting from a given number
+
+### Parameters
+
+-   `start` **[number][4]** Initial value (optional, default `-1`)
+
+### Examples
+
+```javascript
+import { createSequence } from 'yuzu-utils';
+
+const seq = createSequence()
+const seq10 = createSequence(10)
+
+seq() === '_ui.0'
+seq10() === '_ui.11'
+```
+
+Returns **[function][3]** 
+
 ## nextUid
 
 Returns a sequential uid with optional prefix.
@@ -37,6 +59,7 @@ Returns a sequential uid with optional prefix.
 ### Parameters
 
 -   `prefix` **[string][1]** uid prefix. Defaults to the value of `UID_PREFIX` (optional, default `UID_PREFIX`)
+-   `seq` **[string][1]?** Numeric variable to use. Defaults to an internal sequence
 
 ### Examples
 
@@ -46,6 +69,7 @@ import { nextUid } from 'yuzu-utils';
 nextUid() === '_ui.0'
 nextUid() === '_ui.1'
 nextUid('custom.') === 'custom.2'
+nextUid(UID_PREFIX, 10) === '_ui.1'
 ```
 
 Returns **[string][1]** 
@@ -68,7 +92,7 @@ isObjectLike(false) === false
 isObjectLike([]) === true
 ```
 
-Returns **[boolean][4]** 
+Returns **[boolean][5]** 
 
 ## isPlainObject
 
@@ -87,7 +111,7 @@ isPlainObject({}) === true
 isPlainObject([]) === false
 ```
 
-Returns **[boolean][4]** 
+Returns **[boolean][5]** 
 
 ## isElement
 
@@ -106,7 +130,7 @@ isPlainObject(document.body) === true
 isPlainObject([]) === false
 ```
 
-Returns **[boolean][4]** 
+Returns **[boolean][5]** 
 
 ## evaluate
 
@@ -140,7 +164,7 @@ If `method` is a string it will try to resolve the function as a member of the c
 
 ### Parameters
 
--   `ctx` **[object][5]** Context
+-   `ctx` **[object][6]** Context
 -   `method` **([string][1] \| [function][3])** Function to bind
 
 ### Examples
@@ -173,12 +197,12 @@ boundMethod() === 'john'
 
 ## datasetParser
 
-Parses an element's [`dataset`][6] with optional filtering.
+Parses an element's [`dataset`][7] with optional filtering.
 
 ### Parameters
 
--   `el` **[HTMLElement][7]** HTML element
--   `matcher` **[RegExp][8]?** Optional regexp to filter dataset by key (defaults to `/^ui([A-Z].+)$/`) (optional, default `INLINE_STATE_REGEXP`)
+-   `el` **[HTMLElement][8]** HTML element
+-   `matcher` **[RegExp][9]?** Optional regexp to filter dataset by key (defaults to `/^ui([A-Z].+)$/`) (optional, default `INLINE_STATE_REGEXP`)
 -   `formatter` **[function][3]** Optional formatter function. (optional, default `parseString`)
 
 ### Examples
@@ -195,18 +219,18 @@ data.bool === true
 data.dashedValue === 'John'
 ```
 
-Returns **[object][5]** 
+Returns **[object][6]** 
 
 ## qs
 
--   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector][9]**
+-   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector][10]**
 
 Returns the first element within the document that matches the specified group of selectors.
 
 ### Parameters
 
 -   `selector` **[string][1]** CSS selector
--   `ctx` **([Element][10] \| [Document][11])** Root element. `document` by default (optional, default `document`)
+-   `ctx` **([Element][11] \| [Document][12])** Root element. `document` by default (optional, default `document`)
 
 ### Examples
 
@@ -216,18 +240,18 @@ import { qs } from 'yuzu-utils';
 const content = qs('#main-content');
 ```
 
-Returns **([Element][10] | null)** 
+Returns **([Element][11] | null)** 
 
 ## qsa
 
--   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll][12]**
+-   **See: [https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll][13]**
 
 Returns an array of elements within the document that match the specified group of selectors.
 
 ### Parameters
 
 -   `selector` **[string][1]** One or more CSS selectors separated by commas.
--   `ctx` **([Element][10] \| [Document][11])** Root element. `document` by default (optional, default `document`)
+-   `ctx` **([Element][11] \| [Document][12])** Root element. `document` by default (optional, default `document`)
 
 ### Examples
 
@@ -237,7 +261,7 @@ import { qsa } from 'yuzu-utils';
 const listItems = qsa('.list .list-items');
 ```
 
-Returns **[Array][13]&lt;[Element][10]>** 
+Returns **[Array][14]&lt;[Element][11]>** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
@@ -245,22 +269,24 @@ Returns **[Array][13]&lt;[Element][10]>**
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[6]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[7]: https://developer.mozilla.org/docs/Web/HTML/Element
+[7]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+[8]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[9]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
 
-[10]: https://developer.mozilla.org/docs/Web/API/Element
+[10]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript
+[11]: https://developer.mozilla.org/docs/Web/API/Element
 
-[12]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
+[12]: https://developer.mozilla.org/docs/Web/JavaScript
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[13]: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

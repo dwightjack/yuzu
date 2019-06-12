@@ -108,7 +108,7 @@ Returns **[Sandbox][7]**
 stop()
 ```
 
-Stops every running component and clears sandbox events.
+Stops every running component, clears sandbox events and destroys the instance.
 
 ### Examples
 
