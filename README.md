@@ -13,8 +13,9 @@ Learn more at https://dwightjack.github.io/yuzu/.
 ## Example
 
 ```html
-<div class="Timer">
-  <p class="Timer__value">0<p>
+<div class="timer">
+  <p class="timer__value">0</p>
+  <p></p>
 </div>
 ```
 
@@ -23,7 +24,7 @@ import { Component } from 'yuzu';
 
 class Timer extends Component {
   selectors = {
-    value: '.Timer__value',
+    value: '.timer__value',
   };
 
   state = {
@@ -49,10 +50,10 @@ class Timer extends Component {
   }
 }
 
-new Timer().mount('.Timer');
+new Timer().mount('.timer');
 ```
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Ftimer&module=%2Fexamples%2Ftimer%2Findex.js)
+[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Ftimer%2Findex.html&view=preview)
 
 Read the core package [documentation](https://dwightjack.github.io/yuzu/#/packages/yuzu/) to learn more.
 
