@@ -313,7 +313,7 @@ class Counter extends Component {
 const counter = new Counter().mount(Counter.root);
 ```
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Fbase&module=%2Fexamples%2Fbase%2Findex.js)
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Fbase%2Findex.html&module=%2Fexamples%2Fbase%2Findex.js&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 ### Application Breakdown
 
@@ -578,7 +578,7 @@ Here is a full example:
 import { Component } from 'yuzu';
 
 class Text extends Component {
-  static root = '.Text';
+  static root = '.text';
 
   state = {
     content: '',
@@ -606,7 +606,7 @@ class Counter extends Component {
   selectors = {
     increment: '.counter__increment',
     decrement: '.counter__decrement',
-    text: '.Text',
+    text: '.text',
   };
 
   listeners = {
@@ -649,7 +649,7 @@ class Counter extends Component {
 const counter = new Counter().mount(Counter.root);
 ```
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Fchildren&module=%2Fexamples%2Fchildren%2Findex.js)
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Fchildren%2Findex.html&module=%2Fexamples%2Fchildren%2Findex.js&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 ### Child Components' Initial State and Computed State
 
@@ -746,9 +746,7 @@ If you assign a child reference to an `id` value already assigned to an active c
 
 ?> The new reference will be initialized **after** the destroy lifecycle of the previous reference has complete. This lets you set, for example, an exit transition of the instance on its `beforeDestroy` async hook.
 
-Open the following link to see a working example.
-
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?fontsize=16&initialpath=%2Fchildreplace&module=%2Fexamples%2Fchild-replace%2Findex.js)
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Fchild-replace%2Findex.html&module=%2Fexamples%2Fchild-replace%2Findex.js&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 ### Remove Child Components
 
@@ -933,7 +931,9 @@ class UserList extends Component {
 }
 ```
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Freadystate&module=%2Fexamples%2Freadystate%2Findex.js)
+Hit the _refresh_ button to see the example in action.
+
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Freadystate%2Findex.html&module=%2Fexamples%2Freadystate%2Findex.js&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 ### Conditional State Updates
 

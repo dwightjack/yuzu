@@ -343,7 +343,9 @@ The HTML returned by the template will **replace the render root** resulting in 
 </div>
 ```
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Floadable&module=%2Fexamples%2Floadable%2Findex.js)
+Hit the _refresh_ button to see the example in action.
+
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Floadable%2Findex.html&module=%2Fexamples%2Floadable%2Findex.js&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 ?> For simple templates ES6 [Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) are a fast end easy option. For more complex templates consider using something like [**lodash templates**](https://lodash.com/docs/4.17.10#template) or [**handlebars**](http://handlebarsjs.com/).
 

@@ -78,7 +78,7 @@ const sandbox = new Sandbox({
 sandbox.start();
 ```
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Fsandbox-base&module=%2Fexamples%2Fsandbox%2Fbase%2Findex.js)
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Fsandbox%2Fbase%2Findex.html&module=%2Fexamples%2Fsandbox%2Fbase%2Findex.js&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 Upon calling `sandbox.start()` the sandbox will query the DOM inside `#app`, match elements based on each components' `.root` static property and initialize matching component on them.
 
@@ -134,7 +134,7 @@ Starting from the example above let's change the HTML to:
 
 On `sandbox.start()` the first Counter will be initialized with the `dark` theme, but the second will pick the `light` one.
 
-[![Edit Yuzu Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4w5ml1kmk0?initialpath=%2Fsandbox-custom&module=%2Fexamples%2Fsandbox%2Fwithoptions%2Findex.js)
+<iframe src="https://codesandbox.io/embed/yuzu-demo-m1v2m?autoresize=1&fontsize=14&initialpath=%2Fexamples%2Fsandbox%2Fwithoptions%2Findex.html&view=preview" title="Yuzu Demo" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 ### Dynamic selector
 
