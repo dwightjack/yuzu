@@ -23,7 +23,7 @@ import {
   ReadyStateFn,
   IStateLogger,
   IComponentConstructable,
-} from '../types';
+} from './types';
 
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 
@@ -198,19 +198,16 @@ export class Component<
 
     const entries = Object.entries(defaultOptions) as [
       keyof ComponentOptions,
-      any
+      any,
     ][];
-    this.options = entries.reduce(
-      (opts, [key, value]) => {
-        let v = options[key] !== undefined ? options[key] : value;
-        if (typeof v === 'function' && !Component.isComponent(v)) {
-          v = v.bind(this);
-        }
-        opts[key] = v; // eslint-disable-line no-param-reassign
-        return opts;
-      },
-      {} as any,
-    );
+    this.options = entries.reduce((opts, [key, value]) => {
+      let v = options[key] !== undefined ? options[key] : value;
+      if (typeof v === 'function' && !Component.isComponent(v)) {
+        v = v.bind(this);
+      }
+      opts[key] = v; // eslint-disable-line no-param-reassign
+      return opts;
+    }, {} as any);
 
     this.$active = false;
 
@@ -382,6 +379,8 @@ export class Component<
     return this;
   }
 
+  /* eslint-disable @typescript-eslint/no-empty-function */
+
   /**
    * Lifecycle hook called on instance creation.
    *
@@ -446,6 +445,8 @@ export class Component<
    */
   public beforeDestroy(): void {}
 
+  /* eslint-enable @typescript-eslint/no-empty-function */
+
   /**
    * Returns an array of elements matching a CSS selector in the context of the component's root element
    *
@@ -506,7 +507,7 @@ export class Component<
    * @returns {boolean}
    */
   public shouldUpdateState(
-    key: keyof ComponentState,
+    _key: keyof ComponentState,
     currentValue: any,
     newValue: any,
   ): boolean {
@@ -548,7 +549,7 @@ export class Component<
     const changed: (keyof ComponentState)[] = [];
     const { state: prevState } = this;
 
-    const changeSet: Partial<ComponentState> = evaluate(updater, this.state);
+    const changeSet = evaluate(updater, this.state) as Partial<ComponentState>;
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -559,22 +560,19 @@ export class Component<
       );
     }
     const entries = Object.entries(this.state) as [keyof ComponentState, any][];
-    this.state = entries.reduce(
-      (newState: ComponentState, [k, prevValue]) => {
-        const value = changeSet[k];
-        if (
-          value === undefined ||
-          this.shouldUpdateState(k, prevValue, value) === false
-        ) {
-          newState[k] = prevValue; // eslint-disable-line no-param-reassign
-        } else {
-          changed.push(k);
-          newState[k] = value as any; // eslint-disable-line no-param-reassign
-        }
-        return newState;
-      },
-      {} as any,
-    );
+    this.state = entries.reduce((newState: ComponentState, [k, prevValue]) => {
+      const value = changeSet[k];
+      if (
+        value === undefined ||
+        this.shouldUpdateState(k, prevValue, value) === false
+      ) {
+        newState[k] = prevValue; // eslint-disable-line no-param-reassign
+      } else {
+        changed.push(k);
+        newState[k] = value as any; // eslint-disable-line no-param-reassign
+      }
+      return newState;
+    }, {} as any);
 
     if (!silent && changed.length > 0) {
       while (changed.length > 0) {
@@ -901,7 +899,7 @@ export class Component<
    * @param {boolean} [detach=false] Remove the child component root element from the DOM
    * @returns {Promise}
    */
-  public async destroyRef(id: string, detach: boolean = false): Promise<void> {
+  public async destroyRef(id: string, detach = false): Promise<void> {
     const { $refsStore } = this;
     const ref = $refsStore.get(id);
     if (!ref) {
@@ -935,9 +933,11 @@ export class Component<
     }
 
     try {
-      const result = await Promise.all(
-        [...$refsStore.values()].map((ref) => ref.destroy()),
-      );
+      const teardown: Promise<void>[] = [];
+      $refsStore.forEach((ref) => {
+        teardown.push(ref.destroy());
+      });
+      const result = await Promise.all(teardown);
       this.$refs = {};
       $refsStore.clear();
       return result;

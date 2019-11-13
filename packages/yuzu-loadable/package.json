@@ -1,29 +1,30 @@
 {
-  "name": "yuzu",
-  "description": "Yuzu Core Component",
+  "name": "yuzu-loadable",
+  "description": "Yuzu Async Component Loader",
   "version": "2.0.0-rc.18",
   "license": "MIT",
-  "homepage": "https://github.com/dwightjack/yuzu/packages/yuzu",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/loadable",
   "author": "Marco Solazzi",
-  "unpkg": "dist/yuzu.umd.production.min.js",
+  "unpkg": "dist/yuzu-loadable.umd.production.min.js",
   "main": "dist/index.js",
-  "module": "dist/yuzu.esm.js",
+  "module": "dist/yuzu-loadable.esm.js",
   "typings": "dist/index.d.ts",
   "amdName": "YZ",
-  "engines": {
-    "node": ">=10.0.0"
-  },
   "publishConfig": {
     "access": "public"
   },
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "files": [
     "src",
-    "dist",
-    "images",
-    "types"
+    "dist"
   ],
   "keywords": [
-    "component"
+    "async",
+    "lazy",
+    "loadable",
+    "yuzu"
   ],
   "repository": {
     "type": "git",
@@ -35,11 +36,14 @@
     "build": "tsdx build --format cjs,esm,umd",
     "test": "tsdx test"
   },
+  "peerDependencies": {
+    "yuzu": "^2.0.0"
+  },
   "dependencies": {
     "yuzu-utils": "^2.0.0-rc.18"
   },
   "devDependencies": {
-    "yuzu-test-tools": "^1.0.0"
+    "yuzu": "^2.0.0-rc.18"
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
 }

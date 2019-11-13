@@ -1,7 +1,7 @@
 import { Component } from '../src/component';
 import { Children } from '../src/children';
 import * as utils from 'yuzu-utils';
-import { mount } from '../../../shared/utils';
+import { mount } from 'yuzu-test-tools';
 
 describe('`Children`', () => {
   let root: Component;
@@ -55,9 +55,7 @@ describe('`Children`', () => {
     expect(spy).toHaveBeenCalledTimes(els.length);
 
     for (let i = 0; i < els.length; i += 1) {
-      let el: Node;
-      let idx: number;
-      [el, idx] = spy.calls.argsFor(i);
+      const [el, idx] = spy.calls.argsFor(i);
       expect(el).toBe(els[i]);
       expect(idx).toBe(i);
     }

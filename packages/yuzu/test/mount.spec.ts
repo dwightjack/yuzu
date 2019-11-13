@@ -1,7 +1,7 @@
-import { mount as mountHTML } from '../../../shared/utils';
+import { mount as mountHTML } from 'yuzu-test-tools';
+import * as utils from 'yuzu-utils';
 import { Component } from '../src/component';
 import { mount } from '../src/mount';
-import * as utils from 'yuzu-utils';
 
 describe('`mount`', () => {
   describe('Mounter function setup', () => {

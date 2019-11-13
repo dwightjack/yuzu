@@ -3,6 +3,10 @@ logs
 *.log
 npm-debug.log*
 .rpt2_cache
+.rts2_cache_cjs
+.rts2_cache_esm
+.rts2_cache_umd
+.rts2_cache_system
 
 # Runtime data
 pids

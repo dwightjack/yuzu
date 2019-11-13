@@ -1,9 +1,11 @@
 import { Component } from './component';
-import { IObject } from '../types';
+import { IObject } from './types';
 
 type IComponentConstructor = typeof Component;
-export interface IExtendedComponent<P extends Component, M>
-  extends IComponentConstructor {
+export interface IExtendedComponent<
+  P extends Component = Component,
+  M extends Record<string, any> = {}
+> extends IComponentConstructor {
   new (options?: IObject): P & M;
 }
 
@@ -23,14 +25,14 @@ export interface IExtendedComponent<P extends Component, M>
  *  }
  * });
  */
-export const extend = <P extends Component, T = any>(
+export function extend<P extends Component, E extends Record<string, any>>(
   parent: IComponentConstructor,
-  props: T = {} as any,
-): IExtendedComponent<P, T> => {
-  const child = props.hasOwnProperty('constructor')
-    ? props.constructor
-    : function ChildConstructor(this: Component, options?: IObject): P {
-        return parent.call(this, options) as any;
+  props = {} as E,
+): IExtendedComponent<P, E> {
+  const child: IExtendedComponent<P, E> = props.hasOwnProperty('constructor')
+    ? (props.constructor as any)
+    : function ChildConstructor(this: Component, options?: IObject) {
+        return parent.call(this, options);
       };
 
   // https://github.com/mridgway/hoist-non-react-statics/blob/master/index.js#L51
@@ -49,5 +51,5 @@ export const extend = <P extends Component, T = any>(
 
   (child as any).__super__ = parent.prototype;
 
-  return child as IExtendedComponent<P, T>;
-};
+  return child;
+}

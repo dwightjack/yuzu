@@ -1,6 +1,6 @@
-import { Component } from '../src/component';
-import { mount } from '../../../shared/utils';
+import { mount } from 'yuzu-test-tools';
 import * as utils from 'yuzu-utils';
+import { Component } from '../src/component';
 
 describe('`Component`', () => {
   describe('isComponent', () => {
@@ -105,7 +105,7 @@ describe('`Component`', () => {
     it('should exclude passed-in options not defined in the defaults', () => {
       const options = { demo: true };
       class Child extends Component {
-        public defaultOptions = () => options;
+        public defaultOptions = (): Record<string, any> => options;
       }
       const child = new Child({ other: 'yes' });
       expect(child.options).not.toEqual(

@@ -1,15 +1,15 @@
 {
-  "name": "yuzu",
-  "description": "Yuzu Core Component",
+  "name": "yuzu-utils",
+  "description": "Yuzu Utilities",
   "version": "2.0.0-rc.18",
   "license": "MIT",
-  "homepage": "https://github.com/dwightjack/yuzu/packages/yuzu",
+  "homepage": "https://github.com/dwightjack/yuzu/packages/utils",
   "author": "Marco Solazzi",
-  "unpkg": "dist/yuzu.umd.production.min.js",
+  "unpkg": "dist/yuzu-utils.umd.production.min.js",
   "main": "dist/index.js",
-  "module": "dist/yuzu.esm.js",
+  "module": "dist/yuzu-utils.esm.js",
   "typings": "dist/index.d.ts",
-  "amdName": "YZ",
+  "amdName": "YZ.Utils",
   "engines": {
     "node": ">=10.0.0"
   },
@@ -18,12 +18,11 @@
   },
   "files": [
     "src",
-    "dist",
-    "images",
-    "types"
+    "dist"
   ],
   "keywords": [
-    "component"
+    "yuzu",
+    "utilities"
   ],
   "repository": {
     "type": "git",
@@ -35,8 +34,9 @@
     "build": "tsdx build --format cjs,esm,umd",
     "test": "tsdx test"
   },
+  "peerDependencies": {
+  },
   "dependencies": {
-    "yuzu-utils": "^2.0.0-rc.18"
   },
   "devDependencies": {
     "yuzu-test-tools": "^1.0.0"

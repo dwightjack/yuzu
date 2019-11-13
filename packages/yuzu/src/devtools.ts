@@ -1,5 +1,5 @@
 import { Component } from './component';
-import { IStateLogger, IState } from '../types';
+import { IStateLogger, IState } from './types';
 /**
  * `devtools` is an helper function that will expose the instance of a Component in a `$yuzu` property attached to its root DOM element.
  *
@@ -49,9 +49,7 @@ if (process.env.NODE_ENV !== 'production') {
         const listener = this.log.bind(this, key);
         if ($listeners.has(event)) {
           console.warn(
-            `[yuzu-devtools:${this.label}]Already listening for "${event}" on ${
-              instance.$uid
-            }`,
+            `[yuzu-devtools:${this.label}]Already listening for "${event}" on ${instance.$uid}`,
           );
         }
         instance.on(event, listener);
@@ -259,10 +257,8 @@ if (process.env.NODE_ENV !== 'production') {
       return init.call(this, state);
     };
 
-    // @ts-ignore: Devtools Hooks
-    if (window.__YUZU_DEVTOOLS_GLOBAL_HOOK__) {
-      // @ts-ignore
-      window.__YUZU_DEVTOOLS_GLOBAL_HOOK__.init(Component);
+    if ((window as any).__YUZU_DEVTOOLS_GLOBAL_HOOK__) {
+      (window as any).__YUZU_DEVTOOLS_GLOBAL_HOOK__.init(Component);
     }
   };
 

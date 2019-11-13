@@ -18,7 +18,10 @@ export default class Store extends DetachedComponent<IState, IStoreOptions> {
     };
   }
 
-  public dispatch = async (action: (...args: any[]) => any, ...args: any[]) => {
+  public dispatch = async (
+    action: (...args: any[]) => any,
+    ...args: any[]
+  ): Promise<void> => {
     const { state: oldState } = this;
     const state = await action(this.state, ...args);
     if (state) {

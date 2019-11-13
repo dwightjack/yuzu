@@ -1,5 +1,6 @@
 import { Component } from '../src/component';
 import { extend } from '../src/extend';
+
 describe('`extend`', () => {
   it('should return a Component constructor', () => {
     const MyComp = extend(Component);
