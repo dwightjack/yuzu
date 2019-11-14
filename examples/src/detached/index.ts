@@ -1,6 +1,6 @@
 import { Component, mount } from 'yuzu';
 import { Output } from './output';
-export  {template} from './template'
+export { template } from './template';
 
 interface IAppState {
   output: { id: string }[];
@@ -28,7 +28,7 @@ class App extends Component<IAppState> {
 
 export function initialize(root?: HTMLElement | null) {
   if (!root) {
-    return
+    return;
   }
   const app = mount(App, root, null, [
     mount(Output, null, {
@@ -46,5 +46,5 @@ export function initialize(root?: HTMLElement | null) {
     }),
   ])();
 
-  return () => app.destroy()
+  return () => app.destroy();
 }

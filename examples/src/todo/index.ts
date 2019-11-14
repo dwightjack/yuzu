@@ -2,10 +2,9 @@ import { mount } from 'yuzu';
 import { Form } from './form';
 import { App } from './app';
 import { TodoList } from './list';
-export  {template} from './template'
+export { template } from './template';
 
-export function initialize (root: HTMLElement) {
-
+export function initialize(root: HTMLElement) {
   const component = mount(App, root, {}, (app: App) => [
     mount(Form, app.$els.form, {
       id: 'form',
@@ -22,10 +21,10 @@ export function initialize (root: HTMLElement) {
       state: {
         'todos>todos': (todos: any[]) => todos,
       },
-      itemTemplate: (root.querySelector('#todo-item-tmpl') as HTMLElement).innerHTML,
+      itemTemplate: (root.querySelector('#todo-item-tmpl') as HTMLElement)
+        .innerHTML,
     }),
   ])();
 
-  return () => component.destroy()
+  return () => component.destroy();
 }
-
