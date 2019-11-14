@@ -10,7 +10,7 @@ export class Todo extends Component<ITodo, ITodoOptions> {
     return { template: '' };
   }
 
-  public $els: {
+  public $els!: {
     text: HTMLElement;
     complete: HTMLButtonElement;
     remove: HTMLButtonElement;

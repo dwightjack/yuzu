@@ -75,7 +75,7 @@ if (process.env.NODE_ENV !== 'production') {
  * @returns {Component}
  */
 export class Component<
-  ComponentState = any,
+  ComponentState extends Record<string, any> = any,
   ComponentOptions = any
 > extends Events {
   public static root?: string;
@@ -128,7 +128,7 @@ export class Component<
   public $uid!: string;
   public $els: { [key: string]: Element | Element[] };
   public $refs: { [key: string]: Component };
-  public state: Readonly<ComponentState>;
+  public state: ComponentState;
   public $context?: IObject;
   public $parent?: Component;
 

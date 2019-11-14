@@ -2,7 +2,7 @@ import { Component } from 'yuzu';
 import { IAppState } from './types';
 
 export class App extends Component<IAppState> {
-  public $els: {
+  public $els!: {
     list: HTMLUListElement;
     form: HTMLFormElement;
     count: HTMLElement;
@@ -14,7 +14,7 @@ export class App extends Component<IAppState> {
     count: '#count',
   };
 
-  public state = {
+  public state: IAppState = {
     todos: [],
     count: 0,
   };
@@ -39,7 +39,7 @@ export class App extends Component<IAppState> {
     }
   }
 
-  public getTodoIdxById(todoId: number): number | false {
+  public getTodoIdxById(todoId: string): number | false {
     const { todos } = this.state;
     const todoIdx = todos.findIndex(({ id }) => id === todoId);
     return todoIdx !== -1 ? todoIdx : false;
@@ -55,7 +55,7 @@ export class App extends Component<IAppState> {
     this.$els.count.textContent = `${this.state.count} items left`;
   }
 
-  public toggleComplete(todoId: number): void {
+  public toggleComplete(todoId: string): void {
     const todoIdx = this.getTodoIdxById(todoId);
     if (todoIdx !== false) {
       const { todos } = this.state;

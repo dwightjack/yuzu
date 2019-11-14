@@ -1,0 +1,18 @@
+{
+  "name": "examples-detached",
+  "version": "1.0.0",
+  "main": "dist/index.ts",
+  "author": "Marco Solazzi",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "yuzu": "2.0.0-rc.18",
+    "yuzu-application": "2.0.0-rc.18",
+    "yuzu-loadable": "2.0.0-rc.18",
+    "yuzu-polyfills": "2.0.0-rc.18",
+    "yuzu-utils": "2.0.0-rc.18"
+  },
+  "scripts": {
+    "build": "tsdx build --format umd"
+  }
+}

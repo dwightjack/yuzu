@@ -1,16 +1,4 @@
 {
-  "compilerOptions": {
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "downlevelIteration": true,
-    "lib": ["es2017", "dom"],
-    "baseUrl": ".",
-    "paths": {
-      "yuzu": ["../packages/yuzu"],
-      "yuzu-*": ["../packages/*"],
-      "yuzu/*": ["../packages/yuzu/*"]
-    }
-  },
-  "include": ["./*/src/**/*", "../packages/*/src/**/*", "../types/*"],
-  "exclude": ["node_modules"]
+  "extends": "../tsconfig.json",
+  "include": ["src"]
 }

@@ -18,7 +18,7 @@ export class TodoList extends Component<ITodoListState, ITodoListOptions> {
     };
   }
 
-  public todoIdx: number;
+  public todoIdx!: number;
 
   public state: ITodoListState = {
     todos: [],
@@ -34,7 +34,7 @@ export class TodoList extends Component<ITodoListState, ITodoListOptions> {
     let newTodoIds = todoIds;
     // first compute removed todos
     if (todos.length < todoIds.length) {
-      newTodoIds = todos.map(({ id }) => id).filter(Boolean);
+      newTodoIds = todos.map(({ id }) => id).filter(Boolean) as string[];
       todoIds.forEach((id) => {
         if (!newTodoIds.includes(id)) {
           this.destroyRef(id, true);

@@ -5287,6 +5287,11 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
+facon@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/facon/-/facon-2.0.2.tgz#e58b2e2449e4719a2ba8456f1915f804d7a24af2"
+  integrity sha512-oa53T35anEYEOWYQwtcm2hu9drxzOyEUSB8kOBc+y9qE7QBgQThVkD8VzrEzJYi5JKL5EElA6hiL5vSeCB4iUg==
+
 fast-deep-equal@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"

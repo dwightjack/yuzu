@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Abstract Components</title>
+
+</head>
+
+<body>
+  <div id="app">
+    <div>
+      <form action="" id="form" autocomplete="off">
+        <label for="todo-input" class="sr-only">Email address</label>
+        <input class="form-control" type="text" id="todo-input" name="todo" placeholder="todo text..." />
+      </form>
+    </div>
+
+    <p id="count" class="my-2"></p>
+
+    <ul id="list" class="list-group"></ul>
+  </div>
+  <template id="todo-item-tmpl">
+    <span class="todo-text"></span>
+    <div class="btn-group" role="group">
+      <button type="button" data-action="complete" aria-label="Toggle completed">
+        <i class="fas fa-check"></i>
+      </button>
+      <button type="button" data-action="remove" aria-label="Delete">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+  </template>
+
+  <script src="./tmp/bundle.js"></script>
+</body>
+
+</html>

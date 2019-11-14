@@ -1,7 +1,7 @@
 import { Component } from 'yuzu';
 
 export class Form extends Component {
-  public $els: {
+  public $els!: {
     input: HTMLInputElement;
   };
 
