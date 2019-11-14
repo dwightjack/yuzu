@@ -1,5 +1,5 @@
 import { Component } from './component';
-import { IStateLogger, IState } from './types';
+import { IStateLogger, IState } from '../types';
 /**
  * `devtools` is an helper function that will expose the instance of a Component in a `$yuzu` property attached to its root DOM element.
  *

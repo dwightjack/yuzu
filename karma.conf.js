@@ -21,8 +21,8 @@ module.exports = (config) => {
     frameworks: ['jasmine', 'karma-typescript'],
 
     files: [
-      'shared/utils.ts',
-      'shared/__fixtures__/*.html',
+      'packages/yuzu-test-tools/index.ts',
+      'packages/yuzu-test-tools/__fixtures__/*.html',
       'packages/*/src/*.ts',
       'packages/*/test/*.spec.ts',
     ],
@@ -53,29 +53,43 @@ module.exports = (config) => {
             text: '',
           },
       tsconfig: './tsconfig.json',
-      include: {
-        mode: 'merge',
-        values: ['packages/*/test/*.spec.ts'],
+      compilerOptions: {
+        sourceMap: true,
+        module: 'commonjs',
+        baseUrl: './',
+        paths: ['-application', '-utils', '-loadable', ''].reduce(
+          (acc, key) => ({
+            ...acc,
+            [`yuzu${key}`]: `packages/yuzu${key}/src`,
+          }),
+          {
+            'yuzu-test-tools': ['packages/yuzu-dev-tools'],
+          },
+        ),
       },
-      remapOptions: {
-        //warnMissingSourceMaps: false //not supported by currently included remap-istanbul
-        warn: function(warning) {
-          if (
-            warning &&
-            !/^Could not find source map for/.test(warning.message)
-          ) {
-            console.warn(warning);
-          }
-        },
+      include: [
+        'packages/yuzu-test-tools/*.ts',
+        'packages/*/test/*.spec.ts',
+        'packages/*/src/*.ts',
+      ],
+      coverageOptions: {
+        instrumentation: true,
       },
+      // remapOptions: {
+      //   //warnMissingSourceMaps: false //not supported by currently included remap-istanbul
+      //   warn: function(warning) {
+      //     if (
+      //       warning &&
+      //       !/^Could not find source map for/.test(warning.message)
+      //     ) {
+      //       console.warn(warning);
+      //     }
+      //   },
+      // },
       bundlerOptions: {
         exclude: ['yuzu/types'],
         transforms: [require('karma-typescript-es6-transform')()],
         entrypoints: /\.spec\.ts$/,
-      },
-
-      compilerOptions: {
-        sourceMap: true,
       },
     },
 

@@ -23,7 +23,7 @@ import {
   ReadyStateFn,
   IStateLogger,
   IComponentConstructable,
-} from './types';
+} from '../types';
 
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 

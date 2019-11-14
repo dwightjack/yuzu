@@ -1,6 +1,6 @@
 import { Component } from '../src/component';
 import { devtools, YuzuRoot } from '../src/devtools';
-import { fn, IStateLogger } from '../src/types';
+import { fn, IStateLogger } from '../types';
 
 type ILogger = IStateLogger<Component>;
 

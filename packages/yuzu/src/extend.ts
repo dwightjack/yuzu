@@ -1,5 +1,5 @@
 import { Component } from './component';
-import { IObject } from './types';
+import { IObject } from '../types';
 
 type IComponentConstructor = typeof Component;
 export interface IExtendedComponent<

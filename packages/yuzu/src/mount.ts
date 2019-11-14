@@ -1,6 +1,6 @@
 import { qs, isElement, evaluate, createSequence } from 'yuzu-utils';
 import { Component } from './component';
-import { IObject, IState, IComponentConstructable } from './types';
+import { IObject, IState, IComponentConstructable } from '../types';
 
 export type mounterFn<X extends Component> = (ctx?: X) => Component;
 
