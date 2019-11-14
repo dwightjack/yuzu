@@ -62,3 +62,5 @@ umd
 docs
 typings
 tmp
+
+!.vscode
