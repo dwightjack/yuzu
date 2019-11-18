@@ -1,33 +1,34 @@
 import { Component, devtools } from 'yuzu';
-import * as detached from './detached'
+import * as detached from './detached';
+import * as todo from './todo';
 
 devtools(Component);
 
-
 const routes: Record<string, any> = {
-  detached: detached
-}
+  detached,
+  todo,
+};
 
-let current: any = null
+let current: any = null;
 
-const root = document.getElementById('app')
-
+const root = document.getElementById('app');
 
 if (root) {
-
-  window.addEventListener('hashchange', () => {
-    const hash = location.hash.replace('#', '')
-    const route = routes[hash]
+  const render = async (): Promise<void> => {
+    const hash = location.hash.replace('#', '');
+    const route = routes[hash];
     if (!route) {
-      throw new Error(`Route ${hash} not found.`)
+      throw new Error(`Route ${hash} not found.`);
     }
     if (current) {
-      current()
+      await current();
     }
-    root.innerHTML = ''
-    root.appendChild(route.template())
+    root.innerHTML = '';
+    root.appendChild(route.template());
     current = route.initialize(root);
-  }, false);
+  };
+
+  window.addEventListener('hashchange', render, false);
+
+  render();
 }
-
-

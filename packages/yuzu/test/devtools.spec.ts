@@ -2,7 +2,7 @@ import { Component } from '../src/component';
 import { devtools, YuzuRoot } from '../src/devtools';
 import { fn, IStateLogger } from '../types';
 
-type ILogger = IStateLogger<Component>;
+type ILogger = IStateLogger<Component, {}>;
 
 describe('`devtools`', () => {
   let el: HTMLElement;

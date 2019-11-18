@@ -1,5 +1,5 @@
 import { DetachedComponent } from 'yuzu';
-import { IObject, IState } from 'yuzu-yuzu/types';
+import { IObject, IState } from 'yuzu/types';
 import Store from './store';
 
 export interface IProviderOptions {

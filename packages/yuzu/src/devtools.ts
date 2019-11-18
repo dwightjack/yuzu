@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
    * @private
    * @param {string} label Logger name
    */
-  const createStateLogger = (label: string): IStateLogger<Component> => {
+  const createStateLogger = (label: string): IStateLogger<Component, {}> => {
     const $listeners = new Map<string, any>();
 
     /**

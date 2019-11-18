@@ -142,7 +142,7 @@ export class Component<S = {}, O = {}> extends Events {
   // devtools methods
   public $$logStart?: fn;
   public $$logEnd?: fn;
-  public $$logger?: IStateLogger<Component>;
+  public $$logger?: IStateLogger<Component, Readonly<S>>;
 
   // public $$getTree?: IObject;
   /**
@@ -753,7 +753,7 @@ export class Component<S = {}, O = {}> extends Events {
    *   parentCount: (parentState) => parentState.count
    * });
    */
-  public async setRef<C extends Component>(
+  public async setRef<C extends Component<any, any>>(
     refCfg: IRef<
       | IComponentConstructable<C>
       | C

@@ -4,8 +4,12 @@ import { App } from './app';
 import { TodoList } from './list';
 export { template } from './template';
 
-export function initialize(root: HTMLElement) {
-  const component = mount(App, root, {}, (app: App) => [
+export function initialize(root: HTMLElement): () => Promise<void> {
+  if (!root) {
+    return () => Promise.resolve();
+  }
+
+  const component = mount(App, root, {}, (app) => [
     mount(Form, app.$els.form, {
       id: 'form',
       on: {

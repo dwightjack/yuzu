@@ -24,9 +24,12 @@ export class List extends Component<IListState, IListOptions> {
   };
 
   public listeners = {
-    'click .button': () => this.options.onClick(),
+    'click .button': () => {
+      this.options.onClick();
+    },
   };
-  public state = {
+
+  public state: IListState = {
     items: [],
   };
 

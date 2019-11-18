@@ -23,11 +23,15 @@ export class Todo extends Component<ITodo, ITodoOptions> {
   };
 
   public listeners = {
-    'click @remove': () => this.emit('remove', this.state.id),
-    'click @complete': () => this.emit('completed', this.state.id),
+    'click @remove': () => {
+      this.emit('remove', this.state.id);
+    },
+    'click @complete': () => {
+      this.emit('completed', this.state.id);
+    },
   };
 
-  public state = {
+  public state: ITodo = {
     id: null,
     text: '',
     completed: false,

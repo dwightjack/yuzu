@@ -2,7 +2,7 @@ import { qs, isElement, evaluate, createSequence } from 'yuzu-utils';
 import { Component } from './component';
 import { IObject, IState, IComponentConstructable } from '../types';
 
-export type mounterFn<X extends Component> = (ctx?: X) => Component;
+export type mounterFn<X, C = Component<any, any>> = (ctx?: X) => C;
 
 export type mountEventObject = IObject<(...args: any[]) => void>;
 export type mountEventFn<T> = (ctx: T) => mountEventObject;
@@ -13,9 +13,7 @@ export interface IMountProps<T> extends IObject {
   on?: mountEventObject | mountEventFn<T>;
 }
 
-export type mountChildren<C extends Component> =
-  | mounterFn<C>[]
-  | ((ctx: C) => mounterFn<C>[]);
+export type mountChildren<P, C> = mounterFn<C>[] | ((ctx: P) => mounterFn<C>[]);
 
 const childRefIdx = createSequence();
 
@@ -37,13 +35,14 @@ const childRefIdx = createSequence();
  * @param {*} [props.*] every other property will be passed as instance option
  * @return {function}
  */
-export function mount<C extends Component, X extends Component>(
+export function mount<C extends Component<any, any>>(
   ComponentConstructor: IComponentConstructable<C>,
   el: HTMLElement | string | null,
-  props: IMountProps<X> | null = {},
-  children?: mountChildren<C>,
-): mounterFn<X> {
-  const { state = {}, id, on = {}, ...options }: IMountProps<X> = props || {};
+  props: IMountProps<C> | null = {},
+  children?: mountChildren<C, any>,
+): mounterFn<C> {
+  const { state = {}, id, on = {}, ...options } =
+    props || ({} as IMountProps<C>);
   const component = new ComponentConstructor(options);
 
   return function mounter(ctx) {

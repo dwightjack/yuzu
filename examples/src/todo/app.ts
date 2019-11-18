@@ -29,7 +29,7 @@ export class App extends Component<IAppState> {
     this.setState(({ todos }) => ({ todos: [...todos, todo] }));
   }
 
-  public removeTodo(todoId: number): void {
+  public removeTodo(todoId: string): void {
     const todoIdx = this.getTodoIdxById(todoId);
     if (todoIdx !== false) {
       const { todos } = this.state;

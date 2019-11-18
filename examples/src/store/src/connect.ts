@@ -1,10 +1,10 @@
 import { Component } from 'yuzu';
 import Store from './store';
-import { IComponentConstructable, IState, IObject } from 'yuzu/types';
+import { IComponentConstructable, IState } from 'yuzu/types';
 
-export type Actions = IObject<(...args: any[]) => any>;
+export type Actions = Record<string, (...args: any[]) => any>;
 export type Selector = (state: IState) => IState;
-export type Connector<C extends Component> = (
+export type Connector<C> = (
   Child: IComponentConstructable<C>,
 ) => IComponentConstructable<C>;
 
@@ -27,7 +27,7 @@ const bindActions = (
 export function attachStore(
   instance: Component,
   selector?: Selector,
-  actions?: Actions | ((dispatch: any) => Actions),
+  actions?: Actions | ((dispatch: any) => Actions) | null,
 ): void {
   if (!instance.$context) {
     return;
@@ -60,9 +60,8 @@ export function attachStore(
 }
 /* eslint-enable no-param-reassign */
 
-export function inject<C extends Component>(instance: C, store: Store): C {
+export function inject<C>(instance: C, store: Store): C {
   Object.defineProperty(instance, '$context', {
-    enumerable: false,
     writable: false,
     value: {
       $store: store,
@@ -73,8 +72,8 @@ export function inject<C extends Component>(instance: C, store: Store): C {
 
 export function connect(
   selector?: Selector,
-  actions?: Actions | ((dispatch: any) => Actions),
-): Connector<Component> {
+  actions?: Actions | ((dispatch: any) => Actions) | null,
+): Connector<Component<any, any>> {
   return function connector(Child) {
     const Connected = class extends Child {
       public constructor(options?: any) {

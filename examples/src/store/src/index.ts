@@ -5,7 +5,7 @@ import { Counter } from './counter';
 import { Provider } from './provider';
 import { createStore } from './store';
 import { connect } from './connect';
-import { Count } from 'detached/src/count';
+import { Count } from './count';
 
 devtools(Component);
 

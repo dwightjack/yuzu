@@ -27,12 +27,12 @@ export interface IRef<T> {
   [key: string]: any;
 }
 
-export interface IStateLogger<T> {
+export interface IStateLogger<T, S> {
   label: string;
   subscribe: (instance: T, event: string) => () => void;
   unsubscribe: (instance: T, event: string) => void;
   unsubscribeAll: (instance: T) => void;
-  log: (msg: string, next: IState, prev: IState, args?: any[]) => void;
+  log: (msg: string, next: S, prev?: S, args?: any[]) => void;
 }
 
 export type fn = (...args: any[]) => any;

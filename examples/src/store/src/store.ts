@@ -9,7 +9,7 @@ export interface IStoreOptions {
 
 export type StateChangeFn = (state: IState, prev?: IState) => void;
 
-export default class Store extends DetachedComponent<IState, IStoreOptions> {
+export default class Store<S = {}> extends DetachedComponent<S, IStoreOptions> {
   public defaultOptions(): IStoreOptions {
     return {
       name: 'default',
@@ -19,7 +19,7 @@ export default class Store extends DetachedComponent<IState, IStoreOptions> {
   }
 
   public dispatch = async (
-    action: (...args: any[]) => any,
+    action: (state: Readonly<S>, ...args: any[]) => Partial<S> | null,
     ...args: any[]
   ): Promise<void> => {
     const { state: oldState } = this;
@@ -38,13 +38,13 @@ export default class Store extends DetachedComponent<IState, IStoreOptions> {
   }
 
   public ready(): void {
-    this.logAction(`@@INIT`, this.state, null);
+    this.logAction(`@@INIT`, this.state);
   }
 
   public logAction(
     msg: string,
-    prev: IState,
-    next: IState,
+    prev: Readonly<S>,
+    next?: Readonly<S>,
     args?: any[],
   ): void {
     if (this.options.debug && this.$$logger) {

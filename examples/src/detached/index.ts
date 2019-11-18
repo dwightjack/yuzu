@@ -26,20 +26,20 @@ class App extends Component<IAppState> {
   };
 }
 
-export function initialize(root?: HTMLElement | null) {
+export function initialize(root?: HTMLElement | null): () => Promise<void> {
   if (!root) {
-    return;
+    return () => Promise.resolve();
   }
-  const app = mount(App, root, null, [
+  const app = mount(App, root, null, (app) => [
     mount(Output, null, {
       id: 'output',
-      on: (app) => ({
+      on: {
         append: (value) => {
           app.setState(({ output }) => ({
             output: [...output, value],
           }));
         },
-      }),
+      },
       state: {
         'output>total': (output: IAppState['output']) => output.length,
       },
