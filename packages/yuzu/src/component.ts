@@ -19,8 +19,6 @@ import {
   IRef,
   setRefProps,
   eventHandlerFn,
-  stateUpdaterFn,
-  ReadyStateFn,
   IStateLogger,
   IComponentConstructable,
 } from '../types';
@@ -74,10 +72,7 @@ if (process.env.NODE_ENV !== 'production') {
  * @property {Object.<string, function|string>} actions Object mapping state keys and functions to executed on state update
  * @returns {Component}
  */
-export class Component<
-  ComponentState extends Record<string, any> = any,
-  ComponentOptions = any
-> extends Events {
+export class Component<S = {}, O = {}> extends Events {
   public static root?: string;
   public static defaultOptions?: (self?: any) => IObject;
 
@@ -118,7 +113,7 @@ export class Component<
 
   public static displayName?: string;
 
-  public options: Readonly<ComponentOptions>;
+  public options: Readonly<O>;
 
   public detached?: boolean;
 
@@ -128,19 +123,19 @@ export class Component<
   public $uid!: string;
   public $els: { [key: string]: Element | Element[] };
   public $refs: { [key: string]: Component };
-  public state: ComponentState;
+  public state!: Readonly<S>;
   public $context?: IObject;
   public $parent?: Component;
 
   public selectors?: IObject<
-    string | ((el: Element, options: ComponentOptions) => Element | Element[])
+    string | ((el: Element, options: O) => Element | Element[])
   >;
   public listeners?: IObject<string | eventHandlerFn>;
   public actions?: IObject<string | fn>;
 
   public $refsStore: Map<string, Component>;
   public $listeners: Map<eventHandlerFn, IListener>;
-  public readyState?: ReadyStateFn<ComponentState>;
+  public readyState?: (current: Readonly<S>, prev: Readonly<S>) => boolean;
 
   public $warn: (msg: string, ...args: any[]) => void;
 
@@ -169,24 +164,22 @@ export class Component<
   /**
    * Component constructor
    */
-  public constructor(options: Partial<ComponentOptions> = {}) {
+  public constructor(options: Partial<O> = {}) {
     super();
     this.$warn = warn(this);
 
     const defaultOptionsFn = (this.constructor as typeof Component)
       .defaultOptions;
 
-    let defaultOptions: ComponentOptions;
+    let defaultOptions: O;
     if (typeof defaultOptionsFn === 'function') {
       this.$warn(
         'the static property `defaultOptions` is deprecated. Please move the method to the instance',
       );
-      defaultOptions = defaultOptionsFn(this) as ComponentOptions;
+      defaultOptions = defaultOptionsFn(this) as O;
     } else {
       defaultOptions = this.defaultOptions(this) || ({} as any);
     }
-
-    this.state = {} as any;
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(defaultOptions, options, (k: string, keys: string) =>
@@ -196,10 +189,7 @@ export class Component<
       );
     }
 
-    const entries = Object.entries(defaultOptions) as [
-      keyof ComponentOptions,
-      any,
-    ][];
+    const entries = Object.entries(defaultOptions) as [keyof O, any][];
     this.options = entries.reduce((opts, [key, value]) => {
       let v = options[key] !== undefined ? options[key] : value;
       if (typeof v === 'function' && !Component.isComponent(v)) {
@@ -232,8 +222,8 @@ export class Component<
    * @param {Component} self The component instance itself
    * @returns {object}
    */
-  public defaultOptions(self?: this): ComponentOptions;
-  public defaultOptions(): ComponentOptions {
+  public defaultOptions(self?: this): O;
+  public defaultOptions(): O {
     return {} as any;
   }
 
@@ -258,10 +248,7 @@ export class Component<
    * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
-  public mount(
-    el: string | Element,
-    state: Partial<ComponentState> | null = {},
-  ): this {
+  public mount(el: string | Element, state: Partial<S> | null = {}): this {
     if (this.$el) {
       throw new Error('Component is already mounted');
     }
@@ -331,7 +318,7 @@ export class Component<
    * @param {object|null} [state={}] Initial state
    * @returns {Component}
    */
-  public init(state: Partial<ComponentState> = {}): this {
+  public init(state: Partial<S> = {}): this {
     if (!this.detached && !isElement(this.$el)) {
       throw new Error('component instance not mounted');
     }
@@ -357,15 +344,18 @@ export class Component<
       });
     }
 
-    const initialState = Object.assign(this.state, state);
+    const initialState = Object.assign({}, this.state, state);
     this.replaceState(initialState);
 
     this.$active = true;
 
     if (this.readyState) {
       // is it a promise ?
-      const watcher = (current: ComponentState, prev: ComponentState): void => {
-        if ((this.readyState as ReadyStateFn<ComponentState>)(current, prev)) {
+      const watcher = (current: Readonly<S>, prev: Readonly<S>): void => {
+        if (!this.readyState) {
+          return;
+        }
+        if (this.readyState(current, prev)) {
           this.off('change:*', watcher);
           this.ready();
         }
@@ -486,7 +476,7 @@ export class Component<
    *
    * // instance.getState('b', false) === false
    */
-  public getState(key: keyof ComponentState, def?: any): any {
+  public getState(key: keyof S, def?: any): any {
     return this.state.hasOwnProperty(key) ? this.state[key] : def;
   }
 
@@ -507,7 +497,7 @@ export class Component<
    * @returns {boolean}
    */
   public shouldUpdateState(
-    _key: keyof ComponentState,
+    _key: keyof S,
     currentValue: any,
     newValue: any,
   ): boolean {
@@ -542,14 +532,16 @@ export class Component<
    * // use the current state to calculate its next value
    * instance.setState(({ a }) => ({a + 1}));
    */
-  public setState(
-    updater: Partial<ComponentState> | stateUpdaterFn<ComponentState>,
+  public setState<K extends keyof S>(
+    updater:
+      | (Pick<S, K> | Partial<S>)
+      | ((prevState: Readonly<S>) => Pick<S, K> | Partial<S>),
     silent = false,
   ): void {
-    const changed: (keyof ComponentState)[] = [];
+    const changed: K[] = [];
     const { state: prevState } = this;
 
-    const changeSet = evaluate(updater, this.state) as Partial<ComponentState>;
+    const changeSet = evaluate(updater, this.state) as Pick<S, K> | Partial<S>;
 
     if (process.env.NODE_ENV !== 'production') {
       objDiff(
@@ -559,8 +551,8 @@ export class Component<
           `setState: key "${k}" has been discarded because it is not defined in the component's initial state. Accepted keys are: ${keys}`,
       );
     }
-    const entries = Object.entries(this.state) as [keyof ComponentState, any][];
-    this.state = entries.reduce((newState: ComponentState, [k, prevValue]) => {
+    const entries = Object.entries(this.state) as [K, any][];
+    this.state = entries.reduce((newState, [k, prevValue]) => {
       const value = changeSet[k];
       if (
         value === undefined ||
@@ -572,11 +564,11 @@ export class Component<
         newState[k] = value as any; // eslint-disable-line no-param-reassign
       }
       return newState;
-    }, {} as any);
+    }, {} as S);
 
     if (!silent && changed.length > 0) {
       while (changed.length > 0) {
-        const k = changed.pop() as keyof ComponentState;
+        const k = changed.pop() as K;
         this.emit(`change:${k}`, this.state[k], prevState[k]);
       }
       this.emit('change:*', this.state, prevState);
@@ -603,8 +595,8 @@ export class Component<
    */
   public replaceState(newState: IObject, silent = false): void {
     const { state: prevState } = this;
-    this.state = Object.assign({}, newState) as ComponentState;
-    const entries = Object.entries(this.state) as [keyof ComponentState, any][];
+    this.state = Object.assign({}, newState) as S;
+    const entries = Object.entries(this.state) as [keyof S, any][];
     entries.forEach(([key, value]) => {
       if (!silent) {
         this.emit(`change:${key}`, value, prevState[key]);
@@ -765,7 +757,7 @@ export class Component<
     refCfg: IRef<
       | IComponentConstructable<C>
       | C
-      | ((el: this['$el'], state: Readonly<ComponentState>) => C)
+      | ((el: this['$el'], state: Readonly<S>) => C)
     >,
     props?: setRefProps<Component, this>,
   ): Promise<C> {
@@ -845,7 +837,7 @@ export class Component<
             [src = '*', key] = name.split('>');
           }
           refState[key] = value(
-            src !== '*' ? this.state[src as keyof ComponentState] : this.state,
+            src !== '*' ? this.state[src as keyof S] : this.state,
             ref,
           );
           this.on(`change:${src}`, (state) => {

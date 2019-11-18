@@ -166,7 +166,7 @@ export const isElement = (value: any): value is Element =>
  * evaluate(yesNo, true) === 'yes'
  * evaluate(true) === true
  */
-export const evaluate = <T = any>(
+export const evaluate = <T>(
   value: T,
   ...args: any[]
 ): T extends fn ? ReturnType<T> : T => {
