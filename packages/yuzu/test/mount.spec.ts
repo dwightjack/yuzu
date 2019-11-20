@@ -61,7 +61,7 @@ describe('`mount`', () => {
     it('should resolve to an element when a context is passed-in', () => {
       const ctx = new Component().mount('#ref');
       const child = ctx.$el.querySelector('.child');
-      const mounter = mount(Component, '.child');
+      const mounter = mount<Component<any, any>>(Component, '.child');
       const spy = spyOn(utils, 'qs').and.returnValue(child);
 
       mounter(ctx);
@@ -186,9 +186,9 @@ describe('`mount`', () => {
 
     it('should iterate over children function and execute them with the component as context', () => {
       const spy = jasmine.createSpy();
-      class MyComponent extends Component {}
+
       const children = [spy, spy];
-      const component = mount(MyComponent, '#app', null, children)();
+      const component = mount(Component, '#app', null, children)();
 
       const calls = spy.calls.all();
 

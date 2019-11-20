@@ -6,7 +6,7 @@ import { Loadable } from '../src';
 describe('`Loadable`', () => {
   describe('Factory', () => {
     class Child extends Component {}
-    let LoadableComponent: IComponentConstructable<Component>;
+    let LoadableComponent: IComponentConstructable<Component<any, any>>;
     const fetchData = (): any => ({});
     beforeEach(() => {
       LoadableComponent = Loadable({
@@ -220,13 +220,8 @@ describe('`Loadable`', () => {
 
     it('throws if "renderRoot" is not defined', async () => {
       inst.options.renderRoot = null as any;
-      let err;
-      try {
-        await inst.initialize();
-      } catch (e) {
-        err = e;
-      }
-      expect(err).toEqual(jasmine.any(TypeError));
+
+      expectAsync(inst.initialize()).toBeRejected();
     });
 
     it('calls .setLoader()', () => {

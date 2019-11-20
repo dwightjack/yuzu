@@ -35,7 +35,7 @@ const childRefIdx = createSequence();
  * @param {*} [props.*] every other property will be passed as instance option
  * @return {function}
  */
-export function mount<C extends Component<any, any>>(
+export function mount<C extends Component<any, any> = Component<any, any>>(
   ComponentConstructor: IComponentConstructable<C>,
   el: HTMLElement | string | null,
   props: IMountProps<C> | null = {},

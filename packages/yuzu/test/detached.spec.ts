@@ -17,17 +17,13 @@ describe('`DetachedComponent`', () => {
   });
 
   it('throws if setting a component with root as child of a detached component', async () => {
-    let e: any;
-    try {
-      await inst.setRef({
+    await expectAsync(
+      inst.setRef({
         id: 'withRoot',
         component: Component,
         el: document.createElement('div'),
-      });
-    } catch (err) {
-      e = err;
-    }
-    expect(e).toEqual(jasmine.any(Error));
+      }),
+    ).toBeRejected();
   });
 
   it('throws if setting a component with root as child of a detached components tree', async () => {
@@ -42,17 +38,13 @@ describe('`DetachedComponent`', () => {
       component: inst,
     });
 
-    let e: any;
-    try {
-      await inst.setRef({
+    await expectAsync(
+      inst.setRef({
         id: 'withRoot',
         component: Component,
         el: document.createElement('div'),
-      });
-    } catch (err) {
-      e = err;
-    }
-    expect(e).toEqual(jasmine.any(Error));
+      }),
+    ).toBeRejected();
   });
 
   it('traverses the parent tree until it finds a plain element', async () => {
@@ -67,18 +59,14 @@ describe('`DetachedComponent`', () => {
       component: inst,
     });
 
-    let e: any;
     const el = document.createElement('div');
-    try {
-      await inst.setRef({
-        id: 'withRoot',
-        component: Component,
-        el,
-      });
-    } catch (err) {
-      e = err;
-    }
-    expect(e).toBe(undefined);
+    const promise = inst.setRef({
+      id: 'withRoot',
+      component: Component,
+      el,
+    });
+
+    await expectAsync(promise).not.toBeRejected();
     expect(el.parentElement).toBe(grandParent.$el as HTMLElement);
   });
 });

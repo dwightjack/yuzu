@@ -254,10 +254,10 @@ export class Component<S = {}, O = {}> extends Events {
    * @returns {Component}
    */
   public mount(el: string | Element, state: Partial<S> | null = {}): this {
-    invariant(this.$el, 'Component is already mounted');
+    invariant(this.$el === undefined, 'Component is already mounted');
 
     invariant(
-      this.detached,
+      this.detached === undefined,
       'You cannot mount a detached component. Please use `init` instead',
     );
 
@@ -324,7 +324,7 @@ export class Component<S = {}, O = {}> extends Events {
    */
   public init(state: Partial<S> = {}): this {
     invariant(
-      !this.detached && !isElement(this.$el),
+      this.detached === true || isElement(this.$el),
       'component instance not mounted',
     );
 
@@ -769,7 +769,7 @@ export class Component<S = {}, O = {}> extends Events {
     >,
     props?: setRefProps<Component, this>,
   ): Promise<C> {
-    invariant(!isPlainObject(refCfg), 'Invalid reference configuration');
+    invariant(isPlainObject(refCfg), 'Invalid reference configuration');
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
     const { detached } = this;
@@ -806,7 +806,7 @@ export class Component<S = {}, O = {}> extends Events {
       value: this,
     });
 
-    invariant(!id, 'Invalid reference id string');
+    invariant(!!id, 'Invalid reference id string');
 
     // bind events...
     if (on) {
@@ -823,7 +823,7 @@ export class Component<S = {}, O = {}> extends Events {
 
     if (!ref.detached && !ref.$el) {
       invariant(
-        !el,
+        !!el,
         `You need to provide a root element for the child element with id "${id}".`,
       );
       ref.mount(el as Element, null);
@@ -860,10 +860,12 @@ export class Component<S = {}, O = {}> extends Events {
       }
     }
 
-    invariant(
-      !$el && ref.$el,
-      `You cannot attach a plain Component to a DetachedComponents tree. (${id})`,
-    );
+    if (ref.$el) {
+      invariant(
+        !!$el,
+        `You cannot attach a plain Component to a DetachedComponents tree. (${id})`,
+      );
+    }
 
     if (prevRef) {
       await prevRef.destroy();
@@ -896,7 +898,7 @@ export class Component<S = {}, O = {}> extends Events {
   public async destroyRef(id: string, detach = false): Promise<void> {
     const { $refsStore } = this;
     const ref = $refsStore.get(id);
-    invariant(!ref, `Child component "${id}" not found.`);
+    invariant(ref, `Child component "${id}" not found.`);
 
     if (!ref) {
       return;

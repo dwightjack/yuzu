@@ -2,11 +2,11 @@ import { createContext, IContext } from '../src/context';
 import { Component } from 'yuzu';
 
 describe('`Children`', () => {
-  let ctx: IContext;
+  let ctx: IContext<{ demo?: boolean }>;
   let data: any;
 
   beforeEach(() => {
-    data = {};
+    data = { demo: true };
     ctx = createContext(data);
   });
 
@@ -15,20 +15,20 @@ describe('`Children`', () => {
   });
 
   it('expose a method to retrieve the internal data', () => {
-    expect(ctx.getData()).toBe(data);
+    expect(ctx.getData()).toEqual(data);
   });
 
   it('exposes a method to overwrite current data', () => {
-    const updated = {};
+    const updated = { demo: false };
     ctx.update(updated);
-    expect(ctx.getData()).toBe(updated);
+    expect(ctx.getData()).toEqual(updated);
   });
 
   it('exposes a method to inject to the context into a component instance', () => {
     const component = new Component();
     const ret = ctx.inject(component);
-    expect(ret).toBe(component);
-    expect(component.$context).toBe(data);
+    expect(ret).toBe(component as any);
+    expect(component.$context).toEqual(data);
   });
 
   it('does NOT expose the context key as enumerable', () => {

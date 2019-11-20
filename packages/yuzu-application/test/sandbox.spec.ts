@@ -102,20 +102,20 @@ describe('`Sandbox`', () => {
       spyOn(Component, 'isComponent').and.returnValue(false);
       expect(() => {
         inst.register({ component: Component, selector: 'demo' });
-      }).toThrowError(TypeError);
+      }).toThrowError(Error);
     });
 
     it('throws if "selector" is nor a string or a function', () => {
       expect(() => {
         inst.register({ component: Component, selector: null as any });
-      }).toThrowError(TypeError);
+      }).toThrowError(Error);
     });
 
     it('DOES NOT throw if "selector" is a string or a function', () => {
       expect(() => {
         inst.register({ component: Component, selector: 'selector' });
         inst.register({ component: Component, selector: () => true });
-      }).not.toThrowError(TypeError);
+      }).not.toThrowError(Error);
     });
 
     it('pushes the passed-in params to the internal registry', () => {

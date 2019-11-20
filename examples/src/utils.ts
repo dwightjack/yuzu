@@ -1,5 +1,7 @@
-
-export function html(strings: TemplateStringsArray, ...args: any[]) {
+export function html(
+  strings: TemplateStringsArray,
+  ...args: any[]
+): DocumentFragment {
   let result = ``;
   for (let i = 0; i < args.length; i++) {
     if (args[i] instanceof HTMLElement) {

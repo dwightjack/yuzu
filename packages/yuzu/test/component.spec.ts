@@ -116,7 +116,7 @@ describe('`Component`', () => {
     it('should bind functions to the instance', () => {
       const spy = jasmine.createSpy();
       const options = { demo: spy };
-      class Child extends Component {
+      class Child extends Component<{}, { demo: any }> {
         public defaultOptions(): any {
           return options;
         }
@@ -477,7 +477,7 @@ describe('`Component`', () => {
     });
   });
   describe('`getState()`', () => {
-    let inst: Component;
+    let inst: Component<{ a: number }>;
     beforeEach(() => {
       inst = new Component();
       inst.state = {
@@ -488,22 +488,22 @@ describe('`Component`', () => {
       expect(inst.getState('a')).toBe(1);
     });
     it('should return `undefined` if key is not found', () => {
-      expect(inst.getState('notFound')).toBe(undefined);
+      expect(inst.getState('notFound' as any)).toBe(undefined);
     });
   });
   describe('`shouldUpdateState()`', () => {
-    let inst: Component;
+    let inst: Component<{ a: any }>;
     beforeEach(() => {
       inst = new Component();
     });
     it('should strictly compare 2 values and return true if they are different', () => {
-      expect(inst.shouldUpdateState('', 1, 1)).toBe(false);
-      expect(inst.shouldUpdateState('', '1', 1)).toBe(true);
-      expect(inst.shouldUpdateState('', {}, {})).toBe(true);
+      expect(inst.shouldUpdateState('a', 1, 1)).toBe(false);
+      expect(inst.shouldUpdateState('a', '1', 1)).toBe(true);
+      expect(inst.shouldUpdateState('a', {}, {})).toBe(true);
     });
   });
   describe('`setState()`', () => {
-    let inst: Component;
+    let inst: Component<{ a: number; b: number }>;
     beforeEach(() => {
       inst = new Component();
       inst.state = {
@@ -543,8 +543,8 @@ describe('`Component`', () => {
     });
 
     it('does NOT account for keys not already set on the state', () => {
-      inst.setState({ c: 1 });
-      expect(inst.state.c).toBeUndefined();
+      inst.setState({ c: 1 } as any);
+      expect((inst.state as any).c).toBeUndefined();
     });
 
     it('emits a `change:` event for every changed key', () => {
@@ -756,13 +756,8 @@ describe('`Component`', () => {
     });
     it('throws if passed-in parameter is not an object', async () => {
       spyOn(utils, 'isPlainObject').and.returnValue(false);
-      let e: any;
-      try {
-        await inst.setRef(cfg);
-      } catch (err) {
-        e = err;
-      }
-      expect(e).toEqual(jasmine.any(TypeError));
+
+      await expectAsync(inst.setRef(cfg)).toBeRejected();
     });
 
     it('calls component constructors with options', () => {

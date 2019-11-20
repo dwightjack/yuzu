@@ -4,8 +4,8 @@ import { Component } from 'yuzu';
 import { IObject, IComponentConstructable } from 'yuzu/types';
 
 export interface ILoadableOptions {
-  component: IComponentConstructable<Component>;
-  loader?: IComponentConstructable<Component> | null;
+  component: IComponentConstructable<Component<any, any>>;
+  loader?: IComponentConstructable<Component<any, any>> | null;
   template?: (...args: any[]) => string | void;
   renderRoot?: string | (($el: Element) => Element);
   fetchData: (ctx: Component<any, any>) => IObject | void;
@@ -56,7 +56,7 @@ export interface ILoadableState {
  */
 export function Loadable(
   opts: ILoadableOptions,
-): IComponentConstructable<Component> {
+): IComponentConstructable<Component<ILoadableState, ILoadableOptions>> {
   const { component: Child, ...params } = opts;
   const childName = Child.displayName || Child.name || '';
 
@@ -125,7 +125,7 @@ export function Loadable(
       $el.textContent = '';
 
       invariant(
-        !renderRoot,
+        typeof renderRoot === 'function' || typeof renderRoot === 'string',
         '"options.renderRoot" must be either a function or a string',
       );
 
@@ -174,7 +174,7 @@ export function Loadable(
      *
      * instanceof loadable.$refs.async === Message
      */
-    public setComponent(root: Element | null): Promise<Component> {
+    public setComponent(root: Element | null): Promise<Component<any, any>> {
       const { component, options, props } = this.options;
 
       return this.setRef(

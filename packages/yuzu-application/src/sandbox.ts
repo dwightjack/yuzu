@@ -158,13 +158,13 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
     [key: string]: any;
   }): void {
     invariant(
-      !Component.isComponent(params.component),
+      Component.isComponent(params.component),
       'Missing or invalid `component` property',
     );
 
     invariant(
-      typeof params.selector !== 'string' &&
-        typeof params.selector !== 'function',
+      typeof params.selector === 'string' ||
+        typeof params.selector === 'function',
       'Missing `selector` property',
     );
 
@@ -193,7 +193,7 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
   public start(data = {}): this {
     this.mount(this.options.root);
 
-    invariant(!isElement(this.$el), '"this.$el" is not a DOM element');
+    invariant(isElement(this.$el), '"this.$el" is not a DOM element');
 
     this.$el.setAttribute(Sandbox.SB_DATA_ATTR, '');
     this.$ctx = createContext(data);
