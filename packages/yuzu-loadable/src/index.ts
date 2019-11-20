@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { noop, isElement, evaluate } from 'yuzu-utils';
 import { Component } from 'yuzu';
 import { IObject, IComponentConstructable } from 'yuzu/types';
@@ -7,7 +8,7 @@ export interface ILoadableOptions {
   loader?: IComponentConstructable<Component> | null;
   template?: (...args: any[]) => string | void;
   renderRoot?: string | (($el: Element) => Element);
-  fetchData: (ctx: Component) => IObject | void;
+  fetchData: (ctx: Component<any, any>) => IObject | void;
   options?: IObject;
   props?: IObject | ((props: IObject) => IObject);
 }
@@ -122,19 +123,18 @@ export function Loadable(
 
       // empty the component
       $el.textContent = '';
-      let async: Element;
-      if (renderRoot) {
-        async =
-          typeof renderRoot === 'string'
-            ? document.createElement(renderRoot)
-            : renderRoot($el);
-      } else {
-        throw new TypeError(
-          '"options.renderRoot" must be either a function or a string',
-        );
-      }
 
-      this.$els.async = $el.appendChild(async);
+      invariant(
+        !renderRoot,
+        '"options.renderRoot" must be either a function or a string',
+      );
+
+      const async =
+        typeof renderRoot === 'string'
+          ? document.createElement(renderRoot)
+          : renderRoot && renderRoot($el);
+
+      this.$els.async = $el.appendChild(async as Element);
 
       await this.setLoader();
 
@@ -256,10 +256,12 @@ export function Loadable(
 
       if (html) {
         wrapper.innerHTML = html;
-        if (wrapper.childElementCount > 1) {
-          this.$warn(
-            'Multi-root templates are not supported. Just the first root element will be rendered.',
-          );
+        if (process.env.NODE_ENV !== 'production') {
+          if (wrapper.childElementCount > 1) {
+            this.$warn(
+              'Multi-root templates are not supported. Just the first root element will be rendered.',
+            );
+          }
         }
         return wrapper.firstElementChild;
       }

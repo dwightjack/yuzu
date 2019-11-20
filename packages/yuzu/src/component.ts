@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import {
   nextUid,
   isElement,
@@ -173,9 +174,11 @@ export class Component<S = {}, O = {}> extends Events {
 
     let defaultOptions: O;
     if (typeof defaultOptionsFn === 'function') {
-      this.$warn(
-        'the static property `defaultOptions` is deprecated. Please move the method to the instance',
-      );
+      if (process.env.NODE_ENV !== 'production') {
+        this.$warn(
+          'the static property `defaultOptions` is deprecated. Please move the method to the instance',
+        );
+      }
       defaultOptions = defaultOptionsFn(this) as O;
     } else {
       defaultOptions = this.defaultOptions(this) || ({} as any);
@@ -251,21 +254,20 @@ export class Component<S = {}, O = {}> extends Events {
    * @returns {Component}
    */
   public mount(el: string | Element, state: Partial<S> | null = {}): this {
-    if (this.$el) {
-      throw new Error('Component is already mounted');
-    }
+    invariant(this.$el, 'Component is already mounted');
 
-    if (this.detached) {
-      throw new Error(
-        'You cannot mount a detached component. Please use `init` instead',
-      );
-    }
+    invariant(
+      this.detached,
+      'You cannot mount a detached component. Please use `init` instead',
+    );
 
     const $el = typeof el === 'string' ? qs(el) : el;
 
     if (!isElement($el)) {
       // fail silently (kinda...);
-      this.$warn('Element is not a DOM element', $el);
+      if (process.env.NODE_ENV !== 'production') {
+        this.$warn('Element is not a DOM element', $el);
+      }
       return this;
     }
 
@@ -321,14 +323,18 @@ export class Component<S = {}, O = {}> extends Events {
    * @returns {Component}
    */
   public init(state: Partial<S> = {}): this {
-    if (!this.detached && !isElement(this.$el)) {
-      throw new Error('component instance not mounted');
-    }
+    invariant(
+      !this.detached && !isElement(this.$el),
+      'component instance not mounted',
+    );
+
     const { $el } = this;
 
     // initialization placeholder
     if ($el && $el.hasAttribute(Component.YUZU_DATA_ATTR)) {
-      this.$warn(`Element is already initialized... skipping`, $el);
+      if (process.env.NODE_ENV !== 'production') {
+        this.$warn(`Element is already initialized... skipping`, $el);
+      }
       return this;
     }
 
@@ -763,9 +769,7 @@ export class Component<S = {}, O = {}> extends Events {
     >,
     props?: setRefProps<Component, this>,
   ): Promise<C> {
-    if (!isPlainObject(refCfg)) {
-      throw new TypeError('Invalid reference configuration');
-    }
+    invariant(!isPlainObject(refCfg), 'Invalid reference configuration');
 
     const { component: ChildComponent, el, id, on, ...options } = refCfg;
     const { detached } = this;
@@ -802,9 +806,7 @@ export class Component<S = {}, O = {}> extends Events {
       value: this,
     });
 
-    if (!id) {
-      throw new Error('Invalid reference id string');
-    }
+    invariant(!id, 'Invalid reference id string');
 
     // bind events...
     if (on) {
@@ -820,12 +822,11 @@ export class Component<S = {}, O = {}> extends Events {
     this.$refsStore.set(id, ref);
 
     if (!ref.detached && !ref.$el) {
-      if (!el) {
-        throw new Error(
-          `You need to provide a root element for the child element with id "${id}".`,
-        );
-      }
-      ref.mount(el, null);
+      invariant(
+        !el,
+        `You need to provide a root element for the child element with id "${id}".`,
+      );
+      ref.mount(el as Element, null);
     }
 
     const stateMap = evaluate(props, ref, this);
@@ -859,11 +860,10 @@ export class Component<S = {}, O = {}> extends Events {
       }
     }
 
-    if (!$el && ref.$el) {
-      throw new Error(
-        `You cannot attach a plain Component to a DetachedComponents tree. (${id})`,
-      );
-    }
+    invariant(
+      !$el && ref.$el,
+      `You cannot attach a plain Component to a DetachedComponents tree. (${id})`,
+    );
 
     if (prevRef) {
       await prevRef.destroy();
@@ -896,9 +896,12 @@ export class Component<S = {}, O = {}> extends Events {
   public async destroyRef(id: string, detach = false): Promise<void> {
     const { $refsStore } = this;
     const ref = $refsStore.get(id);
+    invariant(!ref, `Child component "${id}" not found.`);
+
     if (!ref) {
-      throw new Error(`Child component "${id}" not found.`);
+      return;
     }
+
     $refsStore.delete(id);
     delete this.$refs[id];
     if (!detach) {
@@ -936,10 +939,12 @@ export class Component<S = {}, O = {}> extends Events {
       $refsStore.clear();
       return result;
     } catch (e) {
-      this.$warn(
-        'An error occurred while destroy the component child components',
-        e,
-      );
+      if (process.env.NODE_ENV !== 'production') {
+        this.$warn(
+          'An error occurred while destroy the component child components',
+          e,
+        );
+      }
       return Promise.reject(e);
     }
   }

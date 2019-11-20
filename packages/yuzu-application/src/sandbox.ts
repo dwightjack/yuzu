@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { datasetParser, isElement, evaluate, createSequence } from 'yuzu-utils';
 import { IObject, IComponentConstructable } from 'yuzu/types';
 import { Component } from 'yuzu';
@@ -106,22 +107,26 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
       if (!Array.isArray(config)) {
         if (config.root) {
           this.register({ component: config, selector: config.root });
-        } else {
-          this.$warn(
-            `Skipping component ${config.displayName ||
-              config.name} because static "root" selector is missing`,
-          );
+        }
+        if (process.env.NODE_ENV !== 'production') {
+          !config.root &&
+            this.$warn(
+              `Skipping component ${config.displayName ||
+                config.name} because static "root" selector is missing`,
+            );
         }
       } else {
         const [component, params = {}] = config;
         const selector = component.root || params.selector;
         if (selector) {
           this.register({ component, selector, ...params });
-        } else {
-          this.$warn(
-            `Skipping component ${component.displayName ||
-              component.name} because a static "root" selector is missing and no "selector" param is passed-in`,
-          );
+        }
+        if (process.env.NODE_ENV !== 'production') {
+          !selector &&
+            this.$warn(
+              `Skipping component ${component.displayName ||
+                component.name} because a static "root" selector is missing and no "selector" param is passed-in`,
+            );
         }
       }
     });
@@ -152,15 +157,17 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
     selector: string | entrySelectorFn;
     [key: string]: any;
   }): void {
-    if (!Component.isComponent(params.component)) {
-      throw new TypeError('Missing or invalid `component` property');
-    }
-    if (
+    invariant(
+      !Component.isComponent(params.component),
+      'Missing or invalid `component` property',
+    );
+
+    invariant(
       typeof params.selector !== 'string' &&
-      typeof params.selector !== 'function'
-    ) {
-      throw new TypeError('Missing `selector` property');
-    }
+        typeof params.selector !== 'function',
+      'Missing `selector` property',
+    );
+
     this.$registry.push(params);
   }
 
@@ -185,9 +192,9 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    */
   public start(data = {}): this {
     this.mount(this.options.root);
-    if (!isElement(this.$el)) {
-      throw new TypeError('this.$el is not a DOM element');
-    }
+
+    invariant(!isElement(this.$el), '"this.$el" is not a DOM element');
+
     this.$el.setAttribute(Sandbox.SB_DATA_ATTR, '');
     this.$ctx = createContext(data);
     this.$ctx.inject(this);
