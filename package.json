@@ -31,7 +31,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint --fix"
+      "pre-commit": "npm run lint --fix"
     }
   },
   "devDependencies": {
@@ -46,7 +46,6 @@
     "eslint-config-prettier": "~6.7.0",
     "eslint-plugin-node": "~10.0.0",
     "eslint-plugin-prettier": "~3.1.1",
-    "execa": "^1.0.0",
     "fast-glob": "^2.2.7",
     "gh-pages": "^2.0.1",
     "husky": "^3.0.9",
