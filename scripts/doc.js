@@ -24,7 +24,12 @@ packages.forEach(async (package) => {
   const dest = path.join(docs, 'packages', package);
   const destApi = path.join(dest, 'api');
   const tmp = path.join(baseFolder, 'tmp');
+  const readmePath = path.join(baseFolder, 'README.md');
   const pkg = require(path.join(baseFolder, 'package.json'));
+
+  if (!fs.existsSync(readmePath)) {
+    return;
+  }
 
   rimraf.sync(dest);
   rimraf.sync(tmp);
