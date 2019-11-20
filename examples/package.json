@@ -1,5 +1,5 @@
 {
-  "name": "examples-detached",
+  "name": "examples-yuzu",
   "version": "1.0.0",
   "main": "dist/index.ts",
   "author": "Marco Solazzi",
@@ -13,6 +13,13 @@
     "yuzu-utils": "2.0.0-rc.18"
   },
   "scripts": {
-    "build": "tsdx build --format umd"
+    "build": "tsdx build --format umd",
+    "start:tsdx": "tsdx watch --format umd",
+    "start:server": "browser-sync start -s --f dist/** index.html --w --ss ../packages",
+    "start": "run-p start:*"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "npm-run-all": "^4.1.5"
   }
 }

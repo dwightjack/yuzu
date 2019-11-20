@@ -1,10 +1,11 @@
-import { Component } from 'yuzu';
-import { IObject } from 'yuzu/types';
-
-export interface IContext {
-  getData(): IObject;
-  update(payload: IObject): void;
-  inject<C extends Component>(instance: C): C;
+export interface IContext<D = {}> {
+  getData(): Readonly<D>;
+  update(payload: D): void;
+  inject<C>(
+    instance: C,
+  ): C & {
+    $context: D;
+  };
 }
 /**
  * ```js
@@ -18,7 +19,7 @@ export interface IContext {
  * @example
  * const context = createContext({ theme: 'dark' });
  */
-export const createContext = (data: IObject = {}): IContext => {
+export const createContext = <D = {}>(data: D = {} as D): IContext<D> => {
   let $data = data;
 
   /**
@@ -26,7 +27,7 @@ export const createContext = (data: IObject = {}): IContext => {
    * @name Context
    * @type {Object}
    */
-  return {
+  const $ctx: IContext<D> = {
     /**
      * ```js
      * getData()
@@ -39,8 +40,8 @@ export const createContext = (data: IObject = {}): IContext => {
      * const context = createContext({ theme: 'dark' });
      * context.getData().theme === 'dark';
      */
-    getData(): IObject {
-      return $data;
+    getData() {
+      return { ...$data };
     },
 
     /**
@@ -58,8 +59,8 @@ export const createContext = (data: IObject = {}): IContext => {
      * context.update({ theme: 'light ' });
      * context.getData().theme === 'light';
      */
-    update(payload: IObject): void {
-      $data = payload;
+    update(payload) {
+      $data = { ...payload } as D;
     },
 
     /**
@@ -79,12 +80,13 @@ export const createContext = (data: IObject = {}): IContext => {
      *
      * instance.$context.theme === 'dark';
      */
-    inject<C extends Component>(instance: C): C {
-      Object.defineProperty(instance, '$context', {
+    inject(instance) {
+      return Object.defineProperty(instance, '$context', {
         enumerable: false,
-        get: () => $data,
+        get: () => this.getData(),
       });
-      return instance;
     },
   };
+
+  return $ctx;
 };

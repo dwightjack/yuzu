@@ -6,21 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Example Index</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
     integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous" />
 </head>
 
 <body>
-  <ul id="nav">
-    <li><a href="/#es5">ES5 compatible example</a></li>
-    <li><a href="/#todo">Simple Todo List</a></li>
-    <li><a href="/#detached">Detached Component</a></li>
-    <li><a href="/#store">Simple Global Store</a></li>
-  </ul>
-  <div id="app"></div>
-  <script src="/dist/examples-detached.umd.development.js"></script>
+  <header class="mt-2">
+    <nav>
+      <ul id="nav" class="nav nav-pills">
+        <li class="nav-item"><a class="nav-link" href="/es5.html">ES5 / UMD usage</a></li>
+        <li class="nav-item"><a class="nav-link" href="/#todo">Simple Todo List</a></li>
+        <li class="nav-item"><a class="nav-link" href="/#detached">Detached Component</a></li>
+        <li class="nav-item"><a class="nav-link" href="/#store">Simple Global Store</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <hr>
+
+  <main class="container">
+    <div id="app"></div>
+  </main>
+
+  <script src="/dist/examples-yuzu.umd.development.js"></script>
 </body>
 
 </html>

@@ -9,6 +9,6 @@ export class Count extends Component<ICountState> {
   };
 
   public actions = {
-    count: (v: number) => (this.$el.textContent = `${v}`),
+    count: (v: number) => (this.$el.textContent = `Total: ${v}`),
   };
 }

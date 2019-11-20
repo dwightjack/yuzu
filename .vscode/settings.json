@@ -16,5 +16,15 @@
   },
   "[javascript]": {
     "editor.formatOnSave": false
-  }
+  },
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#089676",
+    "titleBar.inactiveBackground": "#08967699",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "statusBar.background": "#089676",
+    "statusBarItem.hoverBackground": "#0bc69c",
+    "statusBar.foreground": "#e7e7e7"
+  },
+  "peacock.color": "#089676"
 }

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Component ES5</title>
+</head>
+
+<body>
+  <header class="mt-2 mx-2">
+    <nav>
+      <a class="btn btn-primary" href="/">Back to home</a>
+    </nav>
+  </header>
+  <hr>
+
+  <main class="container">
+    <div id="app">
+      <form class="type-input" autocomplete="off">
+        <div class="form-group">
+          <label for="input">Write something</label>
+          <input name="input" id="input" type="text" class="input form-control" />
+        </div>
+        <p><b>You wrote:</b> <output name="status" class="status text-monospace"></output></p>
+
+      </form>
+    </div>
+  </main>
+
+
+  <script src="/yuzu-polyfills/dist/yuzu-polyfills.umd.production.min.js"></script>
+  <script src="/yuzu/dist/yuzu.umd.production.min.js"></script>
+  <script src="/yuzu-application/dist/yuzu-application.umd.production.min.js"></script>
+  <script>
+    (function () {
+
+      var TypeInput = YZ.extend(YZ.Component, {
+        created: function () {
+          this.selectors = {
+            input: '.input',
+            status: '.status',
+          };
+
+          this.state = {
+            message: '',
+          };
+
+          this.listeners = {
+            'keyup @input': function (e) {
+              this.setState({message: e.currentTarget.value});
+            },
+          };
+
+          this.actions = {
+            message: 'update',
+          };
+        },
+
+        update: function () {
+          this.$els.status.value = this.state.message;
+        },
+      });
+
+      TypeInput.root = '.type-input';
+
+      window.app = new YZ.Application.Sandbox({
+        root: '#app',
+        components: [ TypeInput ],
+      }).start();
+    })();
+  </script>
+</body>
+
+</html>

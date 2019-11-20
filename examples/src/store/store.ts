@@ -1,5 +1,4 @@
 import { DetachedComponent } from 'yuzu';
-import { IState } from 'yuzu/types';
 
 export interface IStoreOptions {
   name: string;
@@ -7,7 +6,12 @@ export interface IStoreOptions {
   effects: { [key: string]: any };
 }
 
-export type StateChangeFn = (state: IState, prev?: IState) => void;
+export type StateChangeFn<S> = (state: Readonly<S>) => void;
+
+export type ActionFn<S> = (
+  state: Readonly<S>,
+  ...args: any[]
+) => Partial<S> | null;
 
 export default class Store<S = {}> extends DetachedComponent<S, IStoreOptions> {
   public defaultOptions(): IStoreOptions {
@@ -19,7 +23,7 @@ export default class Store<S = {}> extends DetachedComponent<S, IStoreOptions> {
   }
 
   public dispatch = async (
-    action: (state: Readonly<S>, ...args: any[]) => Partial<S> | null,
+    action: ActionFn<S>,
     ...args: any[]
   ): Promise<void> => {
     const { state: oldState } = this;
@@ -52,18 +56,16 @@ export default class Store<S = {}> extends DetachedComponent<S, IStoreOptions> {
     }
   }
 
-  public subscribe(fn: StateChangeFn): () => void {
-    const listener = (state: IState): void => fn(state);
+  public subscribe(fn: StateChangeFn<S>): () => void {
+    const listener = (state: Readonly<S>): void => fn(state);
     this.on('change:*', listener);
-    return () => this.unsubscribe(listener);
-  }
-
-  public unsubscribe(fn: StateChangeFn): void {
-    this.off('change:*', fn);
+    return () => {
+      this.off('change:*', listener);
+    };
   }
 }
 
-export const createStore = <S = IState>(
-  initialState: S,
+export const createStore = <S = {}>(
+  initialState: Partial<S>,
   options?: Partial<IStoreOptions>,
-): Store => new Store(options).init(initialState);
+): Store<S> => new Store<S>(options).init(initialState);

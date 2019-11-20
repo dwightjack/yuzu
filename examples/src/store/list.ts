@@ -37,8 +37,9 @@ export class List extends Component<IListState, IListOptions> {
     items: (items: IListState['items']) => {
       if (items.length > 0) {
         const item = document.createElement('li');
+        item.className = 'list-group-item';
 
-        item.innerText = items[items.length - 1];
+        item.textContent = `Item ${items[items.length - 1]}`;
         this.$els.list.appendChild(item);
       }
     },

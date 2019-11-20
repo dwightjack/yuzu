@@ -12,8 +12,10 @@ export class Output extends DetachedComponent<IOutputState> {
   };
 
   public async initialize(): Promise<void> {
+    let idx = 0;
     this.emitter = setInterval(() => {
-      this.emit('append', { id: 'output' });
+      idx += 1;
+      this.emit('append', { id: `output n.${idx}` });
     }, 1000);
 
     const det = await this.setRef({
@@ -21,10 +23,13 @@ export class Output extends DetachedComponent<IOutputState> {
       component: DetachedComponent,
     });
 
+    const countRoot = document.createElement('p');
+    countRoot.className = 'badge badge-secondary';
+
     const count = await det.setRef({
       component: Count,
       id: 'counter',
-      el: document.createElement('p'),
+      el: countRoot,
     });
 
     this.on('change:total', (total) => {

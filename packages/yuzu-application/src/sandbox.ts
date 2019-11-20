@@ -3,21 +3,24 @@ import { IObject, IComponentConstructable } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
 
-export type entrySelectorFn = (sbx: Sandbox) => boolean | HTMLElement[];
+export type entrySelectorFn = (sbx: Sandbox<any>) => boolean | HTMLElement[];
 
 export type sandboxComponentOptions = [
-  IComponentConstructable<Component>,
-  { [key: string]: any },
+  IComponentConstructable<Component<any, any>>,
+  Record<string, any>,
 ];
 
 export interface ISandboxRegistryEntry {
-  component: IComponentConstructable<Component>;
+  component: IComponentConstructable<Component<any, any>>;
   selector: string | entrySelectorFn;
   [key: string]: any;
 }
 
 export interface ISandboxOptions {
-  components?: (IComponentConstructable<Component> | sandboxComponentOptions)[];
+  components?: (
+    | IComponentConstructable<Component<any, any>>
+    | sandboxComponentOptions
+  )[];
   root: HTMLElement | string;
   id: string;
 }
@@ -68,10 +71,7 @@ const nextChildUid = createSequence();
  * @property {Map} $instances Running instances storage
  * @returns {Sandbox}
  */
-export class Sandbox<ISandboxState = any> extends Component<
-  ISandboxState,
-  ISandboxOptions
-> {
+export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
   public static SB_DATA_ATTR = 'data-yuzu-sb';
 
   public defaultOptions(): ISandboxOptions {
@@ -86,7 +86,10 @@ export class Sandbox<ISandboxState = any> extends Component<
 
   public $registry: ISandboxRegistryEntry[] = [];
 
-  public $instances = new Map<string | entrySelectorFn, Component[]>();
+  public $instances = new Map<
+    string | entrySelectorFn,
+    Component<any, any>[]
+  >();
 
   /**
    * Creates a sandbox instance.
@@ -95,7 +98,7 @@ export class Sandbox<ISandboxState = any> extends Component<
    */
   public constructor(options: Partial<ISandboxOptions> = {}) {
     super(options);
-    const { components = [], id } = this.options as ISandboxOptions;
+    const { components = [], id } = this.options;
 
     this.$id = id || nextSbUid('_sbx-');
 
@@ -144,7 +147,7 @@ export class Sandbox<ISandboxState = any> extends Component<
    *   theme: 'dark' // <-- instance options
    * });
    */
-  public register<C extends Component>(params: {
+  public register<C extends Component<any, any>>(params: {
     component: IComponentConstructable<C>;
     selector: string | entrySelectorFn;
     [key: string]: any;
@@ -180,7 +183,7 @@ export class Sandbox<ISandboxState = any> extends Component<
    * // with context data
    * sandbox.start({ globalTheme: 'dark' });
    */
-  public start(data = {}): Sandbox {
+  public start(data = {}): this {
     this.mount(this.options.root);
     if (!isElement(this.$el)) {
       throw new TypeError('this.$el is not a DOM element');
@@ -201,7 +204,7 @@ export class Sandbox<ISandboxState = any> extends Component<
           return;
         }
         const targets = this.resolveSelector(selector);
-        let instances: Promise<Component>[] | undefined;
+        let instances: Promise<Component<any, any>>[] | undefined;
         if (targets === true) {
           instances = [this.createInstance(ComponentConstructor, options)];
         } else if (Array.isArray(targets)) {
@@ -226,7 +229,9 @@ export class Sandbox<ISandboxState = any> extends Component<
         return true;
       },
     );
-    Promise.all(ret).then(() => this.emit('start'));
+    Promise.all(ret).then(() => {
+      this.emit('start');
+    });
 
     return this;
   }
@@ -250,7 +255,7 @@ export class Sandbox<ISandboxState = any> extends Component<
    * @param {HTMLElement} [el] Root element
    * @returns {Component}
    */
-  public createInstance<C extends Component>(
+  public createInstance<C extends Component<any, any>>(
     ComponentConstructor: IComponentConstructable<C>,
     options: IObject,
     el?: HTMLElement,

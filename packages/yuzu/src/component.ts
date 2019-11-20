@@ -123,7 +123,7 @@ export class Component<S = {}, O = {}> extends Events {
   public $uid!: string;
   public $els: { [key: string]: Element | Element[] };
   public $refs: { [key: string]: Component };
-  public state!: Readonly<S>;
+  public state: Readonly<S>;
   public $context?: IObject;
   public $parent?: Component;
 
@@ -200,6 +200,8 @@ export class Component<S = {}, O = {}> extends Events {
     }, {} as any);
 
     this.$active = false;
+
+    this.state = {} as Readonly<S>;
 
     // DOM references
     this.$els = {};

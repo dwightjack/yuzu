@@ -8,11 +8,11 @@ interface IAppState {
 
 class App extends Component<IAppState> {
   public $els!: {
-    pre: HTMLPreElement;
+    contents: HTMLElement;
   };
 
   public selectors = {
-    pre: 'pre',
+    contents: '.contents',
   };
 
   public state = {
@@ -21,7 +21,7 @@ class App extends Component<IAppState> {
 
   public actions = {
     output: (v: IAppState['output']) => {
-      this.$els.pre.innerText = JSON.stringify(v, null, 2);
+      this.$els.contents.innerText = JSON.stringify(v, null, 0);
     },
   };
 }

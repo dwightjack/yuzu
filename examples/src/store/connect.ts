@@ -1,9 +1,10 @@
 import { Component } from 'yuzu';
+import { createContext } from 'yuzu-application';
 import Store from './store';
-import { IComponentConstructable, IState } from 'yuzu/types';
+import { IComponentConstructable } from 'yuzu/types';
 
 export type Actions = Record<string, (...args: any[]) => any>;
-export type Selector = (state: IState) => IState;
+export type Selector<StoreState> = (state: StoreState) => Record<string, any>;
 export type Connector<C> = (
   Child: IComponentConstructable<C>,
 ) => IComponentConstructable<C>;
@@ -24,10 +25,13 @@ const bindActions = (
 };
 
 /* eslint-disable no-param-reassign */
-export function attachStore(
+export function attachStore<StoreState = {}>(
   instance: Component,
-  selector?: Selector,
-  actions?: Actions | ((dispatch: any) => Actions) | null,
+  selector?: Selector<StoreState>,
+  actions?:
+    | Actions
+    | ((dispatch: Store<StoreState>['dispatch']) => Actions)
+    | null,
 ): void {
   if (!instance.$context) {
     return;
@@ -45,7 +49,7 @@ export function attachStore(
   const state = selector($store.state);
   Object.assign(instance.state, state);
 
-  const update = (newState: IState): void => {
+  const update = (newState: StoreState): void => {
     instance.setState(selector(newState));
   };
 
@@ -60,19 +64,23 @@ export function attachStore(
 }
 /* eslint-enable no-param-reassign */
 
-export function inject<C>(instance: C, store: Store): C {
-  Object.defineProperty(instance, '$context', {
-    writable: false,
-    value: {
-      $store: store,
-    },
-  });
-  return instance;
+export function inject<C, S>(
+  instance: C,
+  store: S,
+): C & {
+  $context: {
+    $store: S;
+  };
+} {
+  return createContext({ $store: store }).inject(instance);
 }
 
-export function connect(
-  selector?: Selector,
-  actions?: Actions | ((dispatch: any) => Actions) | null,
+export function connect<StoreState = {}>(
+  selector?: Selector<StoreState>,
+  actions?:
+    | Actions
+    | ((dispatch: Store<StoreState>['dispatch']) => Actions)
+    | null,
 ): Connector<Component<any, any>> {
   return function connector(Child) {
     const Connected = class extends Child {
@@ -85,7 +93,7 @@ export function connect(
       }
 
       public initialize(): void {
-        attachStore(this, selector, actions);
+        attachStore<StoreState>(this, selector, actions);
         super.initialize();
       }
     };
@@ -96,10 +104,8 @@ export function connect(
       Child.name ||
       'Component';
 
-    Object.defineProperty(Connected, 'displayName', {
+    return Object.defineProperty(Connected, 'displayName', {
       value: `Connected${name}`,
     });
-
-    return Connected;
   };
 }

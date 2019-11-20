@@ -1,6 +1,6 @@
 import { html } from '../../utils';
 
-export const template = () => html`
+export const template = (): unknown => html`
   <div id="todo-root">
     <style>
       #todo-root {
