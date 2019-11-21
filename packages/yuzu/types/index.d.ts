@@ -1,7 +1,3 @@
-export interface IObject<T = any> {
-  [key: string]: T;
-}
-
 export interface IState {
   [key: string]: any;
 }
@@ -23,7 +19,7 @@ export interface IRef<T> {
   id: string;
   el?: Element | HTMLElement | string;
   component: T;
-  on?: IObject<fn>;
+  on?: Record<string, fn>;
   [key: string]: any;
 }
 

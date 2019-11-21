@@ -13,7 +13,6 @@ import {
 } from 'yuzu-utils';
 
 import {
-  IObject,
   IState,
   fn,
   IListener,
@@ -27,8 +26,8 @@ import {
 const LISTENER_REGEXP = /^([^ ]+)(?: (.+))?$/;
 
 export type objDiffType = (
-  match: IObject,
-  obj: IObject,
+  match: Record<string, any>,
+  obj: Record<string, any>,
   msg: (k: string, keys: string) => void,
 ) => void;
 let objDiff: objDiffType = noop;
@@ -75,7 +74,7 @@ if (process.env.NODE_ENV !== 'production') {
  */
 export class Component<S = {}, O = {}> extends Events {
   public static root?: string;
-  public static defaultOptions?: (self?: any) => IObject;
+  public static defaultOptions?: (self?: any) => Record<string, any>;
 
   /**
    * ```js
@@ -125,14 +124,15 @@ export class Component<S = {}, O = {}> extends Events {
   public $els: { [key: string]: Element | Element[] };
   public $refs: { [key: string]: Component };
   public state: Readonly<S>;
-  public $context?: IObject;
+  public $context?: Record<string, any>;
   public $parent?: Component;
 
-  public selectors?: IObject<
+  public selectors?: Record<
+    string,
     string | ((el: Element, options: O) => Element | Element[])
   >;
-  public listeners?: IObject<string | eventHandlerFn>;
-  public actions?: IObject<string | fn>;
+  public listeners?: Record<string, string | eventHandlerFn>;
+  public actions?: Record<string, string | fn>;
 
   public $refsStore: Map<string, Component>;
   public $listeners: Map<eventHandlerFn, IListener>;
@@ -145,7 +145,7 @@ export class Component<S = {}, O = {}> extends Events {
   public $$logEnd?: fn;
   public $$logger?: IStateLogger<Component, Readonly<S>>;
 
-  // public $$getTree?: IObject;
+  // public $$getTree?: Record<string, any>;
   /**
    * ```js
    * this.readyState(state, prevState)
@@ -601,7 +601,7 @@ export class Component<S = {}, O = {}> extends Events {
    * // instance.state.b === 2
    * // instance.state.a === undefined
    */
-  public replaceState(newState: IObject, silent = false): void {
+  public replaceState(newState: Record<string, any>, silent = false): void {
     const { state: prevState } = this;
     this.state = Object.assign({}, newState) as S;
     const entries = Object.entries(this.state) as [keyof S, any][];

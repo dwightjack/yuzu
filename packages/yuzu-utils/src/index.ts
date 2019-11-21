@@ -7,7 +7,6 @@ export { Events } from './events';
  */
 
 type fn = (...args: any[]) => any;
-type IObject = Record<string, any>;
 
 /**
  * Event emitter constructor.
@@ -117,7 +116,7 @@ export const isObjectLike = (value: any): boolean =>
  * isPlainObject({}) === true
  * isPlainObject([]) === false
  */
-export const isPlainObject = (value: any): value is IObject => {
+export const isPlainObject = (value: any): value is Record<string, any> => {
   if (!isObjectLike(value) || objToString.call(value) !== '[object Object]') {
     return false;
   }
@@ -284,17 +283,20 @@ export const datasetParser = (
   el: HTMLElement,
   matcher = INLINE_STATE_REGEXP,
   formatter = parseString,
-): IObject => {
-  return Object.entries(el.dataset).reduce((acc: IObject, [key, value]) => {
-    if (matcher.test(key)) {
-      const newKey = key.replace(
-        matcher,
-        (_, m) => `${m[0].toLowerCase()}${m.slice(1)}`,
-      );
-      acc[newKey] = formatter(value);
-    }
-    return acc;
-  }, {});
+): Record<string, any> => {
+  return Object.entries(el.dataset).reduce(
+    (acc: Record<string, any>, [key, value]) => {
+      if (matcher.test(key)) {
+        const newKey = key.replace(
+          matcher,
+          (_, m) => `${m[0].toLowerCase()}${m.slice(1)}`,
+        );
+        acc[newKey] = formatter(value);
+      }
+      return acc;
+    },
+    {},
+  );
 };
 
 export const warn = (ctx: any): ((msg: string, ...args: any[]) => void) => {

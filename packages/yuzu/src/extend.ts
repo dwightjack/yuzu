@@ -1,11 +1,11 @@
 import { Component } from './component';
-import { IObject, IComponentConstructable } from '../types';
+import { IComponentConstructable } from '../types';
 
 export interface IExtendedComponent<
-  P extends Component,
+  P extends Component<any, any>,
   M extends Record<string, any>
 > extends IComponentConstructable<P> {
-  new (options?: IObject): P & M;
+  new (options?: Record<string, any>): P & M;
 }
 
 /**
@@ -30,7 +30,10 @@ export function extend<P extends Component, E extends Record<string, any>>(
 ): IExtendedComponent<P, E> {
   const child: IExtendedComponent<P, E> = props.hasOwnProperty('constructor')
     ? (props.constructor as any)
-    : function ChildConstructor(this: Component, options?: IObject) {
+    : function ChildConstructor(
+        this: Component,
+        options?: Record<string, any>,
+      ) {
         return parent.call(this, options);
       };
 

@@ -141,23 +141,6 @@ if (process.env.NODE_ENV !== 'production') {
     const proto = ComponentClass.prototype;
     const { mount, init, destroy } = proto;
 
-    // function refTree(root: Component, tree: IObject) {
-    //   if (root.$refsStore.size > 0) {
-    //     root.$refsStore.forEach((ref, name) => {
-    //       tree[name] = Object.create(null);
-    //       refTree(ref, tree[name]);
-    //     });
-    //   }
-    //   Object.defineProperty(tree, '$self', {
-    //     enumerable: false,
-    //     value: Object.assign(Object.create(null), {
-    //       $raw: root,
-    //       state: Object.assign(Object.create(null), root.state),
-    //     }),
-    //   });
-    //   return tree;
-    // }
-
     proto.mount = function mountDev(...args) {
       mount.call(this, ...args);
       /**
@@ -171,15 +154,6 @@ if (process.env.NODE_ENV !== 'production') {
         value: this,
         configurable: true,
       });
-
-      // Object.defineProperty(this, '$$getTree', {
-      //   enumerable: false,
-      //   writable: false,
-      //   value() {
-      //     const tree = Object.create(null);
-      //     return refTree(this, tree);
-      //   },
-      // });
 
       return this;
     };

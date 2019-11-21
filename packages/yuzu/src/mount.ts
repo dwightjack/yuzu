@@ -1,16 +1,17 @@
 import { qs, isElement, evaluate, createSequence } from 'yuzu-utils';
 import { Component } from './component';
-import { IObject, IState, IComponentConstructable } from '../types';
+import { IState, IComponentConstructable } from '../types';
 
 export type mounterFn<X, C = Component<any, any>> = (ctx?: X) => C;
 
-export type mountEventObject = IObject<(...args: any[]) => void>;
+export type mountEventObject = Record<string, (...args: any[]) => void>;
 export type mountEventFn<T> = (ctx: T) => mountEventObject;
 
-export interface IMountProps<T> extends IObject {
+export interface IMountProps<T> {
   state?: IState;
   id?: string;
   on?: mountEventObject | mountEventFn<T>;
+  [key: string]: any;
 }
 
 export type mountChildren<P, C> = mounterFn<C>[] | ((ctx: P) => mounterFn<C>[]);

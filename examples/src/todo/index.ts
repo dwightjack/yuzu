@@ -13,14 +13,14 @@ export function initialize(root: HTMLElement): () => Promise<void> {
     mount(Form, app.$els.form, {
       id: 'form',
       on: {
-        submit: (v) => app.addTodo(v),
+        submit: (v: any) => app.addTodo(v),
       },
     }),
     mount(TodoList, app.$els.list, {
       id: 'list',
       on: {
-        completed: (id) => app.toggleComplete(id),
-        remove: (id) => app.removeTodo(id),
+        completed: (id: string) => app.toggleComplete(id),
+        remove: (id: string) => app.removeTodo(id),
       },
       state: {
         'todos>todos': (todos: any[]) => todos,

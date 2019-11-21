@@ -22,7 +22,7 @@
     "prepublishOnly": "npm run release",
     "release": "run-s lint typecheck test bundle docs",
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\" \"scripts/**/*.js\" \"examples/src/**/*.ts\"",
-    "typecheck": "tsc --noEmit -p .",
+    "typecheck": "tsc --noEmit --skipLibCheck -p .",
     "bundle": "lerna run build --scope=yuzu*",
     "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",

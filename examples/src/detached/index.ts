@@ -15,7 +15,7 @@ class App extends Component<IAppState> {
     contents: '.contents',
   };
 
-  public state = {
+  public state: IAppState = {
     output: [],
   };
 
@@ -34,7 +34,7 @@ export function initialize(root?: HTMLElement | null): () => Promise<void> {
     mount(Output, null, {
       id: 'output',
       on: {
-        append: (value) => {
+        append: (value: any) => {
           app.setState(({ output }) => ({
             output: [...output, value],
           }));
