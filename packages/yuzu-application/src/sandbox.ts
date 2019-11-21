@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { datasetParser, isElement, evaluate, createSequence } from 'yuzu-utils';
-import { IObject, IComponentConstructable } from 'yuzu/types';
+import { IComponentConstructable } from 'yuzu/types';
 import { Component } from 'yuzu';
 import { createContext, IContext } from './context';
 
@@ -264,7 +264,7 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    */
   public createInstance<C extends Component<any, any>>(
     ComponentConstructor: IComponentConstructable<C>,
-    options: IObject,
+    options: Record<string, any>,
     el?: HTMLElement,
   ): Promise<C> {
     const inlineOptions = el ? datasetParser(el) : {};

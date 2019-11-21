@@ -1,20 +1,22 @@
 import invariant from 'tiny-invariant';
 import { noop, isElement, evaluate } from 'yuzu-utils';
 import { Component } from 'yuzu';
-import { IObject, IComponentConstructable } from 'yuzu/types';
+import { IComponentConstructable } from 'yuzu/types';
 
-export interface ILoadableOptions {
-  component: IComponentConstructable<Component<any, any>>;
+export interface ILoadableOptions<C> {
+  component: IComponentConstructable<C>;
   loader?: IComponentConstructable<Component<any, any>> | null;
   template?: (...args: any[]) => string | void;
   renderRoot?: string | (($el: Element) => Element);
-  fetchData: (ctx: Component<any, any>) => IObject | void;
-  options?: IObject;
-  props?: IObject | ((props: IObject) => IObject);
+  fetchData: (ctx: Component<any, any>) => Record<string, any> | void;
+  options?: Record<string, any>;
+  props?:
+    | Record<string, any>
+    | ((props: Record<string, any>) => Record<string, any>);
 }
 
 export interface ILoadableState {
-  props: IObject;
+  props: Record<string, any>;
 }
 
 /**
@@ -54,9 +56,9 @@ export interface ILoadableState {
  *
  * const message = new LoadableMessage().mount('#loadable-message');
  */
-export function Loadable(
-  opts: ILoadableOptions,
-): IComponentConstructable<Component<ILoadableState, ILoadableOptions>> {
+export function Loadable<C extends Component<any, any> = Component<any, any>>(
+  opts: ILoadableOptions<C>,
+): IComponentConstructable<Component<ILoadableState, ILoadableOptions<C>>> {
   const { component: Child, ...params } = opts;
   const childName = Child.displayName || Child.name || '';
 
@@ -77,11 +79,11 @@ export function Loadable(
    */
   const LoadableComponent = class extends Component<
     ILoadableState,
-    ILoadableOptions
+    ILoadableOptions<C>
   > {
     public static root = `[data-loadable="${childName}"], [data-loadable][data-component="${childName}"]`;
 
-    public defaultOptions(): ILoadableOptions {
+    public defaultOptions(): ILoadableOptions<C> {
       return Object.assign(
         {
           fetchData: noop,
@@ -90,7 +92,7 @@ export function Loadable(
           loader: null,
           options: {},
           renderRoot: 'div',
-          props: (v: IObject) => v,
+          props: (v: Record<string, any>) => v,
         },
         params,
       );
@@ -100,7 +102,7 @@ export function Loadable(
       async: Element;
     };
 
-    public state = {
+    public state: ILoadableState = {
       props: {},
     };
 
@@ -117,8 +119,7 @@ export function Loadable(
      * @returns {LoadableComponent}
      */
     public async initialize(): Promise<this> {
-      const { fetchData, renderRoot } = this.options as ILoadableOptions &
-        IObject;
+      const { fetchData, renderRoot } = this.options as ILoadableOptions<C>;
       const { $el } = this;
 
       // empty the component
@@ -134,7 +135,9 @@ export function Loadable(
           ? document.createElement(renderRoot)
           : renderRoot && renderRoot($el);
 
-      this.$els.async = $el.appendChild(async as Element);
+      if (async) {
+        this.$els.async = $el.appendChild(async);
+      }
 
       await this.setLoader();
 
@@ -174,7 +177,7 @@ export function Loadable(
      *
      * instanceof loadable.$refs.async === Message
      */
-    public setComponent(root: Element | null): Promise<Component<any, any>> {
+    public setComponent(root: Element | null): Promise<C> {
       const { component, options, props } = this.options;
 
       return this.setRef(
@@ -214,7 +217,7 @@ export function Loadable(
      *
      * instanceof loadable.$refs.async === Loader
      */
-    public async setLoader(): Promise<void | Component> {
+    public async setLoader(): Promise<void | Component<any, any>> {
       const { loader } = this.options;
 
       if (loader) {

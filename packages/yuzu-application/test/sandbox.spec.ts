@@ -342,9 +342,8 @@ describe('`Sandbox`', () => {
       const spy = jasmine.createSpy('created');
       const options = {};
       class Child extends Component {
-        public constructor(opts: any) {
-          super(opts);
-          spy(this, opts);
+        public created(): void {
+          spy(this, this.options);
         }
       }
       inst.createInstance(Child, options, el);
@@ -354,17 +353,14 @@ describe('`Sandbox`', () => {
     it('sets the component as sandbox child ref', () => {
       const spy = spyOn(inst, 'setRef');
       const options = { demo: true };
-      class Child extends Component {
-        public constructor(opts: any) {
-          super(opts);
-          spy(this, opts);
-        }
-      }
+      class Child extends Component<{}, { demo: boolean }> {}
+
       inst.createInstance(Child, options, el);
+
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         el,
-        id: jasmine.any(String),
+        id: jasmine.any(String) as any,
         ...options,
       });
     });

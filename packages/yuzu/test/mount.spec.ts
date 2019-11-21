@@ -86,7 +86,7 @@ describe('`mount`', () => {
       if (root) {
         mount(MyComponent, root)();
       }
-      expect(spy).toHaveBeenCalledWith(root, {});
+      expect(spy).toHaveBeenCalledWith(root as any, {});
     });
 
     it('should NOT call `.mount()` on generated component if root is not an element', () => {
@@ -141,7 +141,10 @@ describe('`mount`', () => {
       const state = {};
       mount(MyComponent, '.child', { state })(ctx);
 
-      expect(spy).toHaveBeenCalledWith(document.querySelector('.child'), null);
+      expect(spy).toHaveBeenCalledWith(
+        document.querySelector('.child') as any,
+        null,
+      );
     });
 
     it('should set the generated component as a child of its context', () => {
@@ -155,8 +158,8 @@ describe('`mount`', () => {
       expect(spy).toHaveBeenCalledWith(
         {
           component,
-          id: jasmine.any(String),
-          on: jasmine.any(Object),
+          id: jasmine.any(String) as any,
+          on: jasmine.any(Object) as any,
         },
         state,
       );
