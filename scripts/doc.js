@@ -2,7 +2,6 @@ const documentation = require('documentation');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
-const ts = require('typescript');
 const mkdir = require('make-dir');
 const glob = require('fast-glob');
 const rimraf = require('rimraf');
@@ -23,7 +22,6 @@ packages.forEach(async (package) => {
   const docsFolder = path.join(baseFolder, 'docs');
   const dest = path.join(docs, 'packages', package);
   const destApi = path.join(dest, 'api');
-  const tmp = path.join(baseFolder, 'tmp');
   const readmePath = path.join(baseFolder, 'README.md');
   const pkg = require(path.join(baseFolder, 'package.json'));
 
@@ -32,11 +30,9 @@ packages.forEach(async (package) => {
   }
 
   rimraf.sync(dest);
-  rimraf.sync(tmp);
 
   await mkdir(dest);
   await mkdir(destApi);
-  await mkdir(tmp);
 
   //copy some files
   await cpy(['**/*.*'], docs, {
@@ -106,21 +102,10 @@ ${moduleLinks}
 
   const renders = files.map(async (file) => {
     const basename = path.basename(file, '.ts');
-    const tmppath = path.join(tmp, `${basename}.js`);
     const filepath = path.join(destApi, `${basename}.md`);
 
-    const src = await readAsync(file, 'utf8');
-    const { outputText } = ts.transpileModule(src, {
-      compilerOptions: {
-        module: ts.ModuleKind.ES2015,
-        target: ts.ScriptTarget.ESNext,
-        removeComments: false,
-      },
-    });
-
     try {
-      await writeAsync(tmppath, outputText, 'utf8');
-      const raw = await documentation.build(tmppath, {
+      const raw = await documentation.build(file, {
         shallow: true,
       });
 
@@ -147,6 +132,5 @@ ${moduleLinks}
   });
 
   await Promise.all(renders);
-  rimraf.sync(tmp);
   console.log(`Documentation build complete for ${package}!`);
 });
