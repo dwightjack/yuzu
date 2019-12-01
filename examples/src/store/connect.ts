@@ -11,7 +11,7 @@ export type Connector<C> = (
 
 const bindActions = (
   actions: Actions | ((dispatch: any) => Actions),
-  store: Store,
+  store: Store<any>,
 ): Actions => {
   if (typeof actions === 'function') {
     return actions(store.dispatch);
@@ -23,6 +23,39 @@ const bindActions = (
 
   return mapped;
 };
+
+export function fromStore<StoreState = {}>(
+  $store: Store<StoreState>,
+  selector?: Selector<StoreState>,
+  actions?:
+    | Actions
+    | ((dispatch: Store<StoreState>['dispatch']) => Actions)
+    | null,
+): any {
+  const state = !selector
+    ? {}
+    : (instance: Component<any, any>) => {
+        const update = (newState: any): void => {
+          instance.setState(selector(newState));
+        };
+
+        const unsubscribe = $store.subscribe(update);
+
+        const { beforeDestroy } = instance;
+
+        instance.beforeDestroy = () => {
+          unsubscribe();
+          beforeDestroy.call(instance);
+        };
+
+        return selector($store.state);
+      };
+
+  return {
+    ...(actions && bindActions(actions, $store)),
+    state,
+  };
+}
 
 /* eslint-disable no-param-reassign */
 export function attachStore<StoreState = {}>(
