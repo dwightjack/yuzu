@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "redux": "^4.0.4",
     "yuzu": "2.0.0-rc.18",
     "yuzu-application": "2.0.0-rc.18",
     "yuzu-loadable": "2.0.0-rc.18",

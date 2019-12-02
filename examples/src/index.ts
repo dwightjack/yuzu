@@ -2,6 +2,7 @@ import { Component, devtools } from 'yuzu';
 import * as detached from './detached';
 import * as todo from './todo';
 import * as store from './store';
+import * as redux from './redux';
 
 devtools(Component);
 
@@ -9,6 +10,7 @@ const routes: Record<string, any> = {
   detached,
   todo,
   store,
+  redux,
 };
 
 let current: any = null;
