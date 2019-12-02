@@ -1,9 +1,9 @@
-// import { Sandbox } from 'yuzu-application';
 import { mount, Component } from 'yuzu';
 import { List } from './list';
 import { Counter } from './counter';
 import { createStore } from './store';
-import { /*connect, */ fromStore } from './connect';
+import { /*connect ,*/ fromStore } from './connect';
+// import { Sandbox, createContext } from 'yuzu-application';
 export { template } from './template';
 
 interface IStoreState {
@@ -26,8 +26,6 @@ const addItem = ({ items }: IStoreState): { items: number[] } => ({
 //   null,
 // )(Counter);
 
-// const context = createContext({ $store });
-
 export function initialize(root: HTMLElement): () => Promise<void> {
   if (!root) {
     return () => Promise.resolve();
@@ -37,34 +35,30 @@ export function initialize(root: HTMLElement): () => Promise<void> {
     items: [],
   });
 
-  // const sandbox = new Sandbox({
-  //   root: '#app-connect',
+  const listOptions = fromStore(
+    $store,
+    ({ items }) => ({ items }),
+    (dispatch) => ({
+      onClick: () => dispatch(addItem),
+    }),
+  );
+
+  const counterOptions = fromStore($store, ({ items }) => ({
+    count: items.length,
+  }));
+
+  // const sandbox = mount(Sandbox, '#app-connect', {
+  //   context: createContext({ $store }),
   //   components: [
   //     [ConnectedList, { selector: '#list' }],
   //     [ConnectedCounter, { selector: '#num' }],
   //   ],
-  // });
+  // })();
 
-  // sandbox.start({ $store });
+  const sandbox = mount(Component, '#app-connect', {}, [
+    mount(List, '#list', listOptions),
+    mount(Counter, '#num', counterOptions),
+  ])();
 
-  // return () => sandbox.stop();
-
-  const component = mount(Component, '#app-connect', {}, () => {
-    return [
-      mount(List, '#list', {
-        ...fromStore(
-          $store,
-          ({ items }) => ({ items }),
-          (dispatch) => ({
-            onClick: () => dispatch(addItem),
-          }),
-        ),
-      }),
-      mount(Counter, '#num', {
-        ...fromStore($store, ({ items }) => ({ count: items.length })),
-      }),
-    ];
-  })();
-
-  return () => component.destroy();
+  return () => sandbox.destroy();
 }
