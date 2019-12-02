@@ -20,46 +20,42 @@ describe('`Sandbox`', () => {
       expect(inst.$id).toMatch(/_sbx-[0-9]+/);
     });
 
-    it('passes `options.root` to mount method', () => {
+    it('passes `options.root` to mount method and starts the sandbox', () => {
       const root = document.createElement('div');
       const inst = new Sandbox({ root });
       const spy = spyOn(inst, 'mount').and.callThrough();
-      inst.start();
+      inst.start({ demo: true });
       expect(spy).toHaveBeenCalledWith(root);
     });
 
     it('sets a data-* attribute on the root element', () => {
       const root = document.createElement('div');
-      const inst = new Sandbox({ root, id: 'demo' });
-      inst.start();
+      const inst = new Sandbox({ id: 'demo' });
+      inst.mount(root);
       expect(root.hasAttribute(Sandbox.SB_DATA_ATTR)).toBe(true);
     });
 
     it('creates an internal array to keep track of registered components', () => {
-      const root = document.createElement('div');
-      const inst = new Sandbox({ root });
+      const inst = new Sandbox();
       expect(inst.$registry).toEqual(jasmine.any(Array));
     });
 
     it('creates an internal map to keep track of component instances', () => {
-      const root = document.createElement('div');
-      const inst = new Sandbox({ root });
+      const inst = new Sandbox();
       expect(inst.$instances).toEqual(jasmine.any(Map));
     });
 
     it('calls register() for every passed-in component configuration', () => {
-      const root = document.createElement('div');
       class Child extends Component {
         public static root = 'demo';
       }
       const components = [Child];
       const spy = spyOn(Sandbox.prototype, 'register');
-      new Sandbox({ components, root });
+      new Sandbox({ components });
       expect(spy).toHaveBeenCalledWith({ component: Child, selector: 'demo' });
     });
 
     it('calls register() for every passed-in component configuration (with options)', () => {
-      const root = document.createElement('div');
       class Child extends Component {
         public static root = 'demo';
       }
@@ -67,7 +63,7 @@ describe('`Sandbox`', () => {
         [Child, { selector: 'custom', prop: true }] as sandboxComponentOptions,
       ];
       const spy = spyOn(Sandbox.prototype, 'register');
-      new Sandbox({ components, root });
+      new Sandbox({ components });
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         selector: 'custom',
@@ -76,13 +72,12 @@ describe('`Sandbox`', () => {
     });
 
     it('falls back to the component selector if not defined in the options', () => {
-      const root = document.createElement('div');
       class Child extends Component {
         public static root = 'demo';
       }
       const components = [[Child, { prop: true }] as sandboxComponentOptions];
       const spy = spyOn(Sandbox.prototype, 'register');
-      new Sandbox({ components, root });
+      new Sandbox({ components });
       expect(spy).toHaveBeenCalledWith({
         component: Child,
         selector: 'demo',
@@ -95,7 +90,7 @@ describe('`Sandbox`', () => {
     let inst: Sandbox;
 
     beforeEach(() => {
-      inst = new Sandbox({ root: document.createElement('div') });
+      inst = new Sandbox();
     });
 
     it('throws if "component" is not a Component constructor', () => {
@@ -126,10 +121,8 @@ describe('`Sandbox`', () => {
   });
   describe('.resolveSelector()', () => {
     let inst: Sandbox;
-    let root: HTMLElement;
     beforeEach(() => {
-      root = document.createElement('div');
-      inst = new Sandbox({ root });
+      inst = new Sandbox();
     });
     it('should call utils.evaluate on the passed-in selector', () => {
       const spy = spyOn(utils, 'evaluate').and.returnValue(false);
@@ -156,44 +149,75 @@ describe('`Sandbox`', () => {
     const params = { component: Component, selector: 'demo' };
     beforeEach(() => {
       root = document.createElement('div');
-      inst = new Sandbox({ root });
+      inst = new Sandbox();
       inst.$registry = [params];
     });
 
     it('should create an internal context', () => {
       const mock = context.createContext({});
-      const spy = spyOn(context, 'createContext').and.returnValue(mock);
+      const spy = spyOn(mock, 'update');
       const ctx = {};
+      (inst.options as any).context = mock;
+      (inst.options as any).root = root;
       inst.start(ctx);
       expect(spy).toHaveBeenCalledWith(ctx);
       expect(inst.$ctx).toBe(mock);
     });
 
-    it('injects the context data in the sandbox itself (for inheritance)', () => {
+    it('sets a deprecation flag', () => {
+      (inst.options as any).root = root;
+      inst.start();
+      expect((inst as any).$legacyStart).toBe(true);
+    });
+
+    it('starts the sandbox by running mount/setup/discover', () => {
+      const spy = spyOn(inst, 'mount').and.callThrough();
+      const spySetup = spyOn(inst, 'setup').and.callThrough();
+      const spyDiscover = spyOn(inst, 'discover');
+      (inst.options as any).root = root;
+      inst.start({ demo: true });
+      expect(spy).toHaveBeenCalledWith(root);
+      expect(spySetup).toHaveBeenCalledWith();
+      expect(spyDiscover).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('.setup()', () => {
+    it('setups the context from the passed in "context" option and injects it into the sandbox instance', () => {
       const mock = {
         inject: jasmine.createSpy('inject'),
       } as any;
-      spyOn(context, 'createContext').and.returnValue(mock);
-      inst.start({});
+      const inst = new Sandbox({
+        context: mock,
+      });
+      inst.setup();
+      expect(inst.$ctx).toBe(mock);
       expect(mock.inject).toHaveBeenCalledWith(inst);
+    });
+  });
+
+  describe('.discover()', () => {
+    let inst: Sandbox;
+    let root: HTMLElement;
+    const params = { component: Component, selector: 'demo' };
+    beforeEach(() => {
+      root = document.createElement('div');
+      inst = new Sandbox();
+      inst.$el = root;
+      inst.$el.setAttribute(Sandbox.SB_DATA_ATTR, '');
+      inst.$registry = [params];
     });
 
     it('should emit a "beforeStart" event', () => {
       const spy = spyOn(inst, 'emit');
-      inst.start();
+      inst.discover();
       expect(spy).toHaveBeenCalledWith('beforeStart');
-    });
-
-    it('should call `mount` method', () => {
-      const spy = spyOn(inst, 'mount').and.callThrough();
-      inst.start();
-      expect(spy).toHaveBeenCalled();
     });
 
     it('should abort component initialization if it is already registered', () => {
       const spy = spyOn(inst.$instances, 'has').and.returnValue(true);
       const spyWarn = spyOn(console, 'warn');
-      inst.start();
+      inst.discover();
       expect(spy).toHaveBeenCalledWith(params.selector);
       expect(spyWarn).toHaveBeenCalled();
       expect(inst.$instances.size).toBe(0);
@@ -201,21 +225,21 @@ describe('`Sandbox`', () => {
 
     it('should call Sandbox#resolveSelector', () => {
       const spy = spyOn(inst, 'resolveSelector').and.returnValue(false);
-      inst.start();
+      inst.discover();
       expect(spy).toHaveBeenCalledWith(params.selector);
     });
 
     it('should NOT call Sandbox#createInstance if selector DOES NOT resolve to true', () => {
       spyOn(inst, 'resolveSelector').and.returnValue(false);
       const spy = spyOn(inst, 'createInstance');
-      inst.start();
+      inst.discover();
       expect(spy).not.toHaveBeenCalled();
     });
 
     it('should NOT call Sandbox#createInstance if selector DOES NOT resolve to an array', () => {
       spyOn(inst, 'resolveSelector').and.returnValue({} as any);
       const spy = spyOn(inst, 'createInstance');
-      inst.start();
+      inst.discover();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -225,7 +249,7 @@ describe('`Sandbox`', () => {
         Promise.resolve(child),
       );
       inst.$registry[0].selector = () => true;
-      inst.start();
+      inst.discover();
       expect(spy.calls.count()).toBe(1);
     });
 
@@ -240,7 +264,7 @@ describe('`Sandbox`', () => {
       spyOn(inst, 'resolveSelector').and.returnValue(children);
       const spy = spyOn(inst, 'createInstance').and.callThrough();
       inst.$registry[0].demo = true;
-      inst.start();
+      inst.discover();
       expect(spy.calls.count()).toBe(2);
       const calls = spy.calls.allArgs();
       calls.forEach((args, i) => {
@@ -254,7 +278,7 @@ describe('`Sandbox`', () => {
       child.setAttribute('data-skip', '');
       spyOn(inst, 'resolveSelector').and.returnValue([child]);
       const spy = spyOn(inst, 'createInstance').and.callThrough();
-      inst.start();
+      inst.discover();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -262,7 +286,7 @@ describe('`Sandbox`', () => {
       const child = document.createElement('div');
       const spy = spyOn(inst, 'createInstance').and.callThrough();
       spyOn(inst, 'resolveSelector').and.returnValue([child]);
-      inst.start();
+      inst.discover();
       expect(spy).not.toHaveBeenCalled();
 
       const mid = document.createElement('div');
@@ -286,7 +310,7 @@ describe('`Sandbox`', () => {
       mid.appendChild(child);
       root.appendChild(mid);
 
-      inst.start();
+      inst.discover();
 
       expect(spy).not.toHaveBeenCalled();
     });
@@ -301,7 +325,7 @@ describe('`Sandbox`', () => {
         Promise.resolve(childInstance),
       );
       const spy = spyOn(inst.$instances, 'set');
-      inst.start();
+      inst.discover();
 
       setTimeout(() => {
         expect(spy).toHaveBeenCalledWith(params.selector, [childInstance]);
@@ -321,9 +345,30 @@ describe('`Sandbox`', () => {
         expect(spy).toHaveBeenCalledWith('start');
         done();
       });
-      inst.start();
+      inst.discover();
       expect(spy).not.toHaveBeenCalledWith('start');
       setTimeout(runner, 300);
+    });
+  });
+
+  describe('mount', () => {
+    it('executes setup/discover', () => {
+      const inst = new Sandbox();
+      const spySetup = spyOn(inst, 'setup');
+      const spyDiscover = spyOn(inst, 'discover');
+      inst.mount(document.createElement('div'));
+      expect(spySetup).toHaveBeenCalled();
+      expect(spyDiscover).toHaveBeenCalled();
+    });
+
+    it('does NOT execute setup/discover only if called from "start" (has "$legacyStart")', () => {
+      const inst = new Sandbox();
+      const spySetup = spyOn(inst, 'setup');
+      const spyDiscover = spyOn(inst, 'discover');
+      Object.defineProperty(inst, '$legacyStart', { value: true });
+      inst.mount(document.createElement('div'));
+      expect(spySetup).not.toHaveBeenCalled();
+      expect(spyDiscover).not.toHaveBeenCalled();
     });
   });
 

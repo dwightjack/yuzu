@@ -23,6 +23,7 @@ export interface ISandboxOptions {
     | sandboxComponentOptions
   )[];
   root: HTMLElement | string;
+  context: IContext<any>;
   id: string;
 }
 
@@ -47,11 +48,10 @@ const nextChildUid = createSequence();
  * ```js
  * const sandbox = new Sandbox({
  *   components: [Counter],
- *   root: '#main', // (defaults to `document.body`)
  *   id: 'main', // optional
  * });
  *
- * sandbox.start();
+ * sandbox.mount('#main');
  * ```
  *
  * In this way the sandbox will attach itself to the element matching `#main` and will traverse its children
@@ -78,6 +78,7 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
   public defaultOptions(): ISandboxOptions {
     return {
       components: [],
+      context: createContext(),
       id: '',
       root: document.body,
     };
@@ -140,7 +141,7 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    * ```
    *
    * Registers a new component into the sandbox. The registered components
-   * will be traversed on `.start()` initializing every matching component.
+   * will be traversed on `.mount()` initializing every matching component.
    *
    * @param {object} params Every property other than `component` and `selector` will be used as component option
    * @param {Component} params.component Component constructor
@@ -176,10 +177,13 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    * start([data])
    * ```
    *
+   * **DEPRECATED!** Use `sandbox.mount(root)` instead.
+   *
    * Starts the sandbox with an optional context.
    *
    * The store will be available inside each component at `this.$context`.
    *
+   * @deprecated
    * @param {object} [data] Optional context data object to be injected into the child components.
    * @fires Sandbox#beforeStart
    * @fires Sandbox#start Events dispatched after all components are initialized
@@ -191,13 +195,61 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    * sandbox.start({ globalTheme: 'dark' });
    */
   public start(data = {}): this {
-    this.mount(this.options.root);
+    Object.defineProperty(this, '$legacyStart', { value: true });
 
+    if (process.env.NODE_ENV !== 'production') {
+      this.$warn(`Sandbox.start is deprecated. Use the "mount" method instead`);
+    }
+    this.mount(this.options.root);
+    this.setup();
+    this.$ctx && this.$ctx.update(data);
+    this.discover();
+    return this;
+  }
+
+  /**
+   * ```js
+   * mount([el], [state])
+   * ```
+   *
+   * Enhances `Component.mount()` by firing the child components discovery logic.
+   * By default will use `document.body` as mount element.
+   *
+   * @param {string|Element} el Component's root element
+   * @param {object|null} [state={}] Initial state
+   * @fires Sandbox#beforeStart
+   * @fires Sandbox#start Events dispatched after all components are initialized
+   * @returns {Sandbox}
+   */
+  public mount(el: string | Element, state: Partial<S> | null = {}): this {
+    super.mount(el, state);
+    this.$el.setAttribute(Sandbox.SB_DATA_ATTR, '');
+    if (!this.hasOwnProperty('$legacyStart')) {
+      this.setup();
+      this.discover();
+    }
+    return this;
+  }
+
+  /**
+   * Setups the sandbox context passed in the options.
+   *
+   * @ignore
+   */
+  public setup(): void {
+    this.$ctx = this.options.context;
+    this.$ctx.inject(this);
+  }
+
+  /**
+   * Initializes the sandbox child components.
+   *
+   * @ignore
+   * @returns {Promise}
+   */
+  public discover(): Promise<void> {
     invariant(isElement(this.$el), '"this.$el" is not a DOM element');
 
-    this.$el.setAttribute(Sandbox.SB_DATA_ATTR, '');
-    this.$ctx = createContext(data);
-    this.$ctx.inject(this);
     this.emit('beforeStart');
 
     const sbSelector = `[${Sandbox.SB_DATA_ATTR}]`;
@@ -205,7 +257,7 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
     const ret = this.$registry.map(
       async ({ component: ComponentConstructor, selector, ...options }) => {
         if (this.$instances.has(selector)) {
-          console.warn(
+          this.$warn(
             `Component ${ComponentConstructor} already initialized on ${selector}`,
           );
           return;
@@ -236,13 +288,18 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
         return true;
       },
     );
-    Promise.all(ret).then(() => {
+    return Promise.all(ret).then(() => {
       this.emit('start');
     });
-
-    return this;
   }
 
+  /**
+   * Resolves a configured component selector to a list of DOM nodes or a boolean (for detached components)
+   *
+   * @ignore
+   * @param {string|function} selector Selector string or function.
+   * @returns {HTMLElement[]|boolean}
+   */
   public resolveSelector(
     selector: string | entrySelectorFn,
   ): HTMLElement[] | boolean {
@@ -257,7 +314,7 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    * Creates a component instance.
    * Reads inline components from the passed-in root DOM element.
    *
-   * @private
+   * @ignore
    * @param {object} options instance options
    * @param {HTMLElement} [el] Root element
    * @returns {Component}
@@ -283,8 +340,11 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    * stop()
    * ```
    *
+   * **DEPRECATED!** Use `sandbox.destroy()` instead.
+   *
    * Stops every running component, clears sandbox events and destroys the instance.
    *
+   * @deprecated
    * @fires Sandbox#beforeStop
    * @fires Sandbox#stop
    * @returns {Promise<void>}
@@ -292,6 +352,31 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
    * sandbox.stop();
    */
   public async stop(): Promise<void> {
+    if (process.env.NODE_ENV !== 'production') {
+      this.$warn(
+        `Sandbox.stop is deprecated. Use the "destroy" method instead`,
+      );
+    }
+
+    return this.destroy();
+  }
+
+  /**
+   * ```js
+   * destroy()
+   * ```
+   *
+   * Enhances `Component.destroy()`.
+   * Stops every running component, clears sandbox events and destroys the instance.
+   *
+   * @deprecated
+   * @fires Sandbox#beforeStop
+   * @fires Sandbox#stop
+   * @returns {Promise<void>}
+   * @example
+   * sandbox.destroy();
+   */
+  public async destroy(): Promise<void> {
     this.emit('beforeStop');
     await this.beforeDestroy();
     this.removeListeners();
@@ -311,13 +396,13 @@ export class Sandbox<S = {}> extends Component<S, ISandboxOptions> {
     this.emit('stop');
     this.clear();
 
-    return this.destroy();
+    return super.destroy();
   }
 
   /**
    * Removes events and associated store
    *
-   * @private
+   * @ignore
    */
   public clear(): void {
     this.$ctx = undefined; // release the context
