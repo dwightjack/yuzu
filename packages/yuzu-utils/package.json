@@ -31,8 +31,10 @@
   "bugs": "https://github.com/dwightjack/yuzu/issues",
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build --format cjs,esm,umd",
-    "test": "tsdx test"
+    "build:tsdx": "tsdx build --format cjs,esm,umd",
+    "build": "npm-run-all build:tsdx size",
+    "test": "tsdx test",
+    "size": "node ../../scripts/size-report.js --color"
   },
   "peerDependencies": {
   },
