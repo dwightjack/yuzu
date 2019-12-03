@@ -1,24 +1,33 @@
 {
   "root": true,
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "prettier/@typescript-eslint"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "parserOptions": {
-    "project": "./tsconfig.json",
-    "ecmaVersion": 2018
-  },
-  "rules": {
-    "@typescript-eslint/interface-name-prefix": [1, "always"],
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/explicit-function-return-type": [
-      1,
-      {
-        "allowExpressions": true
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended",
+        "prettier/@typescript-eslint"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"],
+      "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaVersion": 2018
+      },
+      "rules": {
+        "@typescript-eslint/interface-name-prefix": [1, "always"],
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/explicit-function-return-type": [
+          1,
+          {
+            "allowExpressions": true
+          }
+        ]
       }
-    ]
-  }
+    },
+    {
+      "files": ["*/*.config.js"],
+      "extends": ["../.eslintrc.js"]
+    }
+  ]
 }
