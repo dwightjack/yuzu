@@ -67,7 +67,7 @@ const nextChildUid = createSequence();
  * @param {string} [config.id] ID of the sandbox
  * @property {string} $id Sandbox internal id
  * @property {HTMLElement} $el Sandbox root DOM element
- * @property {Context} $ctx Internal [context](/packages/application/api/context). Used to share data across child instances
+ * @property {Context} $ctx Internal [context](/packages/yuzu-application/api/context). Used to share data across child instances
  * @property {object[]} $registry Registered components storage
  * @property {Map} $instances Running instances storage
  * @returns {Sandbox}

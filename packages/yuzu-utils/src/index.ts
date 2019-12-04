@@ -11,7 +11,7 @@ type fn = (...args: any[]) => any;
 /**
  * Event emitter constructor.
  *
- * [Documentation](packages/utils/api/events)
+ * [Documentation](packages/yuzu-utils/api/events)
  *
  * @name Events
  * @class
