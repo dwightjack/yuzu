@@ -56,11 +56,11 @@ module.exports = (config) => {
       compilerOptions: {
         sourceMap: true,
         module: 'commonjs',
-        baseUrl: './',
+        baseUrl: '.',
         paths: ['-application', '-utils', '-loadable', ''].reduce(
           (acc, key) => ({
             ...acc,
-            [`yuzu${key}`]: `packages/yuzu${key}/src`,
+            [`yuzu${key}`]: [`packages/yuzu${key}/src`],
           }),
           {
             'yuzu-test-tools': ['packages/yuzu-dev-tools'],
