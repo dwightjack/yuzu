@@ -96,7 +96,7 @@ import 'yuzu-polyfills';
 
 ## Documentation
 
-Learn more about Yuzu Loadable! Read the **[full documentation](https://dwightjack.github.io/yuzu/#/packages/loadable/)** or **[browse the API](https://dwightjack.github.io/yuzu/#/packages/loadable/api/index)**.
+Learn more about Yuzu Loadable! Read the **[full documentation](https://dwightjack.github.io/yuzu/#/packages/yuzu-loadable/)** or **[browse the API](https://dwightjack.github.io/yuzu/#/packages/yuzu-loadable/api/index)**.
 
 ## Contributing
 
