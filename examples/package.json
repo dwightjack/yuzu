@@ -1,17 +1,17 @@
 {
   "name": "examples-yuzu",
-  "version": "1.0.0",
+  "version": "2.0.0-rc.19",
   "main": "dist/index.ts",
   "author": "Marco Solazzi",
   "license": "MIT",
   "private": true,
   "dependencies": {
     "redux": "^4.0.4",
-    "yuzu": "2.0.0-rc.18",
-    "yuzu-application": "2.0.0-rc.18",
-    "yuzu-loadable": "2.0.0-rc.18",
-    "yuzu-polyfills": "2.0.0-rc.18",
-    "yuzu-utils": "2.0.0-rc.18"
+    "yuzu": "^2.0.0-rc.19",
+    "yuzu-application": "^2.0.0-rc.19",
+    "yuzu-loadable": "^2.0.0-rc.19",
+    "yuzu-polyfills": "^2.0.0-rc.19",
+    "yuzu-utils": "^2.0.0-rc.19"
   },
   "scripts": {
     "build": "tsdx build --format umd",
