@@ -59,7 +59,7 @@ Icon
 dist
 es
 umd
-docs
+/docs
 typings
 tmp
 
