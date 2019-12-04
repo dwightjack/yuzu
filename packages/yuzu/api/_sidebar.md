@@ -1,9 +1,9 @@
 **Guides**
 
 - [yuzu](packages/yuzu/)
-- [yuzu-polyfills](packages/polyfills/)
-- [yuzu-application](packages/application/)
-- [yuzu-loadable](packages/loadable/)
+- [yuzu-polyfills](packages/yuzu-polyfills/)
+- [yuzu-application](packages/yuzu-application/)
+- [yuzu-loadable](packages/yuzu-loadable/)
 
 ---
 
@@ -16,9 +16,9 @@
  - [devtools](packages/yuzu/api/devtools)
  - [extend](packages/yuzu/api/extend)
  - [mount](packages/yuzu/api/mount)
-- [yuzu-application](packages/application/api/)
+- [yuzu-application](packages/yuzu-application/api/)
   <!-- yuzu-application -->
-- [yuzu-loadable](packages/loadable/api/index)
+- [yuzu-loadable](packages/yuzu-loadable/api/index)
   <!-- yuzu-loadable -->
-- [yuzu-utils](packages/utils/api/index)
+- [yuzu-utils](packages/yuzu-utils/api/index)
   <!-- yuzu-utils -->
