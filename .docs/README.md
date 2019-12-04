@@ -58,7 +58,7 @@ Learn more about Yuzu on the core package [**documentation**](packages/yuzu/).
 ## Official Packages
 
 - [yuzu](packages/yuzu/)
-- [yuzu-application](packages/application/)
-- [yuzu-utils](packages/utils/)
-- [yuzu-loadable](packages/loadable/)
-- [yuzu-polyfills](packages/polyfills/)
+- [yuzu-application](packages/yuzu-application/)
+- [yuzu-utils](packages/yuzu-utils/)
+- [yuzu-loadable](packages/yuzu-loadable/)
+- [yuzu-polyfills](packages/yuzu-polyfills/)
