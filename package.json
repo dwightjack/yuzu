@@ -20,7 +20,7 @@
   "bugs": "https://github.com/dwightjack/yuzu/issues",
   "scripts": {
     "prepublishOnly": "npm run release",
-    "release": "run-s lint typecheck test bundle docs",
+    "release": "run-s bundle lint typecheck test docs",
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\" \"scripts/**/*.js\" \"examples/src/**/*.ts\"",
     "typecheck": "tsc --noEmit --skipLibCheck -p .",
     "bundle": "lerna run build --scope=yuzu*",
