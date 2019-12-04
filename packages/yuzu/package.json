@@ -1,7 +1,7 @@
 {
   "name": "yuzu",
   "description": "Yuzu Core Component",
-  "version": "2.0.0-rc.20",
+  "version": "2.0.0",
   "license": "MIT",
   "homepage": "https://github.com/dwightjack/yuzu/packages/yuzu",
   "author": "Marco Solazzi",
@@ -39,10 +39,10 @@
   },
   "dependencies": {
     "tiny-invariant": "^1.0.6",
-    "yuzu-utils": "^2.0.0-rc.20"
+    "yuzu-utils": "^2.0.0"
   },
   "devDependencies": {
-    "yuzu-test-tools": "^2.0.0-rc.20"
+    "yuzu-test-tools": "^2.0.0"
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
 }
