@@ -179,7 +179,7 @@ Returns **[Promise][9]&lt;void>**
 
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[5]: /packages/application/api/context
+[5]: /packages/yuzu-application/api/context
 
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map
 

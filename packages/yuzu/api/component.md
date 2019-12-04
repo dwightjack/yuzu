@@ -487,7 +487,7 @@ Checks whether the passed-in value is a Component constructor.
 
 Returns **[boolean][3]** 
 
-[1]: /packages/utils/api/events
+[1]: /packages/yuzu-utils/api/events
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
