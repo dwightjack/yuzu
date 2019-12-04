@@ -1,7 +1,7 @@
 {
   "name": "yuzu-utils",
   "description": "Yuzu Utilities",
-  "version": "2.0.0-rc.18",
+  "version": "2.0.0-rc.20",
   "license": "MIT",
   "homepage": "https://github.com/dwightjack/yuzu/packages/utils",
   "author": "Marco Solazzi",
@@ -36,12 +36,8 @@
     "test": "tsdx test",
     "size": "node ../../scripts/size-report.js --color"
   },
-  "peerDependencies": {
-  },
-  "dependencies": {
-  },
   "devDependencies": {
-    "yuzu-test-tools": "^1.0.0"
+    "yuzu-test-tools": "^2.0.0-rc.20"
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
 }
