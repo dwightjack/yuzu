@@ -236,7 +236,7 @@ describe('`Loadable`', () => {
     });
 
     it('logs an error on fetchData failure and returns the instance', async () => {
-      const e = new Error('MOCK');
+      const e = new Error('MOCK fetchData fail');
       fetchData.and.throwError(e);
       const spy = spyOn(console, 'error');
       const ret = await inst.initialize();
@@ -245,7 +245,7 @@ describe('`Loadable`', () => {
     });
 
     it('does NOT mount component on error', async () => {
-      const e = new Error('MOCK');
+      const e = new Error('MOCK  fetchData fail not mounting');
       fetchData.and.throwError(e);
       const spy = spyOn(inst, 'setComponent');
       await inst.initialize();
