@@ -36,6 +36,20 @@ const instance = new Component({ ... })
 
 Returns **[Component][9]** 
 
+## defaultOptions
+
+```js
+this.defaultOptions()
+```
+
+Returns an object with default options.
+
+### Parameters
+
+-   `self` **[Component][9]** The component instance itself
+
+Returns **[object][2]** 
+
 ## mount
 
 ```js
@@ -91,6 +105,8 @@ At this stage just the instance options (`this.options`) are initialized.
 
 ?> Use this hook to tap as early as possible into the component's properties. For example to set a dynamic initial state.
 
+Returns **void** 
+
 ## beforeMount
 
 Lifecycle hook called just before mounting the instance onto the root element.
@@ -98,6 +114,8 @@ Lifecycle hook called just before mounting the instance onto the root element.
 At this stage the component is already attached to its root DOM element.
 
 Overwrite this method with custom logic in your components.
+
+Returns **void** 
 
 ## mounted
 
@@ -109,6 +127,8 @@ Overwrite this method with custom logic in your components.
 
 ?> Use this method when you need to work with the DOM or manage any side-effect that requires the component to be into the DOM.
 
+Returns **void** 
+
 ## initialize
 
 Lifecycle hook called before instance initialization.
@@ -118,6 +138,8 @@ At this stage the state and state listeners are not yet been initialized.
 Overwrite this method with custom logic in your components.
 
 ?> Use this method to set child components by [setRef][10] and run any preparatory work on the instance.
+
+Returns **void** 
 
 ## ready
 
@@ -129,6 +151,8 @@ Overwrite this method with custom logic in your components.
 
 ?> `ready` lifecycle can be delayed (_async ready_) by implementing a [`readyState`][13] method.
 
+Returns **void** 
+
 ## beforeDestroy
 
 Lifecycle hook called just before closing child refs.
@@ -139,13 +163,15 @@ Overwrite this method with custom logic in your components.
 
 !> This is an async method. Return a promise in order to suspend the destroy process.
 
+Returns **void** 
+
 ## findNodes
 
 Returns an array of elements matching a CSS selector in the context of the component's root element
 
 ### Parameters
 
--   `selector`  {string} CSS selector to match
+-   `selector` **[string][8]** {string} CSS selector to match
 
 Returns **[Array][14]&lt;[Element][6]>** 
 
@@ -155,7 +181,7 @@ Returns the first element matching a CSS selector in the context of the componen
 
 ### Parameters
 
--   `selector`  {string} CSS selector to match
+-   `selector` **[string][8]** {string} CSS selector to match
 
 Returns **[Element][6]** 
 
@@ -199,9 +225,10 @@ You can overwrite this method with your own validation logic.
 
 ### Parameters
 
--   `key` **[string][8]** State property name
+-   `_key` **any** 
 -   `currentValue` **any** Value stored in the current state
 -   `newValue` **any** New value
+-   `key` **[string][8]** State property name
 
 Returns **[boolean][3]** 
 
@@ -239,6 +266,8 @@ instance.setState({ a: 2 }, true); //nothing happens, again...
 instance.setState(({ a }) => ({a + 1}));
 ```
 
+Returns **void** 
+
 ## replaceState
 
 ```js
@@ -264,6 +293,8 @@ instance.replaceState({ b: 2 });
 // instance.state.a === undefined
 ```
 
+Returns **void** 
+
 ## broadcast
 
 ```js
@@ -286,6 +317,8 @@ child.on('broadcast:log', (str) => console.log(str));
 instance.setRef({ id: 'child', component: child });
 instance.broadcast('log', 'test') // child component logs 'test'
 ```
+
+Returns **void** 
 
 ## setListener
 
@@ -319,6 +352,8 @@ instance.setListener('click @btn', () => ...)
 instance.setListener('click', () => ...)
 ```
 
+Returns **void** 
+
 ## removeListeners
 
 ```js
@@ -326,6 +361,8 @@ removeListeners()
 ```
 
 Removes all DOM event listeners attached with `.setListener`.
+
+Returns **void** 
 
 ## setRef
 
@@ -341,7 +378,7 @@ If a reference `id` is already attached, the previous one is destroyed and repla
 
 ### Parameters
 
--   `refCfg`  
+-   `refCfg` **IRef&lt;(IComponentConstructable&lt;C> | C | function (el: any, state: Readonly&lt;S>): C)>** 
 -   `props` **[object][2]?** Child component initial state
 -   `config` **[object][2]** A child component configuration object
     -   `config.id` **[string][8]** Reference id. Will be used to set a reference to the child component onto `this.$refs`
@@ -422,20 +459,6 @@ Detaches DOM events, instance's events and destroys all references as well.
 
 Returns **[Promise][19]** 
 
-## &lt;static> isComponent
-
-```js
-Component.isComponent(obj)
-```
-
-Checks whether the passed-in value is a Component constructor.
-
-### Parameters
-
--   `value` **any** 
-
-Returns **[boolean][3]** 
-
 ## &lt;static> YUZU_DATA_ATTR
 
 ```js
@@ -449,6 +472,20 @@ Returns **[object][2]**
 ## &lt;static> YUZU_COMPONENT
 
 Marks yuzu components
+
+## &lt;static> isComponent
+
+```js
+Component.isComponent(obj)
+```
+
+Checks whether the passed-in value is a Component constructor.
+
+### Parameters
+
+-   `value` **any** 
+
+Returns **[boolean][3]** 
 
 [1]: /packages/utils/api/events
 

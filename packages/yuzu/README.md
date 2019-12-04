@@ -1,4 +1,4 @@
-# yuzu <sub>2.0.0-rc.18<sub>
+# yuzu <sub>2.0.0-rc.20<sub>
 
 > old school component management
 

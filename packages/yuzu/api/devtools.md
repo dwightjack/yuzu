@@ -16,6 +16,8 @@ import { Component, devtools } from 'yuzu';
 devtools(Component);
 ```
 
+Type: function (c: any): void
+
 # Component
 
 Methods and properties added by devtools

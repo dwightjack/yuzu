@@ -21,11 +21,10 @@ We can register the component inside a sandbox like this:
 ```js
 const sandbox = new Sandbox({
   components: [Counter],
-  root: '#main', // (defaults to `document.body`)
   id: 'main', // optional
 });
 
-sandbox.start();
+sandbox.mount('#main');
 ```
 
 In this way the sandbox will attach itself to the element matching `#main` and will traverse its children
@@ -36,7 +35,7 @@ just add a `data-skip` attribute to its root element.
 
 ### Parameters
 
--   `options`   (optional, default `{}`)
+-   `options` **Partial&lt;ISandboxOptions>**  (optional, default `{}`)
 -   `config` **[object][1]** 
     -   `config.components` **([Array][2]&lt;Component> | [Array][2]&lt;\[Component, [object][1]]>)?** Array of components constructor or array with [ComponentConstructor, options]
     -   `config.root` **([HTMLElement][3] \| [string][4])** Root element of the sandbox. Either a DOM element or a CSS selector (optional, default `document.body`)
@@ -59,7 +58,7 @@ register(params)
 ```
 
 Registers a new component into the sandbox. The registered components
-will be traversed on `.start()` initializing every matching component.
+will be traversed on `.mount()` initializing every matching component.
 
 ### Parameters
 
@@ -77,11 +76,15 @@ sandbox.register({
 });
 ```
 
+Returns **void** 
+
 ## start
 
 ```js
 start([data])
 ```
+
+**DEPRECATED!** Use `sandbox.mount(root)` instead.
 
 Starts the sandbox with an optional context.
 
@@ -102,11 +105,34 @@ sandbox.start({ globalTheme: 'dark' });
 
 Returns **[Sandbox][7]** 
 
+**Meta**
+
+-   **deprecated**: This is deprecated.
+
+
+## mount
+
+```js
+mount([el], [state])
+```
+
+Enhances `Component.mount()` by firing the child components discovery logic.
+By default will use `document.body` as mount element.
+
+### Parameters
+
+-   `el` **([string][4] \| [Element][8])** Component's root element
+-   `state` **([object][1] | null)** Initial state (optional, default `{}`)
+
+Returns **[Sandbox][7]** 
+
 ## stop
 
 ```js
 stop()
 ```
+
+**DEPRECATED!** Use `sandbox.destroy()` instead.
 
 Stops every running component, clears sandbox events and destroys the instance.
 
@@ -116,7 +142,34 @@ Stops every running component, clears sandbox events and destroys the instance.
 sandbox.stop();
 ```
 
-Returns **[Promise][8]&lt;void>** 
+Returns **[Promise][9]&lt;void>** 
+
+**Meta**
+
+-   **deprecated**: This is deprecated.
+
+
+## destroy
+
+```js
+destroy()
+```
+
+Enhances `Component.destroy()`.
+Stops every running component, clears sandbox events and destroys the instance.
+
+### Examples
+
+```javascript
+sandbox.destroy();
+```
+
+Returns **[Promise][9]&lt;void>** 
+
+**Meta**
+
+-   **deprecated**: This is deprecated.
+
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
@@ -132,4 +185,6 @@ Returns **[Promise][8]&lt;void>**
 
 [7]: #sandbox
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[8]: https://developer.mozilla.org/docs/Web/API/Element
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

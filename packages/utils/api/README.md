@@ -1,3 +1,0 @@
-# yuzu-utils
-
-### Exposed modules

@@ -37,6 +37,8 @@ const childComponentArray = Children('.items', iterator)(parent);
 // Children(els , iterator)(parent);
 ```
 
+Returns **childMounter&lt;ReturnType&lt;I>>** 
+
 [1]: /packages/yuzu/api/component#instance-properties
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

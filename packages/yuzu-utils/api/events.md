@@ -18,6 +18,10 @@ events.on('log', (msg) => console.log(msg))
 events.emit('log', 'Hello world!') // logs 'Hello world!'
 ```
 
+## \_allEvents
+
+Type: {: [Array][2]&lt;listenerFn>}
+
 ## on
 
 ```js
@@ -28,9 +32,9 @@ Adds an event handler for an event.
 
 ### Parameters
 
--   `name` **[string][2]** Event name to listen for, or `'*'` for all events
--   `handler` **[Function][3]** Function to call
--   `once` **[boolean][4]?** Make `handler` be called only once, the `.once` method use this internally
+-   `name` **[string][3]** Event name to listen for, or `'*'` for all events
+-   `handler` **[Function][4]** Function to call
+-   `once` **[boolean][5]?** Make `handler` be called only once, the `.once` method use this internally
 
 ### Examples
 
@@ -48,7 +52,7 @@ emitter
 emitter.emit('hi', 'world')
 ```
 
-Returns **[Event][5]** 
+Returns **[Event][6]** 
 
 ## once
 
@@ -60,8 +64,8 @@ Like `.on` but calls the handler just once.
 
 ### Parameters
 
--   `name` **[string][2]** Event name to listen for, or `'*'` for all events
--   `handler` **[function][3]** Function to call
+-   `name` **[string][3]** Event name to listen for, or `'*'` for all events
+-   `handler` **[function][4]** Function to call
 
 ### Examples
 
@@ -81,7 +85,7 @@ emitter.emit('foo')
 console.log(called) // => 1
 ```
 
-Returns **[Events][6]** 
+Returns **[Events][7]** 
 
 ## off
 
@@ -94,8 +98,8 @@ If `name` is not specified as well, it will then remove all registered event han
 
 ### Parameters
 
--   `name` **[string][2]?** Event name
--   `handler` **[function][3]?** Handler to remove
+-   `name` **[string][3]?** Event name
+-   `handler` **[function][4]?** Handler to remove
 
 ### Examples
 
@@ -118,7 +122,7 @@ emitter.off('foo')
 emitter.off()
 ```
 
-Returns **[Events][6]** 
+Returns **[Events][7]** 
 
 ## emit
 
@@ -131,7 +135,7 @@ Will call every handler registered for the wildcard event `'*'` as well
 
 ### Parameters
 
--   `name` **[string][2]** The name of the event to invoke
+-   `name` **[string][3]** The name of the event to invoke
 -   `args` **...any** Any number of arguments of any type of value, passed to each listener
 
 ### Examples
@@ -152,16 +156,18 @@ emitter.emit('foo', 1, 2, 3)
 emitter.emit('bar', 555)
 ```
 
-Returns **[Events][6]** 
+Returns **[Events][7]** 
 
 [1]: https://github.com/tunnckoCoreLabs/dush
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[5]: https://developer.mozilla.org/docs/Web/API/Event
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[6]: #events
+[6]: https://developer.mozilla.org/docs/Web/API/Event
+
+[7]: #events

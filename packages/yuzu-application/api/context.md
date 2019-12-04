@@ -10,7 +10,7 @@ Returns a new context object
 
 ### Parameters
 
--   `data` **[object][1]** Context internal data (optional, default `{}`)
+-   `data` **[object][1]** Context internal data (optional, default `{}as D`)
 
 ## Examples
 

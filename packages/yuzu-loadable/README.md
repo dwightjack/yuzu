@@ -1,6 +1,12 @@
-# yuzu-utils <sub>2.0.0-rc.18<sub>
+# yuzu-loadable <sub>2.0.0-rc.20<sub>
 
-> utility functions for the [yuzu](https://github.com/dwightjack/yuzu/) library ecosystem
+> async component initializer for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
+
+Yuzu components rely on pre-existing HTML used as baseline to enhance the user experience. But in some scenarios the HTML you need is not rendered, or you have to wait for data coming from a remote API before you can initialize a component.
+
+This is where **Yuzu Loadable** comes in hand.
+
+Yuzu Loadable lets you define an async function and use its returned data to instantiate a component and its HTML template.
 
 <!-- TOC depthTo:3 -->
 
@@ -19,24 +25,23 @@
 ### As NPM Package
 
 ```
-npm install yuzu-utils --save
+npm install yuzu yuzu-loadable --save
 
 # or
 
-yarn add yuzu-utils
+yarn add yuzu yuzu-loadable
 ```
 
 ### CDN Delivered `<script>`
 
-Add the following script tag before your code
+Add the following script tags before your code
 
 ```html
-<script src="https://unpkg.com/yuzu-utils"></script>
+<script src="https://unpkg.com/yuzu"></script>
+<script src="https://unpkg.com/yuzu-loadable"></script>
 ```
 
-Yuzu utils will be available in the global scope under `YZ.Utils`.
-
-**Note** The UMD build of yuzu already ships with built-in utils under the `YZ.Utils` namespace.
+Yuzu Loadable will be available in the global scope under `YZ.Loadable`.
 
 ### ES2017 Syntax
 
@@ -53,7 +58,7 @@ module.exports = {
   // ...
 +  resolve: {
 +    alias: {
-+      'yuzu-utils': 'yuzu-utils/dist/index.next.js'
++      'yuzu-loadable': 'yuzu-loadable/dist/index.next.js'
 +    }
 +  }
 }
@@ -73,7 +78,7 @@ export default {
   plugins: [
     // ...
 +    alias({
-+      'yuzu-utils': path.resolve(__dirname, 'node_modules/yuzu-utils/dist/index.next.js')
++      'yuzu-loadable': path.resolve(__dirname, 'node_modules/yuzu-loadable/dist/index.next.js')
 +    })
   ],
 };
@@ -91,7 +96,7 @@ import 'yuzu-polyfills';
 
 ## Documentation
 
-Learn more about Yuzu utils! Browse **[the API](https://dwightjack.github.io/yuzu/#/packages/utils/api/index)**.
+Learn more about Yuzu Loadable! Read the **[full documentation](https://dwightjack.github.io/yuzu/#/packages/loadable/)** or **[browse the API](https://dwightjack.github.io/yuzu/#/packages/loadable/api/index)**.
 
 ## Contributing
 

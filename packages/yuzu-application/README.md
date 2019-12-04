@@ -1,28 +1,24 @@
-# yuzu-application <sub>2.0.0-rc.18<sub>
+# yuzu-application <sub>2.0.0-rc.20<sub>
 
 > components management for [yuzu](https://github.com/dwightjack/yuzu/tree/master/packages/yuzu)
 
 Yuzu Application exposes a set of modules aimed to simplify the management of Yuzu components in the context of a page.
 
-> **Available modules:**
->
-> - [Context](packages/application/context.md)
-> - [Sandbox](packages/application/sandbox.md)
-
 <!-- TOC depthTo:3 -->
 
 - [Installation](#installation)
-  - [as NPM package](#as-npm-package)
-  - [CDN delivered `<script>`](#cdn-delivered-script)
+  - [As NPM Package](#as-npm-package)
+  - [CDN Delivered `<script>`](#cdn-delivered-script)
   - [ES2017 Syntax](#es2017-syntax)
-- [Browser support](#browser-support)
-- [API Documentation](#api-documentation)
+- [Browser Support](#browser-support)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
 
 <!-- /TOC -->
 
 ## Installation
 
-### as NPM package
+### As NPM Package
 
 ```
 npm install yuzu yuzu-application --save
@@ -32,7 +28,7 @@ npm install yuzu yuzu-application --save
 yarn add yuzu yuzu-application
 ```
 
-### CDN delivered `<script>`
+### CDN Delivered `<script>`
 
 Add the following script tags before your code
 
@@ -84,17 +80,24 @@ export default {
 };
 ```
 
-## Browser support
+## Browser Support
 
 Yuzu works in all modern browsers. In order to make it work in browsers that don't support ES2015+ features (like IE11) you need to include the `yuzu-polyfills` package before any other `yuzu*` package.
 
-If you're using a package bundler without any polyfill library like [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill/) add this line at the very top of your entry point:
+If you're using a package bundler add this line at the very top of your entry point:
 
 ```js
 import 'yuzu-polyfills';
 ```
 
-## API Documentation
+## Documentation
 
-- [Sandbox](packages/application/api/sandbox.md)
-- [Context](packages/application/api/context.md)
+Learn more about Yuzu Application! Read the **[full documentation](https://dwightjack.github.io/yuzu/#/packages/application/)** or **[browse the API](https://dwightjack.github.io/yuzu/#/packages/application/api/)**.
+
+## Contributing
+
+1.  Fork it or clone the repo
+1.  Install dependencies `yarn install`
+1.  Code your changes and write new tests in the `test` folder.
+1.  Ensure everything is fine by running `yarn build`
+1.  Push it or submit a pull request :D

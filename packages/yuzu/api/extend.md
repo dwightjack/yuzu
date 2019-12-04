@@ -7,7 +7,7 @@ Utility method to create new Component classes in environments that don't suppor
 ### Parameters
 
 -   `parent` **Component** Component class to extend
--   `props` **[object][1]** New component default properties and methods (optional, default `{}`)
+-   `props` **[object][1]** New component default properties and methods (optional, default `{}as E`)
 
 ## Examples
 
@@ -22,5 +22,7 @@ const Text = YZ.extend(YZ.Component, {
  }
 });
 ```
+
+Returns **IExtendedComponent&lt;P, E>** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

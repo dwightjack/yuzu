@@ -12,8 +12,8 @@
 - [yuzu](packages/yuzu/api/)
   <!-- yuzu -->
 - [yuzu-application](packages/application/api/)
-  - [context](packages/application/api/context)
- - [sandbox](packages/application/api/sandbox)
+  - [context](packages/yuzu-application/api/context)
+ - [sandbox](packages/yuzu-application/api/sandbox)
 - [yuzu-loadable](packages/loadable/api/index)
   <!-- yuzu-loadable -->
 - [yuzu-utils](packages/utils/api/index)
