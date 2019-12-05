@@ -19,16 +19,15 @@
   },
   "bugs": "https://github.com/dwightjack/yuzu/issues",
   "scripts": {
-    "prepublishOnly": "npm run release",
-    "release": "run-s bundle lint typecheck test docs",
+    "release": "run-s lerna:bundle lint typecheck test lerna:publish",
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\" \"scripts/**/*.js\" \"examples/src/**/*.ts\"",
     "typecheck": "tsc --noEmit --skipLibCheck -p .",
-    "bundle": "lerna run build --scope=yuzu*",
+    "lerna:bundle": "lerna run build --scope=yuzu*",
+    "lerna:publish": "lerna publish --no-git-tag-version --no-push",
     "docs": "node ./scripts/doc.js",
     "test": "karma start karma.conf.js --single-run",
     "dev": "karma start karma.conf.js",
-    "demo": "lerna run start --scope=examples-yuzu --stream",
-    "publish": "lerna publish --skip-git"
+    "demo": "lerna run start --scope=examples-yuzu --stream"
   },
   "husky": {
     "hooks": {
