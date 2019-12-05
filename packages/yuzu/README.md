@@ -1,4 +1,4 @@
-# yuzu <sub>2.0.0<sub>
+# yuzu <sub>2.0.1<sub>
 
 > old school component management
 

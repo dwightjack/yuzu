@@ -1,4 +1,4 @@
-# yuzu-utils <sub>2.0.0<sub>
+# yuzu-utils <sub>2.0.1<sub>
 
 > utility functions for the [yuzu](https://github.com/dwightjack/yuzu/) library ecosystem
 
