@@ -9,14 +9,15 @@ function printDiff(diff) {
   if (!diff) {
     return '';
   }
-  const formatted = prettyBytes(diff);
-  const str = ' (' + (diff > 0 ? `+${formatted}` : formatted) + ')';
+  const formatted = prettyBytes(diff, { signed: true });
+  let str = ` (${formatted})`;
 
   if (diff > 1024) {
-    return chalk.red(str);
+    str = chalk.red(str);
   } else if (diff < -10) {
-    return chalk.green(str);
+    str = chalk.green(str);
   }
+  return str;
 }
 
 (async () => {
@@ -48,12 +49,13 @@ function printDiff(diff) {
 
   sizes.forEach((size, i) => {
     const file = bundles[i];
-    const diff = prevReport[file] && size - prevReport[file];
+    const prevSize = prevReport[file];
+    const diff = prevSize !== undefined && size - prevSize;
     report[file] = size;
 
     console.log(
       `  ${bundles[i].padStart(maxLength)} ⏤  ${prettyBytes(size)}${
-        prevReport[file] ? printDiff(diff) : ''
+        prevSize !== undefined ? printDiff(diff) : ''
       }`,
     );
   });
