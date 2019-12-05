@@ -1,7 +1,7 @@
 {
   "name": "yuzu-application",
   "description": "Yuzu Application Manager",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "homepage": "https://github.com/dwightjack/yuzu/packages/application",
   "author": "Marco Solazzi",
@@ -43,10 +43,10 @@
   },
   "dependencies": {
     "tiny-invariant": "^1.0.6",
-    "yuzu-utils": "^2.0.0"
+    "yuzu-utils": "^2.0.1"
   },
   "devDependencies": {
-    "yuzu": "^2.0.0"
+    "yuzu": "^2.0.1"
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5"
 }
