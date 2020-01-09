@@ -566,7 +566,7 @@ Here is a full example:
 
 ```html
 <div class="counter">
-  <span class="Text"></span>
+  <span class="text"></span>
   <div>
     <button type="button" class="counter__decrement">Decrement</button>
     <button type="button" class="counter__increment">Increment</button>
@@ -717,11 +717,11 @@ In scenarios where you need to establish a communication between children and th
 
 ```js
 // parent.js
-this.$refs.on('message', (value) => {
+this.$refs.myChild.on('message', (value) => {
   this.setState({ childMessage: value });
 });
 
-// child.js
+// myChild.js
 this.emit('message', this.state.message);
 ```
 
@@ -961,6 +961,10 @@ class Navigation extends Component {
 }
 
 class Gallery extends Component {
+  state = {
+    currentImage: 0,
+  };
+
   initialize() {
     this.setRef({
       id: 'navigation',
