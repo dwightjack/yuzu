@@ -5,7 +5,7 @@ import { mount } from 'yuzu-test-tools';
 
 describe('`Children`', () => {
   let root: Component;
-  const noop = (): void => {};
+  const noop = (): void => undefined;
 
   beforeEach(() => {
     mount('component.html');

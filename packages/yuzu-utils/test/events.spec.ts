@@ -16,11 +16,11 @@ describe('`Events`', () => {
 
   describe('.on', () => {
     it('should return the instance', () => {
-      expect(app.on('test', () => {})).toBe(app);
+      expect(app.on('test', () => undefined)).toBe(app);
     });
 
     it('should instance has ._allEvents object that contains all handlers', () => {
-      const fn = (): void => {};
+      const fn = (): void => undefined;
 
       app.on('aaa', fn);
       app.on('aaa', fn);
@@ -117,7 +117,7 @@ describe('`Events`', () => {
 
   describe('.once', () => {
     it('should return the instance', () => {
-      expect(app.once('test', () => {})).toBe(app);
+      expect(app.once('test', () => undefined)).toBe(app);
     });
 
     it('handlers added with .once be called one time only', () => {
@@ -152,8 +152,8 @@ describe('`Events`', () => {
     });
 
     it('should .off("foo") remove all "foo" handlers', () => {
-      app.on('zzz', () => {});
-      app.on('zzz', () => {});
+      app.on('zzz', () => undefined);
+      app.on('zzz', () => undefined);
       app.off('zzz');
 
       expect(app._allEvents.zzz.length).toBe(0);
