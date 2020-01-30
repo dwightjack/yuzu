@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsdx build --format umd",
     "start:tsdx": "tsdx watch --format umd",
-    "start:server": "browser-sync start -s --f dist/** index.html --w --ss ../packages",
+    "start:server": "browser-sync start -s -f dist/** index.html -w --ss ../packages",
     "start": "run-p start:*"
   },
   "devDependencies": {
