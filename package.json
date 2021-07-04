@@ -42,7 +42,7 @@
     "chalk": "^3.0.0",
     "core-js": "^3.4.7",
     "cpy": "^7.1.0",
-    "documentation": "^12.1.4",
+    "documentation": "13.2.5",
     "eslint": "~6.6.0",
     "eslint-config-prettier": "~6.7.0",
     "eslint-plugin-node": "~10.0.0",
