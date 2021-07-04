@@ -2,7 +2,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/repo/yuzu
   docker:
-    - image: circleci/node:10-browsers
+    - image: circleci/node:16-browsers
 
 jobs:
   install:
