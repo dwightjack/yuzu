@@ -40,6 +40,6 @@
   },
   "gitHead": "0d6e84e7a6f39849308551fc1c34a97dff70fca5",
   "devDependencies": {
-    "@types/core-js": "^2.5.2"
+    "@types/core-js": "2.5.2"
   }
 }
