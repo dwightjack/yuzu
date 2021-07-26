@@ -37,8 +37,8 @@
   "devDependencies": {
     "@types/jasmine": "~3.5.0",
     "@types/node": "^12.12.14",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
+    "@typescript-eslint/eslint-plugin": "2.18.0",
+    "@typescript-eslint/parser": "2.18.0",
     "chalk": "^3.0.0",
     "core-js": "^3.4.7",
     "cpy": "^7.1.0",
