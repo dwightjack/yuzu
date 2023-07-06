@@ -41,7 +41,7 @@
     "@typescript-eslint/parser": "^2.8.0",
     "chalk": "^3.0.0",
     "core-js": "^3.4.7",
-    "cpy": "^7.1.0",
+    "cpy": "^10.0.0",
     "documentation": "^12.1.4",
     "eslint": "~6.6.0",
     "eslint-config-prettier": "~6.7.0",
